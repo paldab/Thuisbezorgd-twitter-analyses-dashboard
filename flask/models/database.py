@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 import config
 
 engine = create_engine(
-    'mysql:mysqldb://{}:{}@{}/{}'.format(
+    'mysql+mysqldb://{}:{}@{}/{}'.format(
         config.database['user'], config.database['password'],
         config.database['host'], config.database['db']
     )
