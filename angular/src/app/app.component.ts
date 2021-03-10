@@ -1,5 +1,9 @@
-import { Component, HostBinding } from '@angular/core';
+import { Component } from '@angular/core';
 import { SocialAuthService,GoogleLoginProvider, SocialUser } from 'angularx-social-login';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { Observable } from 'rxjs';
+import { map, shareReplay } from 'rxjs/operators';
+import { OverlayService } from './services/overlay.service';
 
 @Component({
   selector: 'app-root',
@@ -13,17 +17,28 @@ export class AppComponent {
   user!: SocialUser;
   loggedIn: boolean  = false;
 
-  constructor(private authService: SocialAuthService) { }  
+
+  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
+  .pipe(
+    map(result => result.matches),
+    shareReplay()
+  );
+
+  constructor(
+    private authService: SocialAuthService,
+    private breakpointObserver: BreakpointObserver,
+    private loginOverlay: OverlayService,
+  ) { }  
   ngOnInit() {
       this.authService.authState.subscribe((user) => {
       this.user = user;
       this.loggedIn = (user != null);
-      console.log(this.user);
+
+      if(!this.loggedIn) {
+        this.loginOverlay.open({width: 800, height: 800});
+      }
     });
   }  
-  signInWithGoogle(): void {
-    this.authService.signIn(GoogleLoginProvider.PROVIDER_ID);
-  }
   signOut(): void {
     this.authService.signOut();
   }

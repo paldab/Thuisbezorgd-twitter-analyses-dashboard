@@ -1,47 +1,38 @@
-.toolbar {
-    flex: 1 1 auto;
-    text-align: center;
-  }
-  .content {
-    width: 90%;
-    margin: 0 auto;
-    margin-top: 20px;
-    padding-bottom: 20px;
-    &>*:not(:last-child) {
-      margin-bottom: 20px;
-    }
-    .component {
-      height: 100%;
-      padding: 20px;
-      border-radius: 20px;
-      border: 1px solid rgba(0, 0, 0, 0.116);
-      .title {
-        font-size: 20px;
-        font-weight: 300;
-        border-left: 4px solid goldenrod;
-        padding: 5px;
-      }
-      .demo {
-        display: grid;
-        place-items: center;
-      }
-    }
-  }
-  // Grid
-  mat-grid-tile {
-    background: lightblue;
-  }
-  // Card
-  .card {
-    max-width: 400px;
-  }
-  .card-header-image {
-    background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
-    background-size: cover;
-  }
-  .for-more {
-    width: 100%;
-    text-align: center;
-    font-size: larger;
-    margin-bottom: 20px;
-  }
+@import '../styles.scss';
+
+.sidenav-container {
+  height: 100%;
+}
+
+.sidenav {
+  width: 200px;
+}
+
+.sidenav .mat-toolbar {
+  background: inherit;
+}
+
+.mat-toolbar.mat-primary {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+mat-sidenav {
+  width: 280px;
+  padding:15px;
+}
+.mat-drawer { 
+  background-color: mat-color($angular-primary, 300);
+  color:#fff
+}
+.main-content {
+  padding:20px;
+}
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.avatar {
+  width:40px;
+  border-radius: 50%;
+}

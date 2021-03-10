@@ -1,26 +1,47 @@
 <mat-sidenav-container class="sidenav-container">
 
+  <mat-sidenav #drawer class="sidenav" fixedInViewport [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false">
+    <mat-toolbar>Menu</mat-toolbar>
+    <mat-nav-list>
+      <a mat-list-item routerLink="/">
+        <mat-icon>invert_colors</mat-icon>
+        <span>Link 1</span>
+      </a>
+      <a mat-list-item routerLink="/">
+        <mat-icon>invert_colors</mat-icon>
+        <span>Link 2</span>
+      </a>
+      <a mat-list-item routerLink="/">
+        <mat-icon>invert_colors</mat-icon>
+        <span>Link 3</span>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
 
-    <mat-sidenav-content>
-      <mat-toolbar color="primary">
-        <button
-          type="button"
-          aria-label="Toggle sidenav"
-          mat-icon-button
-          (click)="drawer.toggle()">
-          <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
-        </button>
-        <span>Thuisbezorgd Insight</span>
-        <span class="toolbar-spacer"></span>
-        <button mat-icon-button (click)="signInWithGoogle()"
-        matTooltip="Toggle theme"
+
+  <mat-sidenav-content>
+    <mat-toolbar color="primary">
+      <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()">
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+      <span>Thuisbezorgd Insight</span>
+      <span class="toolbar-spacer"></span>
+      <div *ngIf="loggedIn===true">
+        <!-- User is logged in. -->
+        <mat-icon *ngIf="user == null">account_circle</mat-icon>
+        <img *ngIf="user" class="avatar" [src]="user?.photoUrl"/>
+      </div>
+      <button mat-icon-button matTooltip="Toggle theme"
         aria-label="Example icon-button with share icon">
         <mat-icon>invert_colors</mat-icon>
       </button>
-      </mat-toolbar>
-      <!-- Add Content Here -->
-      <app-dashboard></app-dashboard>
-      <router-outlet></router-outlet>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
-  
+    </mat-toolbar>
+    <!-- Add Content Here -->
+    <div *ngIf="loggedIn===false">
+      <!-- User is NOT logged in. Show Overlay.-->
+    </div>
+    <app-dashboard></app-dashboard>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>
