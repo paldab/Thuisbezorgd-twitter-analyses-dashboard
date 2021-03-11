@@ -10,6 +10,6 @@ engine = create_engine(
     )
 )
 
-Session = sessionmaker()
+Session = sessionmaker(bind=engine)
 
 Base = declarative_base()

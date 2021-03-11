@@ -16,10 +16,10 @@ class Tweet(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     text = Column(String(255), nullable=False)
     created_at = Column(Date, nullable=False)
-    user_id = Column(Integer, index=True, nullable=False)
+    user_id = Column(String(255), index=True, nullable=False)
     user_geo_enabled = Column(Boolean, nullable=False)
     user_screenname = Column(String(255), nullable=False)
-    user_location = Column(String(255), nullable=False)
+    user_location = Column(String(255))
     retweet_count = Column(Integer, nullable=False)
     user_verified = Column(Boolean, nullable=False)
 
