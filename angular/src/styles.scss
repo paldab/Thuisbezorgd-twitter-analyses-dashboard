@@ -28,8 +28,6 @@ $angular-theme: mat-light-theme((
   )
 ));
 
-@include angular-material-theme($angular-theme);
-
 $angular-dark-theme: mat-dark-theme((
   color: (
     primary: $angular-primary,
@@ -38,13 +36,41 @@ $angular-dark-theme: mat-dark-theme((
   )
 ));
 
+@include angular-material-theme($angular-theme);
+
+
+
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 
+.mat-slide-toggle-bar, .mat-slide-toggle-thumb {
+  background-color: bisque;
+}
+.mat-slide-toggle-label {
+  margin-right: 15px;
+}
+
 .darkMode {
   @include angular-material-color($angular-dark-theme);
+  .mat-drawer-container {
+    background-color: #303030 !important;
+    color: white !important;
+  }
+  .mat-drawer {
+    background-color:  #ffad33 !important;
+    color: white !important;
+  }
+  .mat-sidenav-container{
+    background-color: #303030 !important;
+
+  }
+  .mat-slide-toggle-bar, .mat-slide-toggle-thumb {
+    background-color: #f54242 !important;
+  }
+
 }
+body.darkBG { background: #303030 !important}
 /* You can add global styles to this file, and also import other style files */
 
 html, body { height: 100%; }

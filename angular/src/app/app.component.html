@@ -18,8 +18,6 @@
       </a>
     </mat-nav-list>
   </mat-sidenav>
-
-
   <mat-sidenav-content>
     <mat-toolbar color="primary">
       <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()">
@@ -27,10 +25,8 @@
       </button>
       <span>Thuisbezorgd Insight</span>
       <span class="toolbar-spacer"></span>
-      <button mat-icon-button matTooltip="Toggle theme"
-        aria-label="Example icon-button with share icon">
-        <mat-icon>invert_colors</mat-icon>
-      </button>
+        <mat-slide-toggle [formControl]="toggleControl" class="mr-8">
+        </mat-slide-toggle>
       <div *ngIf="loggedIn===true">
         <!-- User is logged in. -->
         <img class="avatar" [src]="user?.photoUrl"/>
@@ -43,4 +39,5 @@
     <app-dashboard [title]="user?.name"></app-dashboard>
     <router-outlet></router-outlet>
   </mat-sidenav-content>
+  
 </mat-sidenav-container>

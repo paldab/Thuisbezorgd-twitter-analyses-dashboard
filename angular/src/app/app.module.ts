@@ -2,9 +2,11 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { OverlayModule } from '@angular/cdk/overlay'
 import { LayoutModule } from '@angular/cdk/layout';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 // Google sign in
 import { 
@@ -19,7 +21,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
-import { DashboardComponent } from './dashboard/dashboard.component';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
@@ -29,6 +30,9 @@ import { AppComponent } from './app.component';
 
 import { environment as env } from '../environments/environment';
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @NgModule({
   declarations: [
@@ -37,6 +41,8 @@ import { LoginDialogComponent } from './login-dialog/login-dialog.component';
     LoginDialogComponent,
   ],
   imports: [
+    MatSlideToggleModule,
+    OverlayModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
