@@ -27,21 +27,20 @@
       </button>
       <span>Thuisbezorgd Insight</span>
       <span class="toolbar-spacer"></span>
-      <div *ngIf="loggedIn===true">
-        <!-- User is logged in. -->
-        <mat-icon *ngIf="user == null">account_circle</mat-icon>
-        <img *ngIf="user" class="avatar" [src]="user?.photoUrl"/>
-      </div>
       <button mat-icon-button matTooltip="Toggle theme"
         aria-label="Example icon-button with share icon">
         <mat-icon>invert_colors</mat-icon>
       </button>
+      <div *ngIf="loggedIn===true">
+        <!-- User is logged in. -->
+        <img class="avatar" [src]="user?.photoUrl"/>
+      </div>
     </mat-toolbar>
     <!-- Add Content Here -->
     <div *ngIf="loggedIn===false">
       <!-- User is NOT logged in. Show Overlay.-->
     </div>
-    <app-dashboard></app-dashboard>
+    <app-dashboard [title]="user?.name"></app-dashboard>
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>

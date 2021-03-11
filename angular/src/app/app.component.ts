@@ -34,7 +34,7 @@ export class AppComponent {
       this.authService.authState.subscribe((user) => {
       this.user = user;
       this.loggedIn = (user != null);
-
+      
       if(!this.loggedIn) {
         this.openDialog()
       }
