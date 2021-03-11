@@ -37,7 +37,7 @@ class Hashtag(Base):
     __tablename__ = 'hashtag'
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    name = Column(String(255), nullable=False)
+    name = Column(String(255), nullable=False, unique=True)
 
     tweets = relationship('Tweet', secondary=hashtag_tweet,
                           back_populates='hashtags')
