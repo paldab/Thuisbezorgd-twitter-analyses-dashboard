@@ -3,7 +3,9 @@ import { SocialAuthService,GoogleLoginProvider, SocialUser } from 'angularx-soci
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { OverlayService } from './services/overlay.service';
+
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
+import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +15,6 @@ import { OverlayService } from './services/overlay.service';
 export class AppComponent {
   title = 'Thuisbezorgd Insights';
 
-  // signinForm: FormGroup | undefined;
   user!: SocialUser;
   loggedIn: boolean  = false;
 
@@ -27,7 +28,7 @@ export class AppComponent {
   constructor(
     private authService: SocialAuthService,
     private breakpointObserver: BreakpointObserver,
-    private loginOverlay: OverlayService,
+    private dialog: MatDialog
   ) { }  
   ngOnInit() {
       this.authService.authState.subscribe((user) => {
@@ -35,12 +36,22 @@ export class AppComponent {
       this.loggedIn = (user != null);
 
       if(!this.loggedIn) {
-        this.loginOverlay.open({width: 800, height: 800});
+        this.openDialog()
       }
     });
   }  
   signOut(): void {
     this.authService.signOut();
   }
+  openDialog() {
 
+    const dialogConfig = new MatDialogConfig();
+
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.maxHeight = 400
+    dialogConfig.maxWidth = 600
+
+    this.dialog.open(LoginDialogComponent, dialogConfig);
+  }
 }
