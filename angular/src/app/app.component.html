@@ -23,7 +23,8 @@
       <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()">
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
-      <span>Thuisbezorgd Insight</span>
+      <span><img id="logo" src="../assets/thuisbezorgd.svg"/>
+       Insight</span>
       <span class="toolbar-spacer"></span>
         <mat-slide-toggle [formControl]="toggleControl" class="mr-8">
         </mat-slide-toggle>
@@ -39,5 +40,5 @@
     <app-dashboard [title]="user?.name"></app-dashboard>
     <router-outlet></router-outlet>
   </mat-sidenav-content>
-  
+
 </mat-sidenav-container>
