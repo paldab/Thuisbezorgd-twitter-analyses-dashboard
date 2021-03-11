@@ -17,15 +17,15 @@ class TweetCollector():
         if self.twint_config.Pandas:
             return twint.storage.panda.Tweets_df
 
-    def recent_search(self):
+    def recent_search(self, session):
         cursor = tweepy.Cursor(self.api.search,
                                q='@Thuisbezorgd OR #thuisbezorgd', lang='nl')
-        session = Session()
 
         for item in cursor.items():
             if item.geo is None:
                 location = item.geo
             else:
+                # coordinates are represented in a list as: [lat, long]
                 location = ' '.join(map(str, item.geo['coordinates']))
 
             tweet = model.Tweet(
@@ -41,18 +41,26 @@ class TweetCollector():
             if hashtags:
                 for tag in hashtags:
                     hashtag = model.Hashtag(name=tag['text'])
+                    q = session.query(model.Hashtag.id).filter(
+                        model.Hashtag.name == tag['text']
+                    )
+
+                    # Set id of Hastag when existing is found
+                    if session.query(q.exists()).scalar():
+                        hashtag.id = q.first()[0]
+
                     tweet.hashtags.append(hashtag)
-            session.add(tweet)
-            session.commit()
+
+                session.merge(tweet)
+                session.commit()
 
 
+session = Session()
 c = twint.Config()
 
 model.Base.metadata.create_all(bind=engine)
-
 collector = TweetCollector(config.twitter['key'], config.twitter['secret'])
-
-collector.recent_search()
+collector.recent_search(session)
 
 c.Search = '#thuisbezorgd'
 c.Since = '2020-12-31'
