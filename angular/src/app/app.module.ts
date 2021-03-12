@@ -7,13 +7,15 @@ import { LayoutModule } from '@angular/cdk/layout';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-
 // Google sign in
 import { 
   SocialLoginModule,
   SocialAuthServiceConfig,
   GoogleLoginProvider
 } from 'angularx-social-login';
+
+// Plotly
+import { PlotlyViaWindowModule } from 'angular-plotly.js';
 
 // Angular Material
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -25,14 +27,13 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
-
-import { AppComponent } from './app.component';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { environment as env } from '../environments/environment';
+
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { AppComponent } from './app.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,6 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     LoginDialogComponent,
   ],
   imports: [
-    MatSlideToggleModule,
     OverlayModule,
     BrowserModule,
     AppRoutingModule,
@@ -50,9 +50,12 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
     SocialLoginModule,
     FlexLayoutModule,
     LayoutModule,
+    PlotlyViaWindowModule,
+
     MatToolbarModule,
     MatDialogModule,
     MatButtonModule,
+    MatSlideToggleModule,
     MatSidenavModule,
     MatIconModule,
     MatListModule,
