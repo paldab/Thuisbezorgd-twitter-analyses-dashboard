@@ -36,10 +36,22 @@ mat-sidenav {
   width:40px;
   border-radius: 50%;
 }
-#logo{
-  margin-top: 2%;
-  width: 80%;
+
+.logo-container {
+  margin-left: 10px;
+  #logo{
+    width: 50%;
+  }
+
+  span {
+    margin-top: 2%;
+    margin-left: 5px;
+    font-weight: 600;
+  }
+
 }
+
+
 
 .span {
   font-style: oblique;
