@@ -61,9 +61,16 @@ $angular-dark-theme: mat-dark-theme((
     background-color:  #ffad33 !important;
     color: white !important;
   }
-  .mat-sidenav-container{
+  .mat-sidenav-container {
     background-color: #303030 !important;
 
+  }
+  .mat-menu-item {
+    color: white !important;
+  }
+
+  & .mat-menu-item .mat-icon-no-color, & .mat-menu-item-submenu-trigger::after {
+    color: white !important;
   }
 
 }
