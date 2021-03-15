@@ -3,19 +3,51 @@ import twint
 import tweepy
 from models.database import Session, engine
 from models import model
+from datetime import datetime
 
 
 class TweetCollector():
     def __init__(self, api_key, api_secret, twint_config=twint.Config()):
         self.auth = tweepy.OAuthHandler(api_key, api_secret)
         self.api = tweepy.API(self.auth)
-        self.twint_config = config
+        self.twint_config = twint_config
 
     def twint_search(self):
         twint.run.Search(self.twint_config)
+        tweet_list = twint.output.tweets_list
 
-        if self.twint_config.Pandas:
-            return twint.storage.panda.Tweets_df
+        for item in tweet_list:
+            created_at = datetime.strptime(
+                item.datestamp + " " + item.timestamp,
+                '%Y-%m-%d %H:%M:%S'
+            )
+
+            # TODO: Lookup user?
+            tweet = model.Tweet(
+                id=item.id_str, text=item.tweet, created_at=created_at,
+                user_id=item.user_id, user_geo_enabled=False,
+                user_screenname=item.username, user_location=None,
+                retweet_count=item.retweets_count, user_verified=False
+            )
+
+            hashtags = item.hashtags
+
+            if hashtags:
+                # TODO: Refactor into 1 method
+                for tag in hashtags:
+                    hashtag = model.Hashtag(name=tag)
+                    q = session.query(model.Hashtag.id).filter(
+                        model.Hashtag.name == tag
+                    )
+
+                # Set id of Hastag when existing is found
+                if session.query(q.exists()).scalar():
+                    hashtag.id = q.first()[0]
+
+                tweet.hashtags.append(hashtag)
+
+            session.merge(tweet)
+            session.commit()
 
     def insert_tweets(self, item, session):
         if item.geo is None:
@@ -25,11 +57,10 @@ class TweetCollector():
             location = ' '.join(map(str, item.geo['coordinates']))
 
         tweet = model.Tweet(
-            text=item.text, created_at=item.created_at,
+            id=item.id_str, text=item.text, created_at=item.created_at,
             user_id=item.user.id, user_geo_enabled=item.user.geo_enabled,
             user_screenname=item.user.screen_name, user_location=location,
-            retweet_count=item.retweet_count,
-            user_verified=item.user.verified
+            retweet_count=item.retweet_count, user_verified=item.user.verified
         )
 
         hashtags = item.entities['hashtags']
@@ -47,10 +78,11 @@ class TweetCollector():
 
                 tweet.hashtags.append(hashtag)
 
-            session.merge(tweet)
-            session.commit()
+        session.merge(tweet)
+        session.commit()
 
     def archive_search(self, session, env):
+        # TODO: Add FromDate - ToDate
         cursor = tweepy.Cursor(self.api.search_full_archive,
                                environment_name=env,
                                query='@Thuisbezorgd OR #thuisbezorgd')
@@ -69,13 +101,15 @@ class TweetCollector():
 session = Session()
 c = twint.Config()
 
-model.Base.metadata.create_all(bind=engine)
-collector = TweetCollector(config.twitter['key'], config.twitter['secret'])
-collector.recent_search(session)
-# collector.archive_search(session, config.twitter['environment'])
-
-c.Search = '#thuisbezorgd'
+c.Search = '#thuisbezorgd OR @Thuisbezorgd'
 c.Since = '2020-12-31'
 c.Lang = 'nl'
-c.Pandas = True
-# c.Output = 'tweets.csv'
+c.Store_object = True
+# c.Limit = 1
+
+model.Base.metadata.create_all(bind=engine)
+
+collector = TweetCollector(config.twitter['key'], config.twitter['secret'], c)
+# collector.recent_search(session)
+# collector.archive_search(session, config.twitter['environment'])
+collector.twint_search()
