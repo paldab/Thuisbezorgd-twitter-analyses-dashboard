@@ -30,21 +30,9 @@ class TweetCollector():
                 retweet_count=item.retweets_count, user_verified=False
             )
 
-            hashtags = item.hashtags
-
-            if hashtags:
-                # TODO: Refactor into 1 method
-                for tag in hashtags:
-                    hashtag = model.Hashtag(name=tag)
-                    q = session.query(model.Hashtag.id).filter(
-                        model.Hashtag.name == tag
-                    )
-
-                # Set id of Hastag when existing is found
-                if session.query(q.exists()).scalar():
-                    hashtag.id = q.first()[0]
-
-                tweet.hashtags.append(hashtag)
+            tweet.hashtags.extend(
+                self.get_hashtags_list(session, item.hashtags)
+            )
 
             session.merge(tweet)
             session.commit()
@@ -63,23 +51,33 @@ class TweetCollector():
             retweet_count=item.retweet_count, user_verified=item.user.verified
         )
 
-        hashtags = item.entities['hashtags']
+        tweet.hashtags.extend(
+            self.get_hashtags_list(session, item.entities['hashtags'])
+        )
+
+        session.merge(tweet)
+        session.commit()
+
+    def get_hashtags_list(self, session, hashtags):
+        tags = []
 
         if hashtags:
             for tag in hashtags:
-                hashtag = model.Hashtag(name=tag['text'])
+                # Check if we are dealing with Tweepy or Twint data types
+                text = tag['text'] if isinstance(tag, dict) else tag
+                hashtag = model.Hashtag(name=text)
+
                 q = session.query(model.Hashtag.id).filter(
-                    model.Hashtag.name == tag['text']
+                    model.Hashtag.name == text
                 )
 
                 # Set id of Hastag when existing is found
                 if session.query(q.exists()).scalar():
                     hashtag.id = q.first()[0]
 
-                tweet.hashtags.append(hashtag)
+                tags.append(hashtag)
 
-        session.merge(tweet)
-        session.commit()
+        return tags
 
     def archive_search(self, session, env):
         # TODO: Add FromDate - ToDate
