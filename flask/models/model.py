@@ -22,6 +22,7 @@ class Tweet(Base):
     user_location = Column(String(50))
     retweet_count = Column(Integer, nullable=False)
     user_verified = Column(Boolean, nullable=False)
+    emoji = Column(String(255))
 
     hashtags = relationship('Hashtag', secondary=hashtag_tweet,
                             back_populates='tweets')
