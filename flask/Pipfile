@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+jedi = "*"
+rope = "*"
+autopep8 = "*"
+yapf = "*"
+flake8 = "*"
+flask = "*"
+tweepy = "*"
+twint = {git = "https://github.com/twintproject/twint.git"}
+sqlalchemy = "*"
+mysqlclient = "*"
+emoji = "*"
+pymysql = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"
