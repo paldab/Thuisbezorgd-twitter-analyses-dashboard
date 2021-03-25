@@ -22,7 +22,6 @@ class TweetCollector():
                 '%Y-%m-%d %H:%M:%S'
             )
 
-            # TODO: Lookup user?
             tweet = model.Tweet(
                 id=item.id_str, text=item.tweet, created_at=created_at,
                 user_id=item.user_id, user_geo_enabled=False,
@@ -45,7 +44,7 @@ class TweetCollector():
             location = ' '.join(map(str, item.geo['coordinates']))
 
         tweet = model.Tweet(
-            id=item.id_str, text=item.text, created_at=item.created_at,
+            id=item.id_str, text=item.full_text, created_at=item.created_at,
             user_id=item.user.id, user_geo_enabled=item.user.geo_enabled,
             user_screenname=item.user.screen_name, user_location=location,
             retweet_count=item.retweet_count, user_verified=item.user.verified
@@ -60,6 +59,7 @@ class TweetCollector():
 
     def get_hashtags_list(self, session, hashtags):
         tags = []
+        unique_names = set()
 
         if hashtags:
             for tag in hashtags:
@@ -75,7 +75,10 @@ class TweetCollector():
                 if session.query(q.exists()).scalar():
                     hashtag.id = q.first()[0]
 
-                tags.append(hashtag)
+                # Extra check to prevent integrity errors. No duplicates..
+                if text not in unique_names:
+                    unique_names.add(text)
+                    tags.append(hashtag)
 
         return tags
 
@@ -83,14 +86,16 @@ class TweetCollector():
         # TODO: Add FromDate - ToDate
         cursor = tweepy.Cursor(self.api.search_full_archive,
                                environment_name=env,
-                               query='@Thuisbezorgd OR #thuisbezorgd')
+                               query='@Thuisbezorgd OR #thuisbezorgd',
+                               tweet_mode='extended')
 
         for item in cursor.items():
             self.insert_tweets(item, session)
 
     def recent_search(self, session):
         cursor = tweepy.Cursor(self.api.search,
-                               q='@Thuisbezorgd OR #thuisbezorgd', lang='nl')
+                               q='@Thuisbezorgd OR #thuisbezorgd', lang='nl',
+                               tweet_mode='extended')
 
         for item in cursor.items():
             self.insert_tweets(item, session)
@@ -100,10 +105,10 @@ session = Session()
 c = twint.Config()
 
 c.Search = '#thuisbezorgd OR @Thuisbezorgd'
-c.Since = '2020-12-31'
+c.Since = '2021-03-21'
 c.Lang = 'nl'
 c.Store_object = True
-# c.Limit = 1
+c.Hide_output = True
 
 model.Base.metadata.create_all(bind=engine)
 
