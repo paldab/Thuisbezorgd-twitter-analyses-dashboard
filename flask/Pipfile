@@ -11,13 +11,15 @@ yapf = "*"
 flake8 = "*"
 flask = "*"
 tweepy = "*"
-twint = {git = "https://github.com/twintproject/twint.git"}
 sqlalchemy = "*"
-mysqlclient = "*"
 emoji = "*"
 pymysql = "*"
+cryptography = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.7"
+python_version = "3"
+
+[packages.twint]
+git = "https://github.com/twintproject/twint.git"
