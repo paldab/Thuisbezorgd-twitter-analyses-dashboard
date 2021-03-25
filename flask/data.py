@@ -59,6 +59,7 @@ class TweetCollector():
 
     def get_hashtags_list(self, session, hashtags):
         tags = []
+        unique_names = set()
 
         if hashtags:
             for tag in hashtags:
@@ -74,7 +75,10 @@ class TweetCollector():
                 if session.query(q.exists()).scalar():
                     hashtag.id = q.first()[0]
 
-                tags.append(hashtag)
+                # Extra check to prevent integrity errors. No duplicates..
+                if text not in unique_names:
+                    unique_names.add(text)
+                    tags.append(hashtag)
 
         return tags
 
@@ -104,10 +108,11 @@ c.Search = '#thuisbezorgd OR @Thuisbezorgd'
 c.Since = '2021-03-21'
 c.Lang = 'nl'
 c.Store_object = True
+c.Hide_output = True
 
 model.Base.metadata.create_all(bind=engine)
 
 collector = TweetCollector(config.twitter['key'], config.twitter['secret'], c)
-collector.recent_search(session)
+# collector.recent_search(session)
 # collector.archive_search(session, config.twitter['environment'])
-# collector.twint_search()
+collector.twint_search()
