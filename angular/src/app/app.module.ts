@@ -34,12 +34,17 @@ import { environment as env } from '../environments/environment';
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AppComponent } from './app.component';
+import { AllTweetsComponent } from './all-tweets/all-tweets.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
 
 @NgModule({
   declarations: [
     AppComponent,
     DashboardComponent,
     LoginDialogComponent,
+    AllTweetsComponent,
   ],
   imports: [
     OverlayModule,
@@ -62,6 +67,9 @@ import { AppComponent } from './app.component';
     MatGridListModule,
     MatCardModule,
     MatMenuModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
 
   ],
   entryComponents: [
