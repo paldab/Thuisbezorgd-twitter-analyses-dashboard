@@ -1,16 +1,16 @@
 from sqlalchemy import Table, Column, Integer, String, ForeignKey
 from sqlalchemy.types import DateTime, Boolean, Text
 from sqlalchemy.orm import relationship
-from .database import Base
+from .database import db
 
 hashtag_tweet = Table(
-    'hashtag_tweet', Base.metadata,
+    'hashtag_tweet', getattr(db, '_base').metadata,
     Column('tweet_id', String(255), ForeignKey('tweet.id')),
     Column('hashtag_id', Integer, ForeignKey('hashtag.id'))
 )
 
 
-class Tweet(Base):
+class Tweet(getattr(db, '_base')):
     __tablename__ = 'tweet'
 
     id = Column(String(255), primary_key=True, index=True)
@@ -34,7 +34,7 @@ class Tweet(Base):
         )
 
 
-class Hashtag(Base):
+class Hashtag(getattr(db, '_base')):
     __tablename__ = 'hashtag'
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)

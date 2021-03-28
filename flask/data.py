@@ -1,7 +1,7 @@
-import config
 import twint
+import config
 import tweepy
-from models.database import Session, engine
+from models.database import db
 from models import model
 from datetime import datetime
 
@@ -31,11 +31,11 @@ class TweetCollector():
             )
 
             tweet.hashtags.extend(
-                self.get_hashtags_list(session, item.hashtags)
+                self.get_hashtags_list(getattr(db, '_session')(), item.hashtags)
             )
 
-            session.merge(tweet)
-            session.commit()
+            getattr(db, '_session')().merge(tweet)
+            getattr(db, '_session')().commit()
 
     def insert_tweets(self, item, session):
         if item.geo is None:
@@ -81,33 +81,23 @@ class TweetCollector():
 
     def archive_search(self, session, env):
         # TODO: Add FromDate - ToDate
-        cursor = tweepy.Cursor(self.api.search_full_archive,
-                               environment_name=env,
-                               query='@Thuisbezorgd OR #thuisbezorgd')
+        
+        cursor = tweepy.Cursor(
+            self.api.search_full_archive,
+            environment_name=env,
+            query='@Thuisbezorgd OR #thuisbezorgd'
+        )
 
         for item in cursor.items():
             self.insert_tweets(item, session)
 
     def recent_search(self, session):
-        cursor = tweepy.Cursor(self.api.search,
-                               q='@Thuisbezorgd OR #thuisbezorgd', lang='nl')
+
+        cursor = tweepy.Cursor(
+            self.api.search,
+            q='@Thuisbezorgd OR #thuisbezorgd',
+            lang='nl'
+        )
 
         for item in cursor.items():
             self.insert_tweets(item, session)
-
-
-session = Session()
-c = twint.Config()
-
-c.Search = '#thuisbezorgd OR @Thuisbezorgd'
-c.Since = '2020-12-31'
-c.Lang = 'nl'
-c.Store_object = True
-# c.Limit = 1
-
-model.Base.metadata.create_all(bind=engine)
-
-collector = TweetCollector(config.twitter['key'], config.twitter['secret'], c)
-# collector.recent_search(session)
-# collector.archive_search(session, config.twitter['environment'])
-collector.twint_search()
