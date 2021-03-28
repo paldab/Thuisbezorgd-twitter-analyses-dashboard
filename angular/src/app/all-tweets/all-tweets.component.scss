@@ -1,3 +1,13 @@
 .full-width-table {
   width: 100%;
 }
+.container {
+  margin: 15px;
+  .button-container {
+    margin-bottom: 15px;
+
+    & button {
+      margin-right: 15px;
+    }
+  }
+}

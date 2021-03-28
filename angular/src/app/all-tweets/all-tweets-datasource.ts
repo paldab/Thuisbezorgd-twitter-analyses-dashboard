@@ -6,32 +6,34 @@ import { Observable, of as observableOf, merge } from 'rxjs';
 
 // TODO: Replace this with your own data model type
 export interface AllTweetsItem {
-  name: string;
+  created_at: string;
+  user: string;
+  text: string;
   id: number;
 }
 
 // TODO: replace this with real data from your application
 const EXAMPLE_DATA: AllTweetsItem[] = [
-  {id: 1, name: 'Hydrogen'},
-  {id: 2, name: 'Helium'},
-  {id: 3, name: 'Lithium'},
-  {id: 4, name: 'Beryllium'},
-  {id: 5, name: 'Boron'},
-  {id: 6, name: 'Carbon'},
-  {id: 7, name: 'Nitrogen'},
-  {id: 8, name: 'Oxygen'},
-  {id: 9, name: 'Fluorine'},
-  {id: 10, name: 'Neon'},
-  {id: 11, name: 'Sodium'},
-  {id: 12, name: 'Magnesium'},
-  {id: 13, name: 'Aluminum'},
-  {id: 14, name: 'Silicon'},
-  {id: 15, name: 'Phosphorus'},
-  {id: 16, name: 'Sulfur'},
-  {id: 17, name: 'Chlorine'},
-  {id: 18, name: 'Argon'},
-  {id: 19, name: 'Potassium'},
-  {id: 20, name: 'Calcium'},
+  {id: 1, text: 'Hydrogen', user: '@Henk', created_at: '28/03/2021'},
+  {id: 2, text: 'Helium', user: '@Henk', created_at: '28/03/2021'},
+  {id: 3, text: 'Lithium', user: '@Henk', created_at: '28/03/2021'},
+  {id: 4, text: 'Beryllium', user: '@Henk', created_at: '28/03/2021'},
+  {id: 5, text: 'Boron', user: '@Henk', created_at: '28/03/2021'},
+  {id: 6, text: 'Carbon', user: '@Henk', created_at: '28/03/2021'},
+  {id: 7, text: 'Nitrogen', user: '@Henk', created_at: '28/03/2021'},
+  {id: 8, text: 'Oxygen', user: '@Henk', created_at: '28/03/2021'},
+  {id: 9, text: 'Fluorine', user: '@Henk', created_at: '28/03/2021'},
+  {id: 10, text: 'Neon', user: '@Henk', created_at: '28/03/2021'},
+  {id: 11, text: 'Sodium', user: '@Henk', created_at: '28/03/2021'},
+  {id: 12, text: 'Magnesium', user: '@Henk', created_at: '28/03/2021'},
+  {id: 13, text: 'Aluminum', user: '@Henk', created_at: '28/03/2021'},
+  {id: 14, text: 'Silicon', user: '@Henk', created_at: '28/03/2021'},
+  {id: 15, text: 'Phosphorus', user: '@Henk', created_at: '28/03/2021'},
+  {id: 16, text: 'Sulfur', user: '@Henk', created_at: '28/03/2021'},
+  {id: 17, text: 'Chlorine', user: '@Henk', created_at: '28/03/2021'},
+  {id: 18, text: 'Argon', user: '@Henk', created_at: '28/03/2021'},
+  {id: 19, text: 'Potassium', user: '@Henk', created_at: '28/03/2021'},
+  {id: 20, text: 'Calcium', user: '@Henk', created_at: '28/03/2021'},
 ];
 
 /**
@@ -94,7 +96,7 @@ export class AllTweetsDataSource extends DataSource<AllTweetsItem> {
     return data.sort((a, b) => {
       const isAsc = this.sort.direction === 'asc';
       switch (this.sort.active) {
-        case 'name': return compare(a.name, b.name, isAsc);
+        case 'text': return compare(a.text, b.text, isAsc);
         case 'id': return compare(+a.id, +b.id, isAsc);
         default: return 0;
       }

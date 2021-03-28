@@ -16,7 +16,7 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
   dataSource!: AllTweetsDataSource;
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['id', 'name'];
+  displayedColumns = ['id', 'text', 'user', 'created_at'];
 
   ngOnInit() {
     this.dataSource = new AllTweetsDataSource();
