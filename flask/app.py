@@ -1,6 +1,7 @@
 from models.model import Tweet
 from data import TweetCollector
 from models.database import db
+from sqlalchemy import text
 from flask import Flask, jsonify
 import twint 
 import config
@@ -21,19 +22,21 @@ def test(name):
 @app.route('/all-tweets', methods=['GET'])
 def all_tweets():
 	
-	# with getattr(db, '_engine').connect() as con:
-
-	tweets = getattr(db, '_session')().query(Tweet).all()
-		# query = "SELECT * FROM tweet"
-		# response = con.execute(query)
+	statement = text("SELECT id, text, user_screenname FROM tweet").\
+		columns(Tweet.id, Tweet.text, Tweet.user_screenname)
+	
+	tweets = getattr(db, '_session')().\
+		query(Tweet.id, Tweet.text, Tweet.user_screenname).\
+		from_statement(statement).\
+		all()
 		
-		# row_headers=[x[0] for x in con.execute(query)._metadata.keys]
-		# json_data=[]
+	row_headers=[x for x in tweets[0].keys()]
+	json_data=[]
 
-		# for row in response:
-		# 	json_data.append(dict(zip(row_headers,row)))
+	for tweet in tweets:
+		json_data.append(dict(zip(row_headers, tweet)))
 
-	return jsonify(Tweet.serialize_list(tweets)), 200
+	return jsonify(json_data), 200
     
 if __name__ == '__main__':
 
@@ -55,4 +58,4 @@ if __name__ == '__main__':
 	# collector.archive_search(session, config.twitter['environment'])
 	# collector.twint_search()
 
-	app.run(host='0.0.0.0', port=5050)
+	app.run(host='127.0.0.1', port=5000)
