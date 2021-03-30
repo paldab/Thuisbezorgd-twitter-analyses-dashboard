@@ -3,37 +3,38 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { map } from 'rxjs/operators';
 import { Observable, of as observableOf, merge } from 'rxjs';
+import { TweetsService } from '../services/tweets.service';
 
 // TODO: Replace this with your own data model type
 export interface AllTweetsItem {
   created_at: string;
-  user: string;
+  user_screenname: string;
   text: string;
   id: number;
 }
 
 // TODO: replace this with real data from your application
 const EXAMPLE_DATA: AllTweetsItem[] = [
-  {id: 1, text: 'Hydrogen', user: '@Henk', created_at: '28/03/2021'},
-  {id: 2, text: 'Helium', user: '@Henk', created_at: '28/03/2021'},
-  {id: 3, text: 'Lithium', user: '@Henk', created_at: '28/03/2021'},
-  {id: 4, text: 'Beryllium', user: '@Henk', created_at: '28/03/2021'},
-  {id: 5, text: 'Boron', user: '@Henk', created_at: '28/03/2021'},
-  {id: 6, text: 'Carbon', user: '@Henk', created_at: '28/03/2021'},
-  {id: 7, text: 'Nitrogen', user: '@Henk', created_at: '28/03/2021'},
-  {id: 8, text: 'Oxygen', user: '@Henk', created_at: '28/03/2021'},
-  {id: 9, text: 'Fluorine', user: '@Henk', created_at: '28/03/2021'},
-  {id: 10, text: 'Neon', user: '@Henk', created_at: '28/03/2021'},
-  {id: 11, text: 'Sodium', user: '@Henk', created_at: '28/03/2021'},
-  {id: 12, text: 'Magnesium', user: '@Henk', created_at: '28/03/2021'},
-  {id: 13, text: 'Aluminum', user: '@Henk', created_at: '28/03/2021'},
-  {id: 14, text: 'Silicon', user: '@Henk', created_at: '28/03/2021'},
-  {id: 15, text: 'Phosphorus', user: '@Henk', created_at: '28/03/2021'},
-  {id: 16, text: 'Sulfur', user: '@Henk', created_at: '28/03/2021'},
-  {id: 17, text: 'Chlorine', user: '@Henk', created_at: '28/03/2021'},
-  {id: 18, text: 'Argon', user: '@Henk', created_at: '28/03/2021'},
-  {id: 19, text: 'Potassium', user: '@Henk', created_at: '28/03/2021'},
-  {id: 20, text: 'Calcium', user: '@Henk', created_at: '28/03/2021'},
+  {id: 1, text: 'Hydrogen', user_screenname: '@Henk', created_at: '28/03/2021'},
+  {id: 2, text: 'Helium', user_screenname: '@Henk', created_at: '28/03/2021'},
+  {id: 3, text: 'Lithium', user_screenname: '@Henk', created_at: '28/03/2021'},
+  {id: 4, text: 'Beryllium', user_screenname: '@Henk', created_at: '28/03/2021'},
+  {id: 5, text: 'Boron', user_screenname: '@Henk', created_at: '28/03/2021'},
+  {id: 6, text: 'Carbon', user_screenname: '@Henk', created_at: '28/03/2021'},
+  {id: 7, text: 'Nitrogen', user_screenname: '@Henk', created_at: '28/03/2021'},
+  {id: 8, text: 'Oxygen', user_screenname: '@Henk', created_at: '28/03/2021'},
+  {id: 9, text: 'Fluorine', user_screenname: '@Henk', created_at: '28/03/2021'},
+  {id: 10, text: 'Neon', user_screenname: '@Henk', created_at: '28/03/2021'},
+  {id: 11, text: 'Sodium', user_screenname: '@Henk', created_at: '28/03/2021'},
+  {id: 12, text: 'Magnesium', user_screenname: '@Henk', created_at: '28/03/2021'},
+  {id: 13, text: 'Aluminum', user_screenname: '@Henk', created_at: '28/03/2021'},
+  {id: 14, text: 'Silicon', user_screenname: '@Henk', created_at: '28/03/2021'},
+  {id: 15, text: 'Phosphorus', user_screenname: '@Henk', created_at: '28/03/2021'},
+  {id: 16, text: 'Sulfur', user_screenname: '@Henk', created_at: '28/03/2021'},
+  {id: 17, text: 'Chlorine', user_screenname: '@Henk', created_at: '28/03/2021'},
+  {id: 18, text: 'Argon', user_screenname: '@Henk', created_at: '28/03/2021'},
+  {id: 19, text: 'Potassium', user_screenname: '@Henk', created_at: '28/03/2021'},
+  {id: 20, text: 'Calcium', user_screenname: '@Henk', created_at: '28/03/2021'},
 ];
 
 /**
@@ -42,12 +43,14 @@ const EXAMPLE_DATA: AllTweetsItem[] = [
  * (including sorting, pagination, and filtering).
  */
 export class AllTweetsDataSource extends DataSource<AllTweetsItem> {
-  data: AllTweetsItem[] = EXAMPLE_DATA;
+  data: AllTweetsItem[] = [];
   paginator!: MatPaginator;
   sort!: MatSort;
 
-  constructor() {
+  constructor(private tweetsService: TweetsService) {
     super();
+    this.tweetsService.all_tweets()
+      .subscribe((data: AllTweetsItem[]) =>  this.data = data );
   }
 
   /**

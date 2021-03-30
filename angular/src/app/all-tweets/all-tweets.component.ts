@@ -2,6 +2,7 @@ import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable } from '@angular/material/table';
+import { TweetsService } from '../services/tweets.service';
 import { AllTweetsDataSource, AllTweetsItem } from './all-tweets-datasource';
 
 @Component({
@@ -16,10 +17,12 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
   dataSource!: AllTweetsDataSource;
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['id', 'text', 'user', 'created_at'];
+  displayedColumns = ['id', 'text', 'user_screenname', 'created_at'];
+  
+  constructor(private tweetsService: TweetsService) { }
 
   ngOnInit() {
-    this.dataSource = new AllTweetsDataSource();
+    this.dataSource = new AllTweetsDataSource(this.tweetsService);
   }
 
   ngAfterViewInit() {

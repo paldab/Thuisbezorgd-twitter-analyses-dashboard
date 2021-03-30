@@ -40,6 +40,7 @@ import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AppComponent } from './app.component';
 import { AllTweetsComponent } from './all-tweets/all-tweets.component';
+import { HttpClientModule } from '@angular/common/http';
 
 
 @NgModule({
@@ -52,6 +53,7 @@ import { AllTweetsComponent } from './all-tweets/all-tweets.component';
   imports: [
     OverlayModule,
     BrowserModule,
+    HttpClientModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     FormsModule,

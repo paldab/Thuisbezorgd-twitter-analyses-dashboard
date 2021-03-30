@@ -15,6 +15,7 @@ sqlalchemy = "*"
 emoji = "*"
 pymysql = "*"
 cryptography = "*"
+flask-cors = "*"
 
 [dev-packages]
 

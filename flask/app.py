@@ -3,10 +3,12 @@ from data import TweetCollector
 from models.database import db
 from sqlalchemy import text
 from flask import Flask, jsonify
+from flask_cors import CORS
 import twint 
 import config
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # basic GET route
 @app.route('/welcome/', methods=['GET'])
@@ -19,14 +21,14 @@ def test(name):
 	return 'Welcome ' + name
 
 # GET route with multiple params and JSON response with 418 status code
-@app.route('/all-tweets', methods=['GET'])
+@app.route('/api/v1/all-tweets', methods=['GET'])
 def all_tweets():
 	
-	statement = text("SELECT id, text, user_screenname FROM tweet").\
-		columns(Tweet.id, Tweet.text, Tweet.user_screenname)
+	statement = text("SELECT id, text, user_screenname, created_at FROM tweet").\
+		columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
 	
 	tweets = getattr(db, '_session')().\
-		query(Tweet.id, Tweet.text, Tweet.user_screenname).\
+		query(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at).\
 		from_statement(statement).\
 		all()
 		
