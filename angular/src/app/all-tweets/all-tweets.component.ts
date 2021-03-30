@@ -17,7 +17,7 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
   dataSource!: AllTweetsDataSource;
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
-  displayedColumns = ['id', 'text', 'user_screenname', 'created_at'];
+  displayedColumns = ['id', 'trimmed_text', 'user_screenname', 'created_at'];
   
   constructor(private tweetsService: TweetsService) { }
 

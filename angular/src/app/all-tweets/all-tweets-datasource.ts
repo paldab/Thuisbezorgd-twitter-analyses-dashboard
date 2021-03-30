@@ -10,32 +10,33 @@ export interface AllTweetsItem {
   created_at: string;
   user_screenname: string;
   text: string;
+  trimmed_text: string;
   id: number;
 }
 
 // TODO: replace this with real data from your application
-const EXAMPLE_DATA: AllTweetsItem[] = [
-  {id: 1, text: 'Hydrogen', user_screenname: '@Henk', created_at: '28/03/2021'},
-  {id: 2, text: 'Helium', user_screenname: '@Henk', created_at: '28/03/2021'},
-  {id: 3, text: 'Lithium', user_screenname: '@Henk', created_at: '28/03/2021'},
-  {id: 4, text: 'Beryllium', user_screenname: '@Henk', created_at: '28/03/2021'},
-  {id: 5, text: 'Boron', user_screenname: '@Henk', created_at: '28/03/2021'},
-  {id: 6, text: 'Carbon', user_screenname: '@Henk', created_at: '28/03/2021'},
-  {id: 7, text: 'Nitrogen', user_screenname: '@Henk', created_at: '28/03/2021'},
-  {id: 8, text: 'Oxygen', user_screenname: '@Henk', created_at: '28/03/2021'},
-  {id: 9, text: 'Fluorine', user_screenname: '@Henk', created_at: '28/03/2021'},
-  {id: 10, text: 'Neon', user_screenname: '@Henk', created_at: '28/03/2021'},
-  {id: 11, text: 'Sodium', user_screenname: '@Henk', created_at: '28/03/2021'},
-  {id: 12, text: 'Magnesium', user_screenname: '@Henk', created_at: '28/03/2021'},
-  {id: 13, text: 'Aluminum', user_screenname: '@Henk', created_at: '28/03/2021'},
-  {id: 14, text: 'Silicon', user_screenname: '@Henk', created_at: '28/03/2021'},
-  {id: 15, text: 'Phosphorus', user_screenname: '@Henk', created_at: '28/03/2021'},
-  {id: 16, text: 'Sulfur', user_screenname: '@Henk', created_at: '28/03/2021'},
-  {id: 17, text: 'Chlorine', user_screenname: '@Henk', created_at: '28/03/2021'},
-  {id: 18, text: 'Argon', user_screenname: '@Henk', created_at: '28/03/2021'},
-  {id: 19, text: 'Potassium', user_screenname: '@Henk', created_at: '28/03/2021'},
-  {id: 20, text: 'Calcium', user_screenname: '@Henk', created_at: '28/03/2021'},
-];
+// const EXAMPLE_DATA: AllTweetsItem[] = [
+//   {id: 1, text: 'Hydrogen', user_screenname: '@Henk', created_at: '28/03/2021'},
+//   {id: 2, text: 'Helium', user_screenname: '@Henk', created_at: '28/03/2021'},
+//   {id: 3, text: 'Lithium', user_screenname: '@Henk', created_at: '28/03/2021'},
+//   {id: 4, text: 'Beryllium', user_screenname: '@Henk', created_at: '28/03/2021'},
+//   {id: 5, text: 'Boron', user_screenname: '@Henk', created_at: '28/03/2021'},
+//   {id: 6, text: 'Carbon', user_screenname: '@Henk', created_at: '28/03/2021'},
+//   {id: 7, text: 'Nitrogen', user_screenname: '@Henk', created_at: '28/03/2021'},
+//   {id: 8, text: 'Oxygen', user_screenname: '@Henk', created_at: '28/03/2021'},
+//   {id: 9, text: 'Fluorine', user_screenname: '@Henk', created_at: '28/03/2021'},
+//   {id: 10, text: 'Neon', user_screenname: '@Henk', created_at: '28/03/2021'},
+//   {id: 11, text: 'Sodium', user_screenname: '@Henk', created_at: '28/03/2021'},
+//   {id: 12, text: 'Magnesium', user_screenname: '@Henk', created_at: '28/03/2021'},
+//   {id: 13, text: 'Aluminum', user_screenname: '@Henk', created_at: '28/03/2021'},
+//   {id: 14, text: 'Silicon', user_screenname: '@Henk', created_at: '28/03/2021'},
+//   {id: 15, text: 'Phosphorus', user_screenname: '@Henk', created_at: '28/03/2021'},
+//   {id: 16, text: 'Sulfur', user_screenname: '@Henk', created_at: '28/03/2021'},
+//   {id: 17, text: 'Chlorine', user_screenname: '@Henk', created_at: '28/03/2021'},
+//   {id: 18, text: 'Argon', user_screenname: '@Henk', created_at: '28/03/2021'},
+//   {id: 19, text: 'Potassium', user_screenname: '@Henk', created_at: '28/03/2021'},
+//   {id: 20, text: 'Calcium', user_screenname: '@Henk', created_at: '28/03/2021'},
+// ];
 
 /**
  * Data source for the AllTweets view. This class should

@@ -33,6 +33,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 import { environment as env } from '../environments/environment';
 
@@ -78,7 +79,7 @@ import { HttpClientModule } from '@angular/common/http';
     MatSortModule,
     MatFormFieldModule,
     MatInputModule,
-
+    MatTooltipModule,
   ],
   entryComponents: [
     LoginDialogComponent

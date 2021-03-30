@@ -4,6 +4,7 @@ from models.database import db
 from sqlalchemy import text
 from flask import Flask, jsonify
 from flask_cors import CORS
+import textwrap
 import twint 
 import config
 
@@ -33,9 +34,14 @@ def all_tweets():
 		all()
 		
 	row_headers=[x for x in tweets[0].keys()]
+	row_headers.append('trimmed_text')
 	json_data=[]
-
+	
 	for tweet in tweets:
+		trimmed_text = textwrap.shorten(tweet['text'], width=164, placeholder="...")
+
+		tweet = (tweet['id'], tweet['text'], tweet['user_screenname'], tweet['created_at'], trimmed_text)
+
 		json_data.append(dict(zip(row_headers, tweet)))
 
 	return jsonify(json_data), 200
