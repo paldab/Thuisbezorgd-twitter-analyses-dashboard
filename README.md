@@ -12,6 +12,7 @@ The file `data.py` (and some other files like models.py) require a `config.py` f
 In the `config.py` file, write the following:
 ```python
 database = {
+	'connector': 'con',
 	'user': 'username',
 	'password': 'password',
 	'host': 'host',
