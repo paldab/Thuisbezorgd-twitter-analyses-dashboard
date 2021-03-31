@@ -23,7 +23,11 @@
       <!-- Name Column -->
       <ng-container matColumnDef="trimmed_text">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Text</th>
-        <td mat-cell *matCellDef="let row" [matTooltip]="row.text" matTooltipPosition="above">{{row.trimmed_text}}</td>
+        <td mat-cell *matCellDef="let row">
+          <div class="trimmed-text-container">
+            <span [matTooltip]="row.text" matTooltipClass="tweet-tooltip" matTooltipPosition="above">{{row.trimmed_text}}</span>
+          </div>
+        </td>
       </ng-container>
   
       <!-- Username Column -->
