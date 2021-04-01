@@ -10,7 +10,7 @@
   <p>
     <mat-form-field appearance="fill">
       <mat-label>Zoek op...</mat-label>
-      <input matInput placeholder="woorden" autocomplete="off">
+      <input matInput placeholder="woorden" (keyup)="search($any($event.target).value)" autocomplete="off">
       <mat-icon matSuffix>search</mat-icon>
       <!-- <mat-hint>Hint</mat-hint> -->
     </mat-form-field>

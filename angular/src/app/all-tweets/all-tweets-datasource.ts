@@ -4,6 +4,7 @@ import { MatSort } from '@angular/material/sort';
 import { map } from 'rxjs/operators';
 import { Observable, of as observableOf, merge } from 'rxjs';
 import { TweetsService } from '../services/tweets.service';
+import { MatTableDataSource } from '@angular/material/table';
 
 // TODO: Replace this with your own data model type
 export interface AllTweetsItem {
@@ -43,12 +44,10 @@ const EXAMPLE_DATA: AllTweetsItem[] = [
  * encapsulate all logic for fetching and manipulating the displayed data
  * (including sorting, pagination, and filtering).
  */
-export class AllTweetsDataSource extends DataSource<AllTweetsItem> {
-  data: AllTweetsItem[] = [];
-  paginator!: MatPaginator;
-  sort!: MatSort;
+export class AllTweetsDataSource extends MatTableDataSource<AllTweetsItem> {
+
   spinnerLoading: boolean = false;
-  error: any;
+  req_succeeded: boolean = true;
 
   constructor(private tweetsService: TweetsService) {
     super();
@@ -64,14 +63,14 @@ export class AllTweetsDataSource extends DataSource<AllTweetsItem> {
         this.data = data
       },
       err => {
-        this.error = err.ok
+        this.req_succeeded = err.ok
         console.error(err);
       }
     );    
 
 
     setTimeout(() => {
-      if (this.error == false) {
+      if (this.req_succeeded == false) {
         this.spinnerLoading = true
       } else {
         this.spinnerLoading = false
@@ -85,19 +84,19 @@ export class AllTweetsDataSource extends DataSource<AllTweetsItem> {
    * the returned stream emits new items.
    * @returns A stream of the items to be rendered.
    */
-  connect(): Observable<AllTweetsItem[]> {
-    // Combine everything that affects the rendered data into one update
-    // stream for the data-table to consume.
-    const dataMutations = [
-      observableOf(this.data),
-      this.paginator.page,
-      this.sort.sortChange
-    ];
+  // connect(): Observable<AllTweetsItem[]> {
+  //   // Combine everything that affects the rendered data into one update
+  //   // stream for the data-table to consume.
+  //   const dataMutations = [
+  //     observableOf(this.data),
+  //     this.paginator.page,
+  //     this.sort.sortChange
+  //   ];
 
-    return merge(...dataMutations).pipe(map(() => {
-      return this.getPagedData(this.getSortedData([...this.data]));
-    }));
-  }
+  //   return merge(...dataMutations).pipe(map(() => {
+  //     return this.getPagedData(this.getSortedData([...this.data]));
+  //   }));
+  // }
 
   /**
    *  Called when the table is being destroyed. Use this function, to clean up
@@ -109,33 +108,33 @@ export class AllTweetsDataSource extends DataSource<AllTweetsItem> {
    * Paginate the data (client-side). If you're using server-side pagination,
    * this would be replaced by requesting the appropriate data from the server.
    */
-  private getPagedData(data: AllTweetsItem[]) {
-    const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
-    return data.splice(startIndex, this.paginator.pageSize);
-  }
+  // private getPagedData(data: AllTweetsItem[]) {
+  //   const startIndex = super.paginator?.pageIndex * super.paginator?.pageSize;
+  //   return data.splice(startIndex, super.paginator?.pageSize);
+  // }
 
   /**
    * Sort the data (client-side). If you're using server-side sorting,
    * this would be replaced by requesting the appropriate data from the server.
    */
-  private getSortedData(data: AllTweetsItem[]) {
-    if (!this.sort.active || this.sort.direction === '') {
-      return data;
-    }
+  // private getSortedData(data: AllTweetsItem[]) {
+  //   if (!super.sort?.active || super.sort?.direction === '') {
+  //     return data;
+  //   }
 
-    return data.sort((a, b) => {
-      const isAsc = this.sort.direction === 'asc';
-      switch (this.sort.active) {
-        case 'user_screenname': return compare(a.user_screenname, b.user_screenname, isAsc);
-        case 'trimmed_text': return compare(a.trimmed_text, b.trimmed_text, isAsc);
-        case 'id': return compare(+a.id, +b.id, isAsc);
-        default: return 0;
-      }
-    });
-  }
+  //   return data.sort((a, b) => {
+  //     const isAsc = super.sort?.direction === 'asc';
+  //     switch (super.sort?.active) {
+  //       case 'user_screenname': return compare(a.user_screenname, b.user_screenname, isAsc);
+  //       case 'trimmed_text': return compare(a.trimmed_text, b.trimmed_text, isAsc);
+  //       case 'id': return compare(+a.id, +b.id, isAsc);
+  //       default: return 0;
+  //     }
+  //   });
+  // }
 }
 
 /** Simple sort comparator for example ID/Name columns (for client-side sorting). */
-function compare(a: string | number, b: string | number, isAsc: boolean) {
-  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-}
+// function compare(a: string | number, b: string | number, isAsc: boolean) {
+//   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+// }
