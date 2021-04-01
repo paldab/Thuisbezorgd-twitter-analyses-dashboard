@@ -23,6 +23,14 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
 
   ngOnInit() {
     this.dataSource = new AllTweetsDataSource(this.tweetsService);
+  
+    setTimeout(() => {
+      let next: HTMLElement = document.querySelector("app-all-tweets button.mat-paginator-navigation-next") as HTMLElement;
+      let prev: HTMLElement = document.querySelector("app-all-tweets button.mat-paginator-navigation-previous") as HTMLElement;
+      next.click()
+      prev.click()    
+    }, 5000);
+  
   }
 
   ngAfterViewInit() {

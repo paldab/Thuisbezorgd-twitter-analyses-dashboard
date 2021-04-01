@@ -38,7 +38,7 @@ def all_tweets():
 	json_data=[]
 	
 	for tweet in tweets:
-		trimmed_text = textwrap.shorten(tweet['text'], width=164, placeholder="...")
+		trimmed_text = textwrap.shorten(tweet['text'], width=144, placeholder="...")
 
 		tweet = (tweet['id'], tweet['text'], tweet['user_screenname'], tweet['created_at'], trimmed_text)
 

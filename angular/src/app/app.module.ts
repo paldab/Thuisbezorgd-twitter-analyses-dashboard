@@ -34,6 +34,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { environment as env } from '../environments/environment';
 
@@ -42,6 +44,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { AppComponent } from './app.component';
 import { AllTweetsComponent } from './all-tweets/all-tweets.component';
 import { HttpClientModule } from '@angular/common/http';
+
 
 
 @NgModule({
@@ -80,11 +83,13 @@ import { HttpClientModule } from '@angular/common/http';
     MatFormFieldModule,
     MatInputModule,
     MatTooltipModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule,
   ],
   entryComponents: [
     LoginDialogComponent
   ],
-  providers: [
+  providers: [    
     {
       provide: 'SocialAuthServiceConfig',
       useValue: {
