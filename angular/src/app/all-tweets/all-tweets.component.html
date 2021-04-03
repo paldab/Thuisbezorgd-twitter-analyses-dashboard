@@ -16,10 +16,10 @@
     </mat-form-field>
   </p>
   <div class="button-container">
-    <button mat-raised-button color="primary">Toon Vandaag</button>
-    <button mat-raised-button color="primary">Toon Afgelopen week</button>
-    <button mat-raised-button color="primary">Toon Afgelopen maand</button>
-    <button mat-raised-button color="primary">Toon Alles</button>
+    <button mat-raised-button color="primary" (click)="this.dataSource.getAllTweetsToday();">Toon Vandaag</button>
+    <button mat-raised-button color="primary" (click)="this.dataSource.getAllTweetsWeek();">Toon Afgelopen week</button>
+    <button mat-raised-button color="primary" (click)="this.dataSource.getAllTweetsMonth();">Toon Afgelopen maand</button>
+    <button mat-raised-button color="primary" (click)="this.dataSource.getAllTweets();">Toon Alles</button>
   </div>  
     <table mat-table class="full-width-table" matSort aria-label="Tweets">
       <!-- Id Column -->

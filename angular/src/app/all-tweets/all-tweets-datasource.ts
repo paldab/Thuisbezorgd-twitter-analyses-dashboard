@@ -79,6 +79,78 @@ export class AllTweetsDataSource extends MatTableDataSource<AllTweetsItem> {
     }, 7000)
   }
 
+  getAllTweetsToday() {
+    this.spinnerLoading = true;
+    
+    this.tweetsService.all_tweets('d').subscribe(
+      data => {
+        this.data = data
+      },
+      err => {
+        this.req_succeeded = err.ok
+        console.error(err);
+      }
+    );    
+
+
+    setTimeout(() => {
+      if (this.req_succeeded == false) {
+        this.spinnerLoading = true
+      } else {
+        this.spinnerLoading = false
+      }
+            
+    }, 7000)
+  }
+
+  getAllTweetsWeek() {
+    this.spinnerLoading = true;
+    
+    this.tweetsService.all_tweets('w').subscribe(
+      data => {
+        this.data = data
+      },
+      err => {
+        this.req_succeeded = err.ok
+        console.error(err);
+      }
+    );    
+
+
+    setTimeout(() => {
+      if (this.req_succeeded == false) {
+        this.spinnerLoading = true
+      } else {
+        this.spinnerLoading = false
+      }
+            
+    }, 7000)
+  }
+
+  getAllTweetsMonth() {
+    this.spinnerLoading = true;
+    
+    this.tweetsService.all_tweets('m').subscribe(
+      data => {
+        this.data = data
+      },
+      err => {
+        this.req_succeeded = err.ok
+        console.error(err);
+      }
+    );    
+
+
+    setTimeout(() => {
+      if (this.req_succeeded == false) {
+        this.spinnerLoading = true
+      } else {
+        this.spinnerLoading = false
+      }
+            
+    }, 7000)
+  }
+
   /**
    * Connect this data source to the table. The table will only update when
    * the returned stream emits new items.

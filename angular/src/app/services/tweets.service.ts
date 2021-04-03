@@ -14,8 +14,8 @@ export class TweetsService {
 
   constructor(private httpClient: HttpClient) { }
 
-  all_tweets(): Observable<AllTweetsItem[]> {    
-    return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/all-tweets`)
+  all_tweets(filter = '*'): Observable<AllTweetsItem[]> {    
+    return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/all-tweets?f=${filter}`)
   }
 
 }

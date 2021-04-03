@@ -2,7 +2,7 @@ from models.model import Tweet
 from data import TweetCollector
 from models.database import db
 from sqlalchemy import text
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import textwrap
 import twint 
@@ -25,7 +25,22 @@ def test(name):
 @app.route('/api/v1/all-tweets', methods=['GET'])
 def all_tweets():
 	
-	statement = text("SELECT id, text, user_screenname, created_at FROM tweet").\
+	filter = request.args.get('f', default=None, type=str)
+
+	if filter == 'd':
+		statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE DATE(created_at)=CURDATE()").\
+		columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
+		
+	if filter == 'w':
+		statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE WEEK (created_at) >= WEEK(CURDATE()) -1 AND YEAR(created_at) = YEAR(CURDATE())").\
+		columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
+
+	if filter == 'm':
+		statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE created_at > NOW() - INTERVAL 1 MONTH;").\
+		columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
+
+	if filter == '*':
+		statement = text("SELECT id, text, user_screenname, created_at FROM tweet").\
 		columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
 	
 	tweets = getattr(db, '_session')().\
