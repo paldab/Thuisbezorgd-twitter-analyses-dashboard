@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
 import {environment as env} from "../../environments/environment";
-import { AllTweetsItem } from '../all-tweets/all-tweets-datasource';
+import { AllTweetsItem } from '../all-tweets/all-tweets.component';
 
 
 @Injectable({
