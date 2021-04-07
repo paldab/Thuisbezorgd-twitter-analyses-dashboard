@@ -20,11 +20,9 @@ matplotlib = "*"
 wordcloud = "*"
 numpy = "*"
 nltk = "*"
+twint = {git = "https://github.com/twintproject/twint.git"}
 
 [dev-packages]
 
 [requires]
 python_version = "3"
-
-[packages.twint]
-git = "https://github.com/twintproject/twint.git"

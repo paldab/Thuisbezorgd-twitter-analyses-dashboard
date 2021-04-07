@@ -4,7 +4,7 @@ from models.database import db
 from sqlalchemy import text
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from wordcloud import WordCloud
+from wordcloud import WordCloud, STOPWORDS
 import matplotlib.pyplot as plt
 import pandas as pd
 import base64
@@ -12,7 +12,7 @@ import textwrap
 import twint
 import io
 import config
-
+import emoji
 
 app = Flask(__name__)
 
@@ -31,7 +31,18 @@ def welcome():
 # GET route with param
 @app.route('/person/<name>', methods=['GET'])
 def test(name):
-    return 'Welcome ' + name
+    tweets = db.session.query(Tweet.text).all()
+
+    tweet_df = pd.DataFrame(tweets, columns=['text'])
+    tweet_df['text'] = tweet_df['text'].str.replace(emoji.get_emoji_regexp(),
+                                                    '', regex=True)
+
+    tweet_df['text'] = tweet_df['text'].str.replace(r'#(\w+)',
+                                                    '', regex=True)
+
+    print(tweet_df['text'].tail())
+    return tweet_df['text'].iloc[2]
+
 
 
 # GET route with multiple params and JSON response with 418 status code
@@ -74,11 +85,10 @@ def all_tweets():
 
     return jsonify(json_data), 200
 
-    
-
 @app.route(f'{prefix}/wordcloud', methods=['GET'])
 def generate_wordcloud():
-	
+	dutch_stopwords = STOPWORDS.words
+
 	tweets = getattr(db, '_session')().query(Tweet.text).all()
 	df = pd.DataFrame(tweets, columns=["text"])
 
