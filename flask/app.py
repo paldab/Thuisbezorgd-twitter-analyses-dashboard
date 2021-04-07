@@ -4,7 +4,8 @@ from models.database import db
 from sqlalchemy import text
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from wordcloud import WordCloud, STOPWORDS
+from wordcloud import WordCloud
+from nltk.corpus import stopwords
 import matplotlib.pyplot as plt
 import pandas as pd
 import base64
@@ -87,12 +88,12 @@ def all_tweets():
 
 @app.route(f'{prefix}/wordcloud', methods=['GET'])
 def generate_wordcloud():
-	dutch_stopwords = STOPWORDS.words
+	dutch_stopwords = stopwords.words("dutch")
 
 	tweets = getattr(db, '_session')().query(Tweet.text).all()
 	df = pd.DataFrame(tweets, columns=["text"])
 
-	wc = WordCloud(max_words=1000).generate(" ".join(df["text"]))
+	wc = WordCloud(max_words=1000, stopwords=dutch_stopwords).generate(" ".join(df["text"]))
 
 	plt.imshow(wc)
 	plt.axis("off")

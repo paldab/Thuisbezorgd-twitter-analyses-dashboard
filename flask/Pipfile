@@ -21,6 +21,7 @@ wordcloud = "*"
 numpy = "*"
 nltk = "*"
 twint = {git = "https://github.com/twintproject/twint.git"}
+pytest = "*"
 
 [dev-packages]
 
