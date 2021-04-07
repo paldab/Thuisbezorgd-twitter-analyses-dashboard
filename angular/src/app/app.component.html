@@ -46,7 +46,7 @@
       <div *ngIf="loggedIn===true" class="profile-container">
         <!-- User is logged in. -->
         <img class="avatar" [src]="user?.photoUrl"/>
-        <button mat-raised-button color="warn" (click)="signOut()" matTooltip="Toggle theme"
+        <button mat-raised-button color="warn" (click)="signOut()"
         aria-label="Example icon-button with share icon">
         <mat-icon>logout</mat-icon>
         <span>Logout</span>
