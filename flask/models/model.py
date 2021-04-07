@@ -1,3 +1,4 @@
+from sqlalchemy.sql.elements import Null
 from utils.serializer import Serializer
 from sqlalchemy import Table, Column, Integer, String, ForeignKey
 from sqlalchemy.types import DateTime, Boolean, Text
@@ -27,10 +28,13 @@ class Tweet(getattr(db, '_base'), Serializer):
 
     hashtags = relationship('Hashtag', secondary=hashtag_tweet, back_populates='tweets')
 
-    def serialize(self):
-        serialized_object = Serializer.serialize(self)
-        del serialized_object['hashtags']
-        return serialized_object
+    # def serialize(self):
+    #     serialized_object = Serializer.serialize(self)
+
+    #     if serialized_object['hashtags'] != Null:
+    #         del serialized_object['hashtags']
+
+    #     return serialized_object
         
     def __repr__(self):
         return '<Tweet(user={}, geo_enabled={}, verified={}, text={})>'.format(
@@ -47,8 +51,12 @@ class Hashtag(getattr(db, '_base'), Serializer):
 
     tweets = relationship('Tweet', secondary=hashtag_tweet, back_populates='hashtags')
 
-    def serialize(self):
-        return Serializer.serialize(self)
+    # def serialize(self):
+    #     serialized_object = Serializer.serialize(self)
+
+    #     if serialized_object['tweets'] != None:
+    #         del serialized_object['tweets']
+    #     return serialized_object
 
     def __repr__(self):
         return '<Hashtag(id={}, name={})>'.format(self.id, self.name)

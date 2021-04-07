@@ -57,6 +57,9 @@ export class AppComponent {
       
       if(!this.loggedIn) {
         this.openDialog()
+        window.sessionStorage.clear();
+      } else {
+        window.sessionStorage.setItem("user_name", JSON.stringify(this.user?.name));
       }
     });
   }  

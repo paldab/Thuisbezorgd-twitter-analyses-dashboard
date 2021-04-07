@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-
+  apiUrl: 'http://127.0.0.1:5000/api/v1',
   google: {
     id: '592251458345-1knghkvvtbitilv5949ih16du03q4osl.apps.googleusercontent.com'
   }

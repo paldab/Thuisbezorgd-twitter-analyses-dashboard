@@ -84,22 +84,23 @@ class TweetCollector():
 
     def archive_search(self, session, env):
         # TODO: Add FromDate - ToDate
-        
+
         cursor = tweepy.Cursor(
             self.api.search_full_archive,
             environment_name=env,
-            query='@Thuisbezorgd OR #thuisbezorgd'
+            query='@Thuisbezorgd OR #thuisbezorgd',
+            tweet_mode='extended'
         )
 
         for item in cursor.items():
             self.insert_tweets(item, session)
 
     def recent_search(self, session):
-
         cursor = tweepy.Cursor(
             self.api.search,
             q='@Thuisbezorgd OR #thuisbezorgd',
-            lang='nl'
+            lang='nl',
+            tweet_mode='extended'
         )
 
         for item in cursor.items():

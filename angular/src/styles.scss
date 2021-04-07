@@ -51,6 +51,18 @@ $angular-dark-theme: mat-dark-theme((
   margin-right: 15px;
 }
 
+
+.trimmed-text-container {
+  min-width: 500px;
+}
+
+::ng-deep .mat-tooltip.tweet-tooltip {
+  padding: 15px;
+  font-size: 16px;
+  background-color: mat-color($angular-primary);
+  min-width: 100%;
+}  
+
 .darkMode {
   @include angular-material-color($angular-dark-theme);
   .mat-drawer-container {

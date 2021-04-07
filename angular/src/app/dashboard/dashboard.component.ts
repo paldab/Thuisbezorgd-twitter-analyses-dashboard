@@ -8,7 +8,7 @@ import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-  @Input() title!: string | undefined;
+  name = window.sessionStorage.getItem('user_name')?.replace(/['"]+/g, '');
 
   /** Based on the screen size, switch from standard to one column per row */
   cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
@@ -117,7 +117,7 @@ export class DashboardComponent implements OnInit {
   constructor(private breakpointObserver: BreakpointObserver) {}
 
   ngOnInit(): void {
-    console.log(this.cards);
+    // console.log(this.cards);
     
   }
 }
