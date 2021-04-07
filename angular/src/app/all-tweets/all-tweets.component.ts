@@ -34,6 +34,7 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
 
   ngOnInit() {
     this.dataSource = new MatTableDataSource<AllTweetsItem>();
+    this.getAllTweetsWeek();
   }
 
   search(filterValue: any) {
