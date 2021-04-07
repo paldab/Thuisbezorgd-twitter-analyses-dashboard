@@ -18,6 +18,7 @@ cryptography = "*"
 flask-cors = "*"
 matplotlib = "*"
 wordcloud = "*"
+numpy = "*"
 nltk = "*"
 
 [dev-packages]
