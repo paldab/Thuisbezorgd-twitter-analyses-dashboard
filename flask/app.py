@@ -4,7 +4,8 @@ from models.database import db
 from sqlalchemy import text
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from wordcloud import WordCloud
+from wordcloud import WordCloud, STOPWORDS
+from utils.Cwordcloud import CWordCloud
 import matplotlib.pyplot as plt
 import pandas as pd
 import base64
@@ -12,7 +13,6 @@ import textwrap
 import twint
 import io
 import config
-
 
 app = Flask(__name__)
 
@@ -74,11 +74,10 @@ def all_tweets():
 
     return jsonify(json_data), 200
 
-    
-
 @app.route(f'{prefix}/wordcloud', methods=['GET'])
 def generate_wordcloud():
-	
+	dutch_stopwords = STOPWORDS.words
+
 	tweets = getattr(db, '_session')().query(Tweet.text).all()
 	df = pd.DataFrame(tweets, columns=["text"])
 

@@ -18,11 +18,12 @@ cryptography = "*"
 flask-cors = "*"
 matplotlib = "*"
 wordcloud = "*"
+nltk = "*"
 
 [dev-packages]
 
 [requires]
 python_version = "3"
 
-[packages.twint]
-git = "https://github.com/twintproject/twint.git"
+[packages]
+twint = {git = "https://github.com/twintproject/twint.git"}
