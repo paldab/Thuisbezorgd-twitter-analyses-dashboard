@@ -47,7 +47,7 @@ def test(name):
 
 
 # GET route with multiple params and JSON response with 418 status code
-@app.route('/api/v1/all-tweets', methods=['GET'])
+@app.route(f'{prefix}/all-tweets', methods=['GET'])
 def all_tweets():
     filter = request.args.get('f', default=None, type=str)
 
