@@ -30,7 +30,11 @@ def test(name):
     tweet_df['text'] = tweet_df['text'].str.replace(emoji.get_emoji_regexp(),
                                                     '', regex=True)
 
+    # Hashtags
     tweet_df['text'] = tweet_df['text'].str.replace(r'#(\w+)',
+                                                    '', regex=True)
+    # Mentions
+    tweet_df['text'] = tweet_df['text'].str.replace(r'@(\w+)',
                                                     '', regex=True)
 
     print(tweet_df['text'].tail())
