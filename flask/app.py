@@ -5,7 +5,6 @@ from sqlalchemy import text
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from wordcloud import WordCloud, STOPWORDS
-from utils.Cwordcloud import CWordCloud
 import matplotlib.pyplot as plt
 import pandas as pd
 import base64
