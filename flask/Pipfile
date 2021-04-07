@@ -16,6 +16,8 @@ emoji = "*"
 pymysql = "*"
 cryptography = "*"
 flask-cors = "*"
+matplotlib = "*"
+wordcloud = "*"
 
 [dev-packages]
 
