@@ -102,8 +102,9 @@ def generate_wordcloud():
 	plt.savefig(img, format="png")
 	img.seek(0)
 	img64 = base64.b64encode(img.read())
-	return img64
+    return jsonify(img64), 200
 
+    
 if __name__ == '__main__':
     c = twint.Config()
     c.Search = '#thuisbezorgd OR @Thuisbezorgd'
@@ -125,3 +126,4 @@ if __name__ == '__main__':
     # collector.twint_search()
 
     app.run(host='127.0.0.1', port=5000, debug=True)
+

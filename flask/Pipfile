@@ -16,12 +16,12 @@ emoji = "*"
 pymysql = "*"
 cryptography = "*"
 flask-cors = "*"
-matplotlib = "*"
 wordcloud = "*"
 numpy = "*"
 nltk = "*"
 twint = {git = "https://github.com/twintproject/twint.git"}
 pytest = "*"
+matplotlib = "==3.2.0"
 
 [dev-packages]
 
