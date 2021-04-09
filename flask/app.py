@@ -9,6 +9,7 @@ import twint
 import config
 import emoji
 import pandas as pd
+from nltk.corpus import stopwords
 
 
 app = Flask(__name__)
@@ -27,18 +28,29 @@ def test(name):
     tweets = db.session.query(Tweet.text).all()
 
     tweet_df = pd.DataFrame(tweets, columns=['text'])
+    dutch_stopwords = stopwords.words('dutch')
+
+    # Emoji
     tweet_df['text'] = tweet_df['text'].str.replace(emoji.get_emoji_regexp(),
                                                     '', regex=True)
-
     # Hashtags
     tweet_df['text'] = tweet_df['text'].str.replace(r'#(\w+)',
                                                     '', regex=True)
     # Mentions
     tweet_df['text'] = tweet_df['text'].str.replace(r'@(\w+)',
                                                     '', regex=True)
+    # URLS
+    tweet_df['text'] = tweet_df['text'].str.replace(r'http\S+',
+                                                    '', regex=True)
+    print(tweet_df['text'].iloc[10])
 
-    print(tweet_df['text'].tail())
-    return tweet_df['text'].iloc[2]
+    tweet_df['text'] = tweet_df['text'].apply(
+        lambda x: ' '.join(
+            word.lower() for word in x.split()
+            if word.lower() not in dutch_stopwords
+        )
+    )
+    return tweet_df['text'].iloc[10]
 
 
 # GET route with multiple params and JSON response with 418 status code
