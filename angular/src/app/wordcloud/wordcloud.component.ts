@@ -6,17 +6,27 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./wordcloud.component.scss']
 })
 export class WordcloudComponent implements OnInit {
-  constructor(private wordcloudService:WordcloudService) { }
-  public wordcloudImg = this.getBase64Img();
+  public wordcloudImg = ""
+  constructor(private wordcloudService:WordcloudService) { 
+
+  }
 
   ngOnInit(): void {
+    this.getBase64Img()
   }
 
-  public getBase64Img():string{
-    this.wordcloudService.generateWordcloud().subscribe(img =>{
-      console.log(img)
-      return img
+  public getBase64Img(){
+    let imgUrl;
+    const base64ImgTemplate:string = "data:image/png;base64,"
+    this.wordcloudService.generateWordcloud().subscribe(data => {
+      const {img} = data
+      imgUrl = img
+
+      this.wordcloudImg += `${base64ImgTemplate}${imgUrl}`
     })
-    return "No Image!"
   }
+}
+
+interface Wordcloud {
+  img:string;
 }

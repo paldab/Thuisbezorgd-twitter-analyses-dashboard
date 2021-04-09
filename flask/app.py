@@ -6,15 +6,18 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from wordcloud import WordCloud
 from nltk.corpus import stopwords
+import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
 import base64
+import json
 import textwrap
 import twint
 import io
 import config
 import emoji
 
+matplotlib.use('Agg')
 app = Flask(__name__)
 
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -103,7 +106,13 @@ def generate_wordcloud():
     plt.savefig(img, format="png")
     img.seek(0)
     img64 = base64.b64encode(img.read())
-    return jsonify(img64), 200
+    
+    # converting bytes to string
+    img_to_str = str(img64).split("'")[1]
+    
+    json_payload = {"img":img_to_str}
+
+    return jsonify(json_payload), 200
 
 
 if __name__ == '__main__':

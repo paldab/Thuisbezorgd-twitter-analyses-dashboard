@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import {environment as env} from "../../environments/environment";
 import { HttpClient } from '@angular/common/http';
@@ -6,7 +7,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class WordcloudService {
-  private SERVER_URL = env.apiUrl || "localhost:5000/api/v1";
+  private SERVER_URL = env.apiUrl || "http://localhost:5000/api/v1";
 
   constructor(private http: HttpClient) { }
 
@@ -14,7 +15,7 @@ export class WordcloudService {
    * 
    * @returns a base64 url of an wordcloud png image
    */
-  generateWordcloud(){
-    return this.http.get(`${this.SERVER_URL}/wordcloud`)
+  generateWordcloud(): Observable<any>{
+    return this.http.get<any>(`${this.SERVER_URL}/wordcloud`)
   }
 }
