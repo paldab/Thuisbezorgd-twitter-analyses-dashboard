@@ -11,11 +11,15 @@ export class WordcloudService {
 
   constructor(private http: HttpClient) { }
 
-  /**
-   * 
-   * @returns a base64 url of an wordcloud png image
-   */
-  generateWordcloud(): Observable<any>{
-    return this.http.get<any>(`${this.SERVER_URL}/wordcloud`)
+/**
+ * 
+ * @param backgroundColor optional background color of the image
+ * @returns a base64 url of an wordcloud png image
+ */
+  generateWordcloud(backgroundColor?: string): Observable<any>{
+    if (backgroundColor === undefined){
+      return this.http.get<any>(`${this.SERVER_URL}/wordcloud`)
+    }
+    return this.http.get<any>(`${this.SERVER_URL}/wordcloud?backgroundcolor=${backgroundColor}`)
   }
 }

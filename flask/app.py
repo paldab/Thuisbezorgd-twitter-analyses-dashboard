@@ -117,7 +117,7 @@ def generate_wordcloud():
     
     # converting bytes to string
     img_to_str = str(img64).split("'")[1]
-    
+    print(img_to_str)
     json_payload = {"image":img_to_str}
 
     return jsonify(json_payload), 200
