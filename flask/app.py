@@ -88,23 +88,24 @@ def all_tweets():
 
 @app.route(f'{prefix}/wordcloud', methods=['GET'])
 def generate_wordcloud():
-	dutch_stopwords = stopwords.words("dutch")
+    dutch_stopwords = stopwords.words("dutch")
 
-	tweets = getattr(db, '_session')().query(Tweet.text).all()
-	df = pd.DataFrame(tweets, columns=["text"])
+    tweets = getattr(db, '_session')().query(Tweet.text).all()
+    df = pd.DataFrame(tweets, columns=["text"])
 
-	wc = WordCloud(max_words=1000, stopwords=dutch_stopwords).generate(" ".join(df["text"]))
+    wc = WordCloud(max_words=1000, stopwords=dutch_stopwords).generate(
+        " ".join(df["text"]))
 
-	plt.imshow(wc)
-	plt.axis("off")
+    plt.imshow(wc)
+    plt.axis("off")
 
-	img = io.BytesIO()
-	plt.savefig(img, format="png")
-	img.seek(0)
-	img64 = base64.b64encode(img.read())
+    img = io.BytesIO()
+    plt.savefig(img, format="png")
+    img.seek(0)
+    img64 = base64.b64encode(img.read())
     return jsonify(img64), 200
 
-    
+
 if __name__ == '__main__':
     c = twint.Config()
     c.Search = '#thuisbezorgd OR @Thuisbezorgd'
@@ -126,4 +127,3 @@ if __name__ == '__main__':
     # collector.twint_search()
 
     app.run(host='127.0.0.1', port=5000, debug=True)
-
