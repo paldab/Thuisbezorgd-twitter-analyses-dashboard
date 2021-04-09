@@ -89,16 +89,24 @@ def all_tweets():
 
     return jsonify(json_data), 200
 
-@app.route(f'{prefix}/wordcloud', methods=['GET'])
+@app.route(f'{prefix}/wordcloud', methods=['GET', 'POST'])
 def generate_wordcloud():
+    # Check parameters
+    background_color = request.args.get('backgroundcolor')
+    if background_color == "" or background_color == None:
+        background_color = "black"
+    
+    # dutch stopwords
     dutch_stopwords = stopwords.words("dutch")
 
     tweets = getattr(db, '_session')().query(Tweet.text).all()
     df = pd.DataFrame(tweets, columns=["text"])
 
-    wc = WordCloud(max_words=1000, stopwords=dutch_stopwords).generate(
+    wc = WordCloud(max_words=1000, stopwords=dutch_stopwords,
+                   background_color=background_color).generate(
         " ".join(df["text"]))
 
+    # converting image to base64
     plt.imshow(wc)
     plt.axis("off")
 
@@ -110,7 +118,7 @@ def generate_wordcloud():
     # converting bytes to string
     img_to_str = str(img64).split("'")[1]
     
-    json_payload = {"img":img_to_str}
+    json_payload = {"image":img_to_str}
 
     return jsonify(json_payload), 200
 
