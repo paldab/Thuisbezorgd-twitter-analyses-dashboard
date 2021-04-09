@@ -15,6 +15,10 @@ def clean_tweet(tweet_df):
     # URLS
     tweet_df['text'] = tweet_df['text'].str.replace(r'http\S+',
                                                     '', regex=True)
+
+    # Remove Retweets
+    tweet_df['text'] = tweet_df['text'].str.replace(r'^rt :', '', regex=True)
+
     return tweet_df
 
 
