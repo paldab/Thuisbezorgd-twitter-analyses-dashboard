@@ -89,13 +89,14 @@ def all_tweets():
 
     return jsonify(json_data), 200
 
-@app.route(f'{prefix}/wordcloud', methods=['GET', 'POST'])
+
+@app.route(f'{prefix}/wordcloud', methods=['GET'])
 def generate_wordcloud():
     # Check parameters
     background_color = request.args.get('backgroundcolor')
     if background_color == "" or background_color == None:
         background_color = "black"
-    
+
     # dutch stopwords
     dutch_stopwords = stopwords.words("dutch")
 
@@ -114,11 +115,11 @@ def generate_wordcloud():
     plt.savefig(img, format="png")
     img.seek(0)
     img64 = base64.b64encode(img.read())
-    
+
     # converting bytes to string
     img_to_str = str(img64).split("'")[1]
     print(img_to_str)
-    json_payload = {"image":img_to_str}
+    json_payload = {"image": img_to_str}
 
     return jsonify(json_payload), 200
 
