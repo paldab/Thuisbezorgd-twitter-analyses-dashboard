@@ -44,6 +44,7 @@ import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AppComponent } from './app.component';
 import { AllTweetsComponent } from './all-tweets/all-tweets.component';
+import { WordcloudComponent } from './wordcloud/wordcloud.component';
 
 
 
@@ -53,6 +54,7 @@ import { AllTweetsComponent } from './all-tweets/all-tweets.component';
     DashboardComponent,
     LoginDialogComponent,
     AllTweetsComponent,
+    WordcloudComponent,
   ],
   imports: [
     OverlayModule,
