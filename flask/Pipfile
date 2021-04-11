@@ -19,9 +19,9 @@ flask-cors = "*"
 wordcloud = "*"
 numpy = "*"
 nltk = "*"
-twint = {git = "https://github.com/twintproject/twint.git"}
 pytest = "*"
 matplotlib = "==3.2.0"
+twint = { git = "https://github.com/twintproject/twint.git" }
 
 [dev-packages]
 

@@ -5,7 +5,8 @@ from sqlalchemy import text
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from wordcloud import WordCloud
-from nltk.corpus import stopwords
+import nltk
+# from nltk.corpus import stopwords
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -98,7 +99,7 @@ def generate_wordcloud():
         background_color = "black"
 
     # dutch stopwords
-    dutch_stopwords = stopwords.words("dutch")
+    dutch_stopwords = nltk.corpus.stopwords.words("dutch")
 
     tweets = getattr(db, '_session')().query(Tweet.text).all()
     df = pd.DataFrame(tweets, columns=["text"])
@@ -118,7 +119,6 @@ def generate_wordcloud():
 
     # converting bytes to string
     img_to_str = str(img64).split("'")[1]
-    print(img_to_str)
     json_payload = {"image": img_to_str}
 
     return jsonify(json_payload), 200
@@ -138,6 +138,7 @@ if __name__ == '__main__':
     collector = TweetCollector(
         config.twitter['key'], config.twitter['secret'], c
     )
+    nltk.download('stopwords')
     # collector.recent_search(getattr(db, 'session'))
 
     # collector.archive_search(getattr(db, 'session'),
