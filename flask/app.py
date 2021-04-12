@@ -64,11 +64,15 @@ def all_tweets():
             columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
 
     if filter == 'm':
-        statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE created_at > NOW() - INTERVAL 1 MONTH;").\
+        statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE created_at > NOW() - INTERVAL 1 MONTH ORDER BY created_at").\
             columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
 
     if filter == '*':
         statement = text("SELECT id, text, user_screenname, created_at FROM tweet").\
+            columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
+
+    if filter == 'x':
+        statement = text("SELECT id, text, user_screenname, CAST(created_at AS DATE) as CreateDate FROM tweet WHERE created_at > NOW() - INTERVAL 1 MONTH  ORDER BY created_at").\
             columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
 
     tweets = getattr(db, '_session')().query(

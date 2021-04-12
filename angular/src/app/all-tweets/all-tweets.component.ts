@@ -59,6 +59,7 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
     
     this.tweetsService.all_tweets().subscribe(
       data => {
+        console.log(data.length);
         this.dataSource.data = data
         this.filterType = 'alles'
       },
