@@ -5,7 +5,8 @@ from sqlalchemy import text
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from wordcloud import WordCloud
-from nltk.corpus import stopwords
+import nltk
+# from nltk.corpus import stopwords
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -55,7 +56,7 @@ def all_tweets():
     filter = request.args.get('f', default=None, type=str)
 
     if filter == 'd':
-        statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE DATE(created_at)=CURDATE()").\
+        statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE DATE(created_at) = CURDATE()").\
             columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
 
     if filter == 'w':
@@ -63,18 +64,22 @@ def all_tweets():
             columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
 
     if filter == 'm':
-        statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE created_at > NOW() - INTERVAL 1 MONTH;").\
+        statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE created_at > NOW() - INTERVAL 1 MONTH ORDER BY created_at").\
             columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
 
     if filter == '*':
         statement = text("SELECT id, text, user_screenname, created_at FROM tweet").\
             columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
 
+    if filter == 'x':
+        statement = text("SELECT id, text, user_screenname, DATE(created_at) as CreateDate FROM tweet WHERE created_at > NOW() - INTERVAL 1 MONTH  ORDER BY created_at").\
+            columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
+
     tweets = getattr(db, '_session')().query(
         Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
     ).from_statement(statement).all()
 
-    row_headers = [x for x in tweets[0].keys()]
+    row_headers = [x for x in tweets[0].keys()] 
     row_headers.append('trimmed_text')
     json_data = []
 
@@ -98,7 +103,7 @@ def generate_wordcloud():
         background_color = "black"
 
     # dutch stopwords
-    dutch_stopwords = stopwords.words("dutch")
+    dutch_stopwords = nltk.corpus.stopwords.words("dutch")
 
     tweets = getattr(db, '_session')().query(Tweet.text).all()
     df = pd.DataFrame(tweets, columns=["text"])
@@ -137,6 +142,7 @@ if __name__ == '__main__':
     collector = TweetCollector(
         config.twitter['key'], config.twitter['secret'], c
     )
+    nltk.download('stopwords')
     # collector.recent_search(getattr(db, 'session'))
 
     # collector.archive_search(getattr(db, 'session'),
