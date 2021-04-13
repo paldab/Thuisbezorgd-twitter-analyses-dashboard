@@ -1,18 +1,19 @@
 <div class="grid-container">
   <h1 class="mat-h1">Welcome, {{ name }}.</h1>
   <mat-grid-list cols="1" rowHeight="500px">
-    <mat-grid-tile *ngFor="let card of cards | async" [colspan]="card.cols" [rowspan]="card.rows">
+    <mat-grid-tile>
       <mat-card class="dashboard-card">
         <mat-card-header>
-          <mat-card-title>
-            {{ card.title }}
-          </mat-card-title>
+          <mat-card-title>Wordcloud</mat-card-title>
         </mat-card-header>
+      
         <mat-card-content class="dashboard-card-content">
-          <plotly-plot [data]="card.data" [layout]="card.layout"></plotly-plot>
+          <wordcloud></wordcloud>
         </mat-card-content>
-      </mat-card>
+      
+        </mat-card>
     </mat-grid-tile>
+
 
 
   <mat-grid-tile *ngFor="let Time of timeline | async" [colspan]="Time.cols" [rowspan]="Time.rows">
@@ -45,20 +46,7 @@
       <td>{{post.trimmed_text}}</td>
       <td>{{post.created_at}}</td>
     </tr>
-
-    
   </table>
-  
-
-
 </mat-grid-tile>
-
   </mat-grid-list>
-  <mat-card>
-    <mat-card-content>
-      <app-wordcloud></app-wordcloud>
-
-    </mat-card-content>
-
-  </mat-card>
 </div>

@@ -117,7 +117,7 @@ def generate_wordcloud():
     plt.axis("off")
 
     img = io.BytesIO()
-    plt.savefig(img, format="png")
+    plt.savefig(img, format="png", bbox_inches ='tight', pad_inches=0)
     img.seek(0)
     img64 = base64.b64encode(img.read())
 

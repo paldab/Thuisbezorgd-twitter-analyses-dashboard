@@ -1,7 +1,7 @@
 import { WordcloudService } from './../services/wordcloud.service';
 import { Component, OnInit } from '@angular/core';
 @Component({
-  selector: 'app-wordcloud',
+  selector: 'wordcloud',
   templateUrl: './wordcloud.component.html',
   styleUrls: ['./wordcloud.component.scss']
 })
