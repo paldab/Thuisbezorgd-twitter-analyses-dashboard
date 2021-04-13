@@ -26,6 +26,7 @@ export class DashboardComponent implements OnInit {
   tweetsADay: number[] = [];
   orderedTweetsArray = new Array();
   countable: number = 5;
+  usedChar: string = 'x';
 
   ngOnInit(): void {
     // console.log(this.cards);
@@ -35,6 +36,8 @@ export class DashboardComponent implements OnInit {
 
   getAllTweetsMonth() {
     this.mostRecentTweets('x');
+    this.usedChar = 'x';
+    this.countable = 5;
 
     this.createDate.length = 0;
     this.tweetsADay.length = 0;
@@ -73,6 +76,9 @@ export class DashboardComponent implements OnInit {
 
   getAllTweetsDay() {
     this.mostRecentTweets('d');
+    this.usedChar = 'd';
+    this.countable = 5;
+
     this.createDate.length = 0;
     this.tweetsADay.length = 0;
     this.tweetsService.all_tweets('d').subscribe(
@@ -108,6 +114,9 @@ export class DashboardComponent implements OnInit {
 
   getAllTweetsWeek() {
     this.mostRecentTweets('w');
+    this.usedChar = 'w';
+    this.countable = 5;
+    
     this.createDate.length = 0;
     this.tweetsADay.length = 0;
     this.tweetsService.all_tweets('w').subscribe(
@@ -191,11 +200,14 @@ let teller = 0;
       console.log(index); 
     }
 });
+}
 
 
 
 
-
-
+loadMoreTweetsButton() {
+this.countable = this.countable + 5;
+this.mostRecentTweets(this.usedChar);
+console.log(this.orderedTweetsArray.length);
 }
 }

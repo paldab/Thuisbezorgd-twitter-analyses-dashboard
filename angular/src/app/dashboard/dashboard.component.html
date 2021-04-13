@@ -41,6 +41,8 @@
         <mat-card-title>Top 5 tweets</mat-card-title>
       </mat-card-header>
       <mat-card-content>
+           <button mat-raised-button color="primary" (click)="this.loadMoreTweetsButton();">Load more Tweets</button>
+
         <table>
           <tr>
             <th style="background-color: sandybrown">Username</th>
