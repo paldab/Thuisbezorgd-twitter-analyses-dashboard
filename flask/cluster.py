@@ -18,24 +18,42 @@ tweet_df = pd.DataFrame(tweets, columns=['text'])
 tweet_df = clean_tweet(tweet_df)
 tweet_df = remove_stopwords(tweet_df)
 
-vectorizer = TfidfVectorizer(max_features=100)
-X = vectorizer.fit_transform(tweet_df.text.values)
+vectorizer = TfidfVectorizer()
+X = vectorizer.fit_transform(tweet_df.text)
 
 features = vectorizer.get_feature_names()
 
-Z = linkage(X.todense(), 'ward')
+# import functools
+import numpy as np
 
-cluster = fcluster(Z, 0.9, criterion='distance')
+nzero_count = 0
 
-plt.figure()
-dn = dendrogram(Z, show_leaf_counts=True)
-plt.show()
+# tmp = np.where(np.all(np.isclose(X, 0.), axis=0))
+print(X.shape)
+
+for vector in X:
+    nonzero = np.count_nonzero(vector.toarray())
+    nzero_count += nonzero
+
+    # tmp = np.where(vector == 0)
+    # print(tmp, type(tmp))
+    # if tmp == 0:
+    #     print(zero_count)
+
+#     zero_count += 1
+
+# Z = linkage(X, 'ward')
+
+# cluster = fcluster(Z, 0.9, criterion='distance')
+
+# plt.figure()
+# dn = dendrogram(Z, show_leaf_counts=True)
+# plt.show()
 
 # model = AgglomerativeClustering(n_clusters=None, affinity='cosine',
 #                                 distance_threshold=0, linkage='single')
 
 # cluster = model.fit(X.toarray())
-
 
 # # Create a TruncatedSVD instance: svd
 # svd = TruncatedSVD(n_components=50)
