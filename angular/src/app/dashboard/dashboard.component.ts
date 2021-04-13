@@ -83,8 +83,9 @@ export class DashboardComponent implements OnInit {
     this.tweetsADay.length = 0;
     this.tweetsService.all_tweets('d').subscribe(
       data => {
+        console.log(data);
         let counter = 0;
-        for (let index = 1; index < data.length -1; index++) {   
+        for (let index = 0; index < 1; index++) {   
           counter = counter + 1;
           console.log(data[index].created_at);
           this.createDate.push(data[index].created_at.substr(5,7));
@@ -110,7 +111,7 @@ export class DashboardComponent implements OnInit {
       } else {
       }
     }, 7000)
-  }
+  } 
 
   getAllTweetsWeek() {
     this.mostRecentTweets('w');
