@@ -1,6 +1,7 @@
 from models.model import Tweet
 from data import TweetCollector
 from models.database import db
+from utils.cleaner import clean_tweet, remove_stopwords
 from sqlalchemy import text
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -79,7 +80,7 @@ def all_tweets():
         Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
     ).from_statement(statement).all()
 
-    row_headers = [x for x in tweets[0].keys()] 
+    row_headers = [x for x in tweets[0].keys()]
     row_headers.append('trimmed_text')
     json_data = []
 
@@ -107,6 +108,9 @@ def generate_wordcloud():
 
     tweets = getattr(db, '_session')().query(Tweet.text).all()
     df = pd.DataFrame(tweets, columns=["text"])
+
+    df = clean_tweet(df)
+    df = remove_stopwords(df)
 
     wc = WordCloud(max_words=1000, stopwords=dutch_stopwords,
                    background_color=background_color).generate(
