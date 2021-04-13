@@ -1,5 +1,5 @@
 <div class="grid-container">
-  <h1 class="mat-h1">Welcome, {{ name }}.</h1>
+  <h1 class="mat-h1" *ngIf="name != undefined;">Welcome, {{ name }}.</h1>
   <mat-grid-list cols="1" rowHeight="500px">
     <mat-grid-tile>
       <mat-card class="dashboard-card">

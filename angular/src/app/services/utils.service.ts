@@ -8,8 +8,8 @@ export class UtilsService {
 
   constructor(private router: Router) { }
   
-  reload(route: string) {
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+  reload(origin: string, route: string) {
+    this.router.navigateByUrl(origin, { skipLocationChange: true }).then(() => {
       this.router.navigateByUrl(route);
     }); 
   }

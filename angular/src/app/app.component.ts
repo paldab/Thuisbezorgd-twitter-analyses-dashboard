@@ -4,10 +4,11 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 
-import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
+import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
 import { LoginDialogComponent } from './login-dialog/login-dialog.component';
 import { FormControl } from '@angular/forms';
-import { Overlay, OverlayContainer } from '@angular/cdk/overlay';
+import { OverlayContainer } from '@angular/cdk/overlay';
+import { UtilsService } from './services/utils.service';
 
 @Component({
   selector: 'app-root',
@@ -34,7 +35,8 @@ export class AppComponent {
     private authService: SocialAuthService,
     private breakpointObserver: BreakpointObserver,
     private dialog: MatDialog,
-    private overlay: OverlayContainer
+    private overlay: OverlayContainer,
+    public utilsService: UtilsService
 
   ) { }  
   ngOnInit() {
@@ -66,6 +68,7 @@ export class AppComponent {
 
   signOut(): void {
     this.authService.signOut();
+    this.utilsService.reload('table/all-tweets', '/dashboard');
   }
   openDialog() {
 

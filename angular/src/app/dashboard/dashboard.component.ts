@@ -11,11 +11,15 @@ import { Observable, of } from 'rxjs';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-  name = window.sessionStorage.getItem('user_name')?.replace(/['"]+/g, '');
   req_succeeded: boolean = true;
-
+  name: any = undefined;  
+ 
   constructor(private breakpointObserver: BreakpointObserver, private tweetsService: TweetsService) {
     this.mostRecentTweets();
+
+    setTimeout(() => {
+      this.name = window.sessionStorage.getItem('user_name')?.replace(/['"]+/g, '');
+    }, 4000);
   }
 
   createDate: string[] = [];
