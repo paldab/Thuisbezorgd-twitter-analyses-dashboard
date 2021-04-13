@@ -13,23 +13,25 @@
       
         </mat-card>
     </mat-grid-tile>
-    
-  <mat-grid-tile *ngFor="let Time of realTime | async" [colspan]="Time.cols" [rowspan]="Time.rows">
-    <h1>{{Time}}</h1>  
-    <mat-card class="dashboard-card">
+
+
+
+  <mat-grid-tile *ngFor="let Time of timeline | async" [colspan]="Time.cols" [rowspan]="Time.rows">
+      <mat-card class="dashboard-card">
         <mat-card-header>
           <mat-card-title>
             {{ Time.title }}
           </mat-card-title>
         </mat-card-header>
-        <button mat-raised-button color="primary" (click)="this.getAllTweets('d');">Show 24HR</button>
-        <button mat-raised-button color="primary" (click)="this.getAllTweets('w');">Show week</button>
-        <button mat-raised-button color="primary" (click)="this.getAllTweets('m');">Show month</button>
+        <button mat-raised-button color="primary" (click)="this.getAllTweetsDay();">Show 24HR</button>
+  <button mat-raised-button color="primary" (click)="this.getAllTweetsWeek();">Show week</button>
+  <button mat-raised-button color="primary" (click)="this.getAllTweetsMonth();">Show month</button>
         <mat-card-content class="dashboard-card-content">
           <plotly-plot [data]="Time.data" [layout]="Time.layout"></plotly-plot>
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>
+
 
 <mat-grid-tile>
  <table>
@@ -47,4 +49,8 @@
   </table>
 </mat-grid-tile>
   </mat-grid-list>
+
+
+
+<div id="tester" style="width:600px;height:250px;"></div>
 </div>
