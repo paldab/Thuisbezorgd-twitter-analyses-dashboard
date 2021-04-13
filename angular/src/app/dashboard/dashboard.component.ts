@@ -116,19 +116,20 @@ export class DashboardComponent implements OnInit {
       ];
     })
   );  
-  constructor(private breakpointObserver: BreakpointObserver, private tweetsService: TweetsService) {}
+  constructor(private breakpointObserver: BreakpointObserver, private tweetsService: TweetsService) {
+    this.mostRecentTweets();
+  }
 
   createDate: string[] = [];
   tweetsADay: number[] = [];
+  orderedTweetsArray = new Array();
+  countable: number = 5;
 
   ngOnInit(): void {
     // console.log(this.cards);
     this.getAllTweetsMonth();
     
   }
-
-
-
 
   getAllTweetsMonth() {
     this.tweetsService.all_tweets('x').subscribe(
@@ -176,21 +177,8 @@ export class DashboardComponent implements OnInit {
       if (this.req_succeeded == false) {
       } else {
       }
-            
     }, 7000)
   }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   /** Based on the screen size, switch from standard to one column per row */
@@ -198,8 +186,6 @@ export class DashboardComponent implements OnInit {
     map(({matches}) => {
     
       return [
-       
-        
         {
           title: "Time",
           cols: 1,
@@ -214,6 +200,26 @@ export class DashboardComponent implements OnInit {
     })
   );  
 
+
+
+mostRecentTweets(): any{
+  this.tweetsService.all_tweets('x').subscribe(
+    data => {
+let teller = 0;
+      for (let index = data.length; index > data.length - this.countable; index--) {
+        this.orderedTweetsArray[teller] = data[index-1];
+        teller = teller + 1;
+        console.log(index); 
+      }
+
+
+    
+
+
+
+
+});
+}
 
 
 

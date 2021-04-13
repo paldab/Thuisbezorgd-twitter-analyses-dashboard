@@ -28,6 +28,21 @@
       </mat-card>
     </mat-grid-tile>
 
+<mat-grid-tile>
+ <table>
+    <tr>
+      <th style="background-color: sandybrown">Username</th>
+      <th style="background-color: sandybrown">Text</th>
+      <th style="background-color: sandybrown">Post date</th>
+    </tr>
+
+    <tr *ngFor="let post of orderedTweetsArray" >
+      <td>{{post.user_screenname}}</td>
+      <td>{{post.trimmed_text}}</td>
+      <td>{{post.created_at}}</td>
+    </tr>
+  </table>
+</mat-grid-tile>
 
   </mat-grid-list>
   <mat-card>
@@ -38,4 +53,3 @@
 
   </mat-card>
 </div>
-<button mat-raised-button color="primary" (click)="this.getAllTweetsMonth();">Toon maand</button>
