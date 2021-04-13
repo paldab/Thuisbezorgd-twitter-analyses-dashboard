@@ -1,7 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { map } from 'rxjs/operators';
-import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
+import { Breakpoints, BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { TweetsService } from '../services/tweets.service';
+import { Observable, of } from 'rxjs';
+
 
 @Component({
   selector: 'app-dashboard',
@@ -11,146 +13,40 @@ import { TweetsService } from '../services/tweets.service';
 export class DashboardComponent implements OnInit {
   name = window.sessionStorage.getItem('user_name')?.replace(/['"]+/g, '');
   req_succeeded: boolean = true;
+  public realTime: any;
 
-  /** Based on the screen size, switch from standard to one column per row */
-  cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
-    map(({matches}) => {
-      if (matches) {
-        return [
-          {
-            title: "A Fancy Plott",
-            cols: 1,
-            rows: 1,
-            data: [
-              { x: [1, 2, 3], y: [2, 6, 3], type: 'scatter', mode: 'lines+points', marker: {color: 'red'} },
-              { x: [1, 2, 3], y: [2, 5, 3], type: 'bar' },
-            ],
-            layout: {width: 600, height: 400}
-          },
-          {
-            title: "A Fancy Plot",
-            cols: 1,
-            rows: 1,
-            data: [
-              { x: [1, 2, 3], y: [2, 6, 3], type: 'scatter', mode: 'lines+points', marker: {color: 'blue'} },
-              { x: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], y: [2, 5, 3, 6, 4, 7, 8, 10, 9, 4], type: 'bar' },
-            ],
-            layout: {width: 600, height: 400}
-          }
-          // {
-          //   title: 'Card 2',
-          //   cols: 1,
-          //   rows: 1
-          // },
-          // {
-          //   title: 'Card 3',
-          //   cols: 1,
-          //   rows: 1
-          // },
-          // {
-          //   title: 'Card 4',
-          //   cols: 1,
-          //   rows: 1
-          // }
-        ];
-      }
-
-      // return [{
-      //     title: 'Card 1',
-      //     cols: 2,
-      //     rows: 1
-      //   },
-        // {
-        //   title: 'Card 2',
-        //   cols: 1,
-        //   rows: 1
-        // },
-        // {
-        //   title: 'Card 3',
-        //   cols: 1,
-        //   rows: 2
-        // },
-        // {
-        //   title: 'Card 4',
-        //   cols: 1,
-        //   rows: 1
-        // }
-      // ];
-
-      return [
-        {
-          title: "A Fancy Plott",
-          cols: 1,
-          rows: 1,
-          data: [
-            { x: [1, 2, 3], y: [2, 6, 3], type: 'scatter', mode: 'lines+points', marker: {color: 'red'} },
-            { x: [1, 2, 3], y: [2, 5, 3], type: 'bar' },
-          ],
-          layout: {width: 600, height: 400}
-        },
-        {
-          title: "A Fancy Plot",
-          cols: 1,
-          rows: 1,
-          data: [
-            { x: [1, 2, 3], y: [2, 6, 3], type: 'scatter', mode: 'lines+points', marker: {color: 'blue'} },
-            { x: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], y: [2, 5, 3, 6, 4, 7, 8, 10, 9, 4], type: 'bar' },
-          ],
-          layout: {width: 600, height: 400}
-        }
-        // {
-        //   title: 'Card 2',
-        //   cols: 1,
-        //   rows: 1
-        // },
-        // {
-        //   title: 'Card 3',
-        //   cols: 1,
-        //   rows: 1
-        // },
-        // {
-        //   title: 'Card 4',
-        //   cols: 1,
-        //   rows: 1
-        // }
-      ];
-    })
-  );  
   constructor(private breakpointObserver: BreakpointObserver, private tweetsService: TweetsService) {
     this.mostRecentTweets();
   }
-
+  public isHandset = false;
   createDate: string[] = [];
   tweetsADay: number[] = [];
   orderedTweetsArray = new Array();
   countable: number = 5;
 
   ngOnInit(): void {
-    // console.log(this.cards);
-    this.getAllTweetsMonth();
-    
-  }
+    this.getAllTweets('w');
+    }
 
-  getAllTweetsMonth() {
-    this.tweetsService.all_tweets('x').subscribe(
+  getAllTweets(periode: string){
+    this.tweetsService.all_tweets(periode).subscribe(
       data => {
-        this.createDate = [];
-        this.tweetsADay = [];
-        console.log(data);
-        console.log(data[0].created_at.substr(0, 17))
         let counter = 0;
+
+        console.log(this.createDate.length);
+
+        if (this.createDate.length > 0){
+          this.createDate = [];
+          this.tweetsADay = [];
+        }
         for (let index = 1; index < data.length -1; index++) {
           if (data[index -1].created_at.substr(5, 7) !== data[index].created_at.substr(5, 7) ) {
           counter = counter + 1;
-          console.log(data[index].created_at);
           this.createDate.push(data[index].created_at.substr(5,7));
           }
         }
 
-        console.log(this.createDate);
-
-
-          let teller = 0;
+        let teller = 0;
 
         for (let index = 0; index < this.createDate.length; index++) {
           let tweetscounter = 0;
@@ -162,11 +58,6 @@ export class DashboardComponent implements OnInit {
           teller = teller + 1;
           this.tweetsADay[index] = tweetscounter;
         }
-
-          console.log(this.createDate);
-          console.log(this.tweetsADay);
-        
-
       },
       err => {
         this.req_succeeded = err.ok
@@ -174,141 +65,49 @@ export class DashboardComponent implements OnInit {
       }
     );    
 
+    this.realTime = this.getTimeLine()
 
     setTimeout(() => {
       if (this.req_succeeded == false) {
       } else {
       }
-    }, 7000)
+    }, 2000)
   }
 
-
-
-  getAllTweetsDay() {
-    this.tweetsService.all_tweets('d').subscribe(
-      data => {
-        this.createDate = [];
-        this.tweetsADay = [];
-        console.log(data);
-        console.log(data[0].created_at.substr(0, 17))
-        let counter = 0;
-        for (let index = 1; index < data.length -1; index++) {
-          if (data[index -1].created_at.substr(5, 7) !== data[index].created_at.substr(5, 7) ) {
-          counter = counter + 1;
-          console.log(data[index].created_at);
-          this.createDate.push(data[index].created_at.substr(5,7));
-          }
-        }
-
-        console.log(this.createDate);
-
-
-          let teller = 0;
-
-        for (let index = 0; index < this.createDate.length; index++) {
-          let tweetscounter = 0;
-          for (let index = 0; index < data.length; index++) {
-            if(this.createDate[teller] === data[index].created_at.substr(5, 7)){
-              tweetscounter = tweetscounter + 1;
-            }
-          }
-          teller = teller + 1;
-          this.tweetsADay[index] = tweetscounter;
-        }
-
-          console.log(this.createDate);
-          console.log(this.tweetsADay);
-        
-
-      },
-      err => {
-        this.req_succeeded = err.ok
-        console.error(err);
+  public getTimeLine(){
+    const graphData = [
+      {
+        title: "Time",
+        cols: 1,
+        rows: 1,
+        data: [
+          { x: this.createDate, y: this.tweetsADay, type: 'bar' },
+        ],
+        layout: {width: 600, height: 400}
       }
-    );    
-
-
-    setTimeout(() => {
-      if (this.req_succeeded == false) {
-      } else {
-      }
-    }, 7000)
+    ];
+    return of(graphData)
   }
-
-
-
-  getAllTweetsWeek() {
-    this.createDate = [];
-    this.tweetsADay = [];
-    this.tweetsService.all_tweets('w').subscribe(
-      data => {
-        console.log(data);
-        console.log(data[0].created_at.substr(0, 17))
-        let counter = 0;
-        for (let index = 1; index < data.length -1; index++) {
-          if (data[index -1].created_at.substr(5, 7) !== data[index].created_at.substr(5, 7) ) {
-          counter = counter + 1;
-          console.log(data[index].created_at);
-          this.createDate.push(data[index].created_at.substr(5,7));
-          }
-        }
-
-        console.log(this.createDate);
-
-
-          let teller = 0;
-
-        for (let index = 0; index < this.createDate.length; index++) {
-          let tweetscounter = 0;
-          for (let index = 0; index < data.length; index++) {
-            if(this.createDate[teller] === data[index].created_at.substr(5, 7)){
-              tweetscounter = tweetscounter + 1;
-            }
-          }
-          teller = teller + 1;
-          this.tweetsADay[index] = tweetscounter;
-        }
-
-          console.log(this.createDate);
-          console.log(this.tweetsADay);
-        
-
-      },
-      err => {
-        this.req_succeeded = err.ok
-        console.error(err);
-      }
-    );    
-
-
-    setTimeout(() => {
-      if (this.req_succeeded == false) {
-      } else {
-      }
-    }, 7000)
-  }
-
 
   /** Based on the screen size, switch from standard to one column per row */
-  timeline = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
-    map(({matches}) => {
-    
-      return [
-        {
-          title: "Time",
-          cols: 1,
-          rows: 1,
-          data: [
-            { x: this.createDate, y: this.tweetsADay, type: 'bar' },
-          ],
-          layout: {width: 600, height: 400}
-        }
-    
-      ];
+  public timeline = this.breakpointObserver.observe(['(min-width: 100px)']).pipe(
+    map((state:BreakpointState) => {
+    console.log(state);
+
+    return [
+      {
+        title: "Time",
+        cols: 1,
+        rows: 1,
+        data: [
+          { x: this.createDate, y: this.tweetsADay, type: 'bar' },
+        ],
+        layout: {width: 600, height: 400}
+      }
+    ];
+
     })
   );  
-
-
 
 mostRecentTweets(): any{
   this.tweetsService.all_tweets('x').subscribe(
@@ -317,20 +116,10 @@ let teller = 0;
       for (let index = data.length; index > data.length - this.countable; index--) {
         this.orderedTweetsArray[teller] = data[index-1];
         teller = teller + 1;
-        console.log(index); 
+        // console.log(index); 
       }
-
-
-    
-
-
-
 
 });
 }
-
-
-
-
 
 }
