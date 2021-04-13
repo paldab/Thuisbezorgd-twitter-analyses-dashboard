@@ -1,9 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {map} from 'rxjs/operators';
-import {Breakpoints, BreakpointObserver, BreakpointState} from '@angular/cdk/layout';
+import {Breakpoints, BreakpointObserver} from '@angular/cdk/layout';
 import {TweetsService} from '../services/tweets.service';
-import {Observable, of} from 'rxjs';
-
 
 @Component({
   selector: 'app-dashboard',
@@ -15,7 +13,7 @@ export class DashboardComponent implements OnInit {
   name: any = undefined;
 
   constructor(private breakpointObserver: BreakpointObserver, private tweetsService: TweetsService) {
-    this.mostRecentTweets('x');
+    this.mostRecentTweets('m');
 
     setTimeout(() => {
       this.name = window.sessionStorage.getItem('user_name')?.replace(/['"]+/g, '');
@@ -26,7 +24,7 @@ export class DashboardComponent implements OnInit {
   tweetsADay: number[] = [];
   orderedTweetsArray = new Array();
   countable: number = 5;
-  usedChar: string = 'x';
+  usedChar: string = 'm';
 
   ngOnInit(): void {
     // console.log(this.cards);
@@ -35,8 +33,8 @@ export class DashboardComponent implements OnInit {
   }
 
   getAllTweetsMonth() {
-    this.mostRecentTweets('x');
-    this.usedChar = 'x';
+    this.mostRecentTweets('m');
+    this.usedChar = 'm';
     this.countable = 5;
 
     this.createDate.length = 0;
