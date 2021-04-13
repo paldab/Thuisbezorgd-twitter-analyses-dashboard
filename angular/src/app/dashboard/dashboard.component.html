@@ -6,11 +6,11 @@
         <mat-card-header>
           <mat-card-title>Wordcloud</mat-card-title>
         </mat-card-header>
-      
+
         <mat-card-content class="dashboard-card-content">
           <wordcloud></wordcloud>
         </mat-card-content>
-      
+
         </mat-card>
     </mat-grid-tile>
 
@@ -38,18 +38,18 @@
   <mat-grid-tile colspan="2" rowspan="3">
     <mat-card class="dashboard-card">
       <mat-card-header>
-        <mat-card-title>Top 5 tweets</mat-card-title>
+        <mat-card-title>Laatste 5 tweets</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-           <button mat-raised-button color="primary" (click)="this.loadMoreTweetsButton();">Load more Tweets</button>
+           <button mat-raised-button color="primary" (click)="this.loadMoreTweetsButton();" style="display: none">Load more Tweets</button>
 
         <table>
           <tr>
             <th style="background-color: sandybrown">Username</th>
             <th style="background-color: sandybrown">Text</th>
-            <th style="background-color: sandybrown">Post date</th>
+            <th style="background-color: sandybrown">Created at</th>
           </tr>
-    
+
           <tr *ngFor="let post of orderedTweetsArray" >
             <td>{{post.user_screenname}}</td>
             <td>{{post.trimmed_text}}</td>
