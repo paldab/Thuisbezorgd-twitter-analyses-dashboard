@@ -13,6 +13,22 @@
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>
+
+
+  <mat-grid-tile *ngFor="let Time of timeline | async" [colspan]="Time.cols" [rowspan]="Time.rows">
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title>
+            {{ Time.title }}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="dashboard-card-content">
+          <plotly-plot [data]="Time.data" [layout]="Time.layout"></plotly-plot>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+
+
   </mat-grid-list>
   <mat-card>
     <mat-card-content>

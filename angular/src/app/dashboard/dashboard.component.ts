@@ -179,4 +179,44 @@ export class DashboardComponent implements OnInit {
             
     }, 7000)
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /** Based on the screen size, switch from standard to one column per row */
+  timeline = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
+    map(({matches}) => {
+    
+      return [
+       
+        
+        {
+          title: "Time",
+          cols: 1,
+          rows: 1,
+          data: [
+            { x: this.createDate, y: this.tweetsADay, type: 'bar' },
+          ],
+          layout: {width: 600, height: 400}
+        }
+    
+      ];
+    })
+  );  
+
+
+
+
+
+
 }
