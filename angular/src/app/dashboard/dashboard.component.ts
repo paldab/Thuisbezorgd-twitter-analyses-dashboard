@@ -201,7 +201,15 @@ export class DashboardComponent implements OnInit {
           cols: 1,
           rows: 4,
           data: [
-            { x: this.createDate, y: this.tweetsADay, type: 'bar' },
+            { 
+              x: this.createDate, 
+              y: this.tweetsADay, 
+              type: 'bar',
+              
+              marker: {
+                color: '#ff9800'
+              }
+            },
           ],
           layout: {width: 600, height: 400}
         }
