@@ -197,9 +197,9 @@ export class DashboardComponent implements OnInit {
     
       return [
         {
-          title: "Time",
+          title: "Timeline tweets",
           cols: 1,
-          rows: 1,
+          rows: 4,
           data: [
             { x: this.createDate, y: this.tweetsADay, type: 'bar' },
           ],

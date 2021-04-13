@@ -1,7 +1,7 @@
 <div class="grid-container">
   <h1 class="mat-h1" *ngIf="name != undefined;">Welcome, {{ name }}.</h1>
-  <mat-grid-list cols="1" rowHeight="500px">
-    <mat-grid-tile>
+  <mat-grid-list cols="2" rowHeight="6:1">
+    <mat-grid-tile colspan="1" rowspan="4">
       <mat-card class="dashboard-card">
         <mat-card-header>
           <mat-card-title>Wordcloud</mat-card-title>
@@ -23,34 +23,38 @@
             {{ Time.title }}
           </mat-card-title>
         </mat-card-header>
-        <button mat-raised-button color="primary" (click)="this.getAllTweetsDay();">Show 24HR</button>
-  <button mat-raised-button color="primary" (click)="this.getAllTweetsWeek();">Show week</button>
-  <button mat-raised-button color="primary" (click)="this.getAllTweetsMonth();">Show month</button>
         <mat-card-content class="dashboard-card-content">
+          <div class="button-container">
+            <button mat-raised-button color="primary" (click)="this.getAllTweetsDay();">Toon vandaag</button>
+            <button mat-raised-button color="primary" (click)="this.getAllTweetsWeek();">Toon afgelopen week</button>
+            <button mat-raised-button color="primary" (click)="this.getAllTweetsMonth();">Toon afgelopen maand</button>
+          </div>
           <plotly-plot [data]="Time.data" [layout]="Time.layout"></plotly-plot>
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>
 
 
-<mat-grid-tile>
- <table>
-    <tr>
-      <th style="background-color: sandybrown">Username</th>
-      <th style="background-color: sandybrown">Text</th>
-      <th style="background-color: sandybrown">Post date</th>
-    </tr>
-
-    <tr *ngFor="let post of orderedTweetsArray" >
-      <td>{{post.user_screenname}}</td>
-      <td>{{post.trimmed_text}}</td>
-      <td>{{post.created_at}}</td>
-    </tr>
-  </table>
-</mat-grid-tile>
-  </mat-grid-list>
-
-
-
-<div id="tester" style="width:600px;height:250px;"></div>
-</div>
+  <mat-grid-tile colspan="2" rowspan="3">
+    <mat-card class="dashboard-card">
+      <mat-card-header>
+        <mat-card-title>Top 5 tweets</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <table>
+          <tr>
+            <th style="background-color: sandybrown">Username</th>
+            <th style="background-color: sandybrown">Text</th>
+            <th style="background-color: sandybrown">Post date</th>
+          </tr>
+    
+          <tr *ngFor="let post of orderedTweetsArray" >
+            <td>{{post.user_screenname}}</td>
+            <td>{{post.trimmed_text}}</td>
+            <td>{{post.created_at}}</td>
+          </tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  </mat-grid-tile>
+</mat-grid-list>

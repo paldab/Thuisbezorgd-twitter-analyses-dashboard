@@ -2,6 +2,14 @@
   margin: 20px;
 }
 
+.button-container {
+  display:flex;
+  padding: 0 15px;
+  button {
+    margin-right: 15px;
+  }
+}
+
 .dashboard-card {
   position: absolute;
   top: 15px;
