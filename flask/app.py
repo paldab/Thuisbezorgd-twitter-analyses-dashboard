@@ -56,7 +56,7 @@ def all_tweets():
     filter = request.args.get('f', default=None, type=str)
 
     if filter == 'd':
-        statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE DATE(created_at)=CURDATE()").\
+        statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE DATE(created_at) = CURDATE()").\
             columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
 
     if filter == 'w':
@@ -72,14 +72,14 @@ def all_tweets():
             columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
 
     if filter == 'x':
-        statement = text("SELECT id, text, user_screenname, CAST(created_at AS DATE) as CreateDate FROM tweet WHERE created_at > NOW() - INTERVAL 1 MONTH  ORDER BY created_at").\
+        statement = text("SELECT id, text, user_screenname, DATE(created_at) as CreateDate FROM tweet WHERE created_at > NOW() - INTERVAL 1 MONTH  ORDER BY created_at").\
             columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
 
     tweets = getattr(db, '_session')().query(
         Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
     ).from_statement(statement).all()
 
-    row_headers = [x for x in tweets[0].keys()]
+    row_headers = [x for x in tweets[0].keys()] 
     row_headers.append('trimmed_text')
     json_data = []
 

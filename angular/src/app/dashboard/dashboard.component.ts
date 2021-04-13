@@ -134,6 +134,114 @@ export class DashboardComponent implements OnInit {
   getAllTweetsMonth() {
     this.tweetsService.all_tweets('x').subscribe(
       data => {
+        this.createDate = [];
+        this.tweetsADay = [];
+        console.log(data);
+        console.log(data[0].created_at.substr(0, 17))
+        let counter = 0;
+        for (let index = 1; index < data.length -1; index++) {
+          if (data[index -1].created_at.substr(5, 7) !== data[index].created_at.substr(5, 7) ) {
+          counter = counter + 1;
+          console.log(data[index].created_at);
+          this.createDate.push(data[index].created_at.substr(5,7));
+          }
+        }
+
+        console.log(this.createDate);
+
+
+          let teller = 0;
+
+        for (let index = 0; index < this.createDate.length; index++) {
+          let tweetscounter = 0;
+          for (let index = 0; index < data.length; index++) {
+            if(this.createDate[teller] === data[index].created_at.substr(5, 7)){
+              tweetscounter = tweetscounter + 1;
+            }
+          }
+          teller = teller + 1;
+          this.tweetsADay[index] = tweetscounter;
+        }
+
+          console.log(this.createDate);
+          console.log(this.tweetsADay);
+        
+
+      },
+      err => {
+        this.req_succeeded = err.ok
+        console.error(err);
+      }
+    );    
+
+
+    setTimeout(() => {
+      if (this.req_succeeded == false) {
+      } else {
+      }
+    }, 7000)
+  }
+
+
+
+  getAllTweetsDay() {
+    this.tweetsService.all_tweets('d').subscribe(
+      data => {
+        this.createDate = [];
+        this.tweetsADay = [];
+        console.log(data);
+        console.log(data[0].created_at.substr(0, 17))
+        let counter = 0;
+        for (let index = 1; index < data.length -1; index++) {
+          if (data[index -1].created_at.substr(5, 7) !== data[index].created_at.substr(5, 7) ) {
+          counter = counter + 1;
+          console.log(data[index].created_at);
+          this.createDate.push(data[index].created_at.substr(5,7));
+          }
+        }
+
+        console.log(this.createDate);
+
+
+          let teller = 0;
+
+        for (let index = 0; index < this.createDate.length; index++) {
+          let tweetscounter = 0;
+          for (let index = 0; index < data.length; index++) {
+            if(this.createDate[teller] === data[index].created_at.substr(5, 7)){
+              tweetscounter = tweetscounter + 1;
+            }
+          }
+          teller = teller + 1;
+          this.tweetsADay[index] = tweetscounter;
+        }
+
+          console.log(this.createDate);
+          console.log(this.tweetsADay);
+        
+
+      },
+      err => {
+        this.req_succeeded = err.ok
+        console.error(err);
+      }
+    );    
+
+
+    setTimeout(() => {
+      if (this.req_succeeded == false) {
+      } else {
+      }
+    }, 7000)
+  }
+
+
+
+  getAllTweetsWeek() {
+    this.createDate = [];
+    this.tweetsADay = [];
+    this.tweetsService.all_tweets('w').subscribe(
+      data => {
         console.log(data);
         console.log(data[0].created_at.substr(0, 17))
         let counter = 0;
