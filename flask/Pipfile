@@ -1,0 +1,31 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+jedi = "*"
+rope = "*"
+autopep8 = "*"
+yapf = "*"
+flake8 = "*"
+flask = "*"
+tweepy = "*"
+sqlalchemy = "*"
+emoji = "*"
+pymysql = "*"
+cryptography = "*"
+flask-cors = "*"
+wordcloud = "*"
+numpy = "*"
+nltk = "*"
+pytest = "*"
+matplotlib = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3"
+
+[packages.twint]
+ git = "https://github.com/twintproject/twint.git" 

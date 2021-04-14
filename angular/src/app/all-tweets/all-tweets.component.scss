@@ -1,0 +1,63 @@
+@import '../../styles.scss';
+
+.full-width-table {
+  width: 100%;
+}
+.mat-form-field {
+  width: 400px;
+}
+
+.filterType {
+  font-weight: 500;
+  font-size: 21px;
+}
+
+div#loader {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0, 0.6);
+  z-index: 1;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+
+  div.spinner-wrapper {
+    background-color: rgba(0,0,0, 0.8);
+    border-radius: 5px;
+    padding: 45px;
+
+    div.err {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      
+      mat-icon.err_icon {
+        color: mat-color($angular-primary);
+        width: 100%;
+        height: 100%;
+        font-size: 100px;
+        margin-bottom: 10px;
+      }
+      p.err_msg {
+        color: white;
+        font-size: 32px;
+        margin-bottom: 10px;
+      }
+      button {
+        margin-top: 10px;
+      }
+    }
+  }
+}
+.container {
+  margin: 25px;
+  .button-container {
+    margin-bottom: 25px;
+
+    & button {
+      margin-right: 15px;
+    }
+  }
+}
