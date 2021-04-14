@@ -2,7 +2,7 @@ from models.model import Tweet
 from models.database import db
 from utils.cleaner import clean_tweet, remove_stopwords
 import pandas as pd
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer, HashingVectorizer
 from sklearn.cluster import KMeans, AgglomerativeClustering
 from sklearn.decomposition import TruncatedSVD
 from sklearn.pipeline import make_pipeline
@@ -18,22 +18,23 @@ tweet_df = pd.DataFrame(tweets, columns=['text'])
 tweet_df = clean_tweet(tweet_df)
 tweet_df = remove_stopwords(tweet_df)
 
-vectorizer = TfidfVectorizer()
+vectorizer = HashingVectorizer()
 X = vectorizer.fit_transform(tweet_df.text)
 
-features = vectorizer.get_feature_names()
+# features = vectorizer.get_feature_names()
 
 # import functools
-import numpy as np
+# import numpy as np
 
-nzero_count = 0
+# nzero_count = 0
 
-# tmp = np.where(np.all(np.isclose(X, 0.), axis=0))
-print(X.shape)
+# # tmp = np.where(np.all(np.isclose(X, 0.), axis=0))
+# print(X.shape)
 
-for vector in X:
-    nonzero = np.count_nonzero(vector.toarray())
-    nzero_count += nonzero
+# for vector in X:
+#     print(vector)
+#     nonzero = np.count_nonzero(vector.toarray())
+#     nzero_count += nonzero
 
     # tmp = np.where(vector == 0)
     # print(tmp, type(tmp))
@@ -42,13 +43,13 @@ for vector in X:
 
 #     zero_count += 1
 
-# Z = linkage(X, 'ward')
+Z = linkage(X.todense(), 'average')
 
-# cluster = fcluster(Z, 0.9, criterion='distance')
+cluster = fcluster(Z, 0.85, criterion='distance')
 
-# plt.figure()
-# dn = dendrogram(Z, show_leaf_counts=True)
-# plt.show()
+plt.figure(figsize=(24, 9))
+dn = dendrogram(Z, show_leaf_counts=True)
+plt.savefig('test.svg')
 
 # model = AgglomerativeClustering(n_clusters=None, affinity='cosine',
 #                                 distance_threshold=0, linkage='single')
