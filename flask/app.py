@@ -7,7 +7,6 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from wordcloud import WordCloud
 import nltk
-# from nltk.corpus import stopwords
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -27,6 +26,10 @@ cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 prefix = "/api/v1"
 
 app.config["APPLICATION_ROOT"] = prefix
+
+@app.route('/')
+def index():
+    return "<h1>Welcome to our server !!</h1>"
 
 # basic GET route
 @app.route('/welcome/', methods=['GET'])

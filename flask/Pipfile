@@ -21,11 +21,11 @@ numpy = "*"
 nltk = "*"
 pytest = "*"
 matplotlib = "*"
+gunicorn = "*"
+twint = { git = "https://github.com/twintproject/twint.git" }
+pyarrow = "*"
 
 [dev-packages]
 
 [requires]
 python_version = "3"
-
-[packages.twint]
- git = "https://github.com/twintproject/twint.git" 
