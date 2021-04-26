@@ -20,10 +20,10 @@ class DB():
         self._session = sessionmaker(bind=self._engine)
         self.session = self._session()
 
-    def filter_cucks(self, *user_names):
+    def filter_users(self, *user_names):
         cn_str = (', '.join("'" + name + "'" for name in user_names))
 
-        return self.call_procedure('filter_cucks', [cn_str])
+        return self.call_procedure('filter_users', [cn_str])
 
     def call_procedure(self, name, params=None):
         if params is None:
