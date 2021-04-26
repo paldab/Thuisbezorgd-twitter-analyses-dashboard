@@ -29,8 +29,12 @@ prefix = "/api/v1"
 app.config["APPLICATION_ROOT"] = prefix
 
 # basic GET route
-@app.route('/welcome/', methods=['GET'])
+@app.route('/welcome', methods=['GET'])
 def welcome():
+    df = db.filter_cucks('bootyroll', 'njmidm', 'cat_gaming_', 'vriendenv', 'eetleed', 'voetnootje');
+    
+    print(df.head())
+    
     return "Welcome to localhost:5050"
 
 
