@@ -4,7 +4,11 @@
     [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false">
     <mat-toolbar>Menu</mat-toolbar>
     <mat-nav-list>
-      <a mat-list-item routerLink="/table/all-tweets">
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="link-active" [routerLinkActiveOptions]="{exact:true}">
+        <mat-icon>home</mat-icon>
+        <span>Home</span>
+      </a>
+      <a mat-list-item routerLink="/table/all-tweets" routerLinkActive="link-active" [routerLinkActiveOptions]="{exact:true}">
         <mat-icon>view_list</mat-icon>
         <span>Alle tweets</span>
       </a>
@@ -23,7 +27,7 @@
       <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()">
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
-      <span fxLayoutAlign="start center" class="logo-container">
+      <span fxLayoutAlign="start center" class="logo-container" routerLink="dashboard">
         <img id="logo" src="../assets/thuisbezorgd.svg"/>
         <span>Insight</span>
       </span>
@@ -46,7 +50,7 @@
       <div *ngIf="loggedIn===true" class="profile-container">
         <!-- User is logged in. -->
         <img class="avatar" [src]="user?.photoUrl"/>
-        <button mat-raised-button color="warn" (click)="signOut()" matTooltip="Toggle theme"
+        <button mat-raised-button color="warn" (click)="signOut()"
         aria-label="Example icon-button with share icon">
         <mat-icon>logout</mat-icon>
         <span>Logout</span>

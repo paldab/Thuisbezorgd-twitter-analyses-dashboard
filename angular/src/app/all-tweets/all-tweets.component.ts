@@ -3,6 +3,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { TweetsService } from '../services/tweets.service';
+import { UtilsService } from '../services/utils.service';
 
 export interface AllTweetsItem {
   created_at: string;
@@ -30,7 +31,7 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
   displayedColumns = ['id', 'trimmed_text', 'user_screenname', 'created_at'];
   
-  constructor(private tweetsService: TweetsService) { }
+  constructor(private tweetsService: TweetsService, public utilsService: UtilsService) { }
 
   ngOnInit() {
     this.dataSource = new MatTableDataSource<AllTweetsItem>();
@@ -58,6 +59,7 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
     
     this.tweetsService.all_tweets().subscribe(
       data => {
+        console.log(data.length);
         this.dataSource.data = data
         this.filterType = 'alles'
       },

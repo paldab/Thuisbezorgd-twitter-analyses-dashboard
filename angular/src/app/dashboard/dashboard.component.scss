@@ -2,6 +2,14 @@
   margin: 20px;
 }
 
+.button-container {
+  display:flex;
+  padding: 0 15px;
+  button {
+    margin-right: 15px;
+  }
+}
+
 .dashboard-card {
   position: absolute;
   top: 15px;
@@ -18,4 +26,20 @@
 
 .dashboard-card-content {
   text-align: center;
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
 }

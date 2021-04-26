@@ -21,7 +21,7 @@ mat-sidenav {
   width: 280px;
   padding:15px;
 }
-.mat-drawer { 
+.mat-drawer {
   background-color: mat-color($angular-primary, 300);
   color:#fff
 }
@@ -64,4 +64,8 @@ a.mat-list-item .mat-icon {
 
 .span {
   font-style: oblique;
+}
+
+.link-active {
+  background-color: #ff9800 !important;
 }

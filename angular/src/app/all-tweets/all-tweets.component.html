@@ -1,8 +1,16 @@
 <div id="loader" *ngIf="this.spinnerLoading">
     <div class="spinner-wrapper">
-      <mat-spinner class="spinner-border" [diameter]="150">
+      <mat-spinner *ngIf="this.req_succeeded" class="spinner-border" [diameter]="150">
         <span class="sr-only">Loading...</span>
       </mat-spinner>
+      <div *ngIf="!this.req_succeeded" class="err">
+        <mat-icon class="err_icon" >sentiment_very_dissatisfied</mat-icon>
+        <p class="err_msg">Oeps! Probeer het later nog eens.</p>
+        <button mat-raised-button color="primary" (click)="this.utilsService.reload('/', 'table/all-tweets')"
+        aria-label="Example icon-button with share icon">
+        <span>Probeer opnieuw</span>
+        </button>
+      </div>
     </div>
 </div>
 
