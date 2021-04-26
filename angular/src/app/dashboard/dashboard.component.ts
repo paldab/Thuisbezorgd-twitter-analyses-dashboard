@@ -189,6 +189,41 @@ export class DashboardComponent implements OnInit {
                   }
                 },
               ],
+              layout: {width: 200, height: 300}
+            
+          },
+          {
+            title: "Laatste 5 tweets",
+            type: "plotly-table",
+            cols: 4,
+            rows: 5,
+          }
+          ];
+      }
+
+      if(l == breakpointer.matches) {
+        return [
+          {
+            title: "Wordcloud van de dag",
+            type: "wordcloud",
+            cols: 2,
+            rows: 5,
+          },
+          {
+              title: "Timeline tweets",
+              type: "plotly-plot",
+              cols: 2,
+              rows: 5,
+              data: [
+                {
+                  x: this.createDate,
+                  y: this.tweetsADay,
+                  type: 'bar',
+                  marker: {
+                    color: '#ff9800'
+                  }
+                },
+              ],
               layout: {width: 600, height: 400}
             
           },
