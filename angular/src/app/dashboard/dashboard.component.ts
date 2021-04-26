@@ -156,26 +156,86 @@ export class DashboardComponent implements OnInit {
   }
 
   /** Based on the screen size, switch from standard to one column per row */
-  timeline = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
-    map(({matches}) => {
-      return [
-        {
-          title: "Timeline tweets",
-          cols: 1,
-          rows: 4,
-          data: [
-            {
-              x: this.createDate,
-              y: this.tweetsADay,
-              type: 'bar',
-              marker: {
-                color: '#ff9800'
-              }
-            },
-          ],
-          layout: {width: 600, height: 400}
-        }
-      ];
+  components = this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium, Breakpoints.Large, Breakpoints.XLarge]).pipe(
+    map((breakpointer) => {
+      let indexes = Object.keys(breakpointer.breakpoints);
+      let xs = breakpointer.breakpoints[indexes[0]];
+      let s  = breakpointer.breakpoints[indexes[1]];
+      let m  = breakpointer.breakpoints[indexes[2]];
+      let l  = breakpointer.breakpoints[indexes[3]];
+      let xl = breakpointer.breakpoints[indexes[4]];
+
+      
+      if(xs == breakpointer.matches) {
+        return [
+          {
+            title: "Wordcloud van de dag",
+            type: "wordcloud",
+            cols: 4,
+            rows: 5,
+          },
+          {
+              title: "Timeline tweets",
+              type: "plotly-plot",
+              cols: 4,
+              rows: 5,
+              data: [
+                {
+                  x: this.createDate,
+                  y: this.tweetsADay,
+                  type: 'bar',
+                  marker: {
+                    color: '#ff9800'
+                  }
+                },
+              ],
+              layout: {width: 600, height: 400}
+            
+          },
+          {
+            title: "Laatste 5 tweets",
+            type: "plotly-table",
+            cols: 4,
+            rows: 5,
+          }
+          ];
+      }
+
+      if(xl == breakpointer.matches) {
+        return [
+          {
+            title: "Wordcloud van de dag",
+            type: "wordcloud",
+            cols: 1,
+            rows: 5,
+          },
+          {
+              title: "Timeline tweets",
+              type: "plotly-plot",
+              cols: 1,
+              rows: 5,
+              data: [
+                {
+                  x: this.createDate,
+                  y: this.tweetsADay,
+                  type: 'bar',
+                  marker: {
+                    color: '#ff9800'
+                  }
+                },
+              ],
+              layout: {width: 600, height: 400}
+            
+          },
+          {
+            title: "Laatste 5 tweets",
+            type: "plotly-table",
+            cols: 2,
+            rows: 5,
+          }
+          ];
+      }
+      return [];
     })
   );
 
@@ -197,7 +257,6 @@ export class DashboardComponent implements OnInit {
         for (let index = 0; index < this.countable; index++) {
           this.orderedTweetsArray[teller] = data[index];
           teller = teller + 1;
-          console.log(index);
         }
       });
   }
