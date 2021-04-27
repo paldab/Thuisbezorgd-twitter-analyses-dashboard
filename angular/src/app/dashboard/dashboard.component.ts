@@ -177,7 +177,7 @@ export class DashboardComponent implements OnInit {
 
         },
         {
-          title: "Twitter Gebruikers",
+          title: "Gebruikers",
           type: "agg-numbers",
           icon: "group",
           class: "teal",
