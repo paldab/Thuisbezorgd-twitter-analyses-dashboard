@@ -273,7 +273,7 @@ export class DashboardComponent implements OnInit {
       if(l == breakpointer.matches) {
 
         layout[0].cols = layout[1].cols = layout[2].cols = layout[3].cols = 1;
-        layout[0].rows = layout[1].rows = layout[2].rows = layout[3].rows = 8;
+        layout[0].rows = layout[1].rows = layout[2].rows = layout[3].rows = 4;
         
 
         layout[4].cols = 2;
