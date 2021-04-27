@@ -165,110 +165,131 @@ export class DashboardComponent implements OnInit {
       let l  = breakpointer.breakpoints[indexes[3]];
       let xl = breakpointer.breakpoints[indexes[4]];
 
+      let layout = [
+        {
+          title: "Top Tweeter",
+          type: "agg-numbers",
+          icon: "star",
+          class: "primary",
+          cols: 4,
+          rows: 4,
+          show: true,
+
+        },
+        {
+          title: "Twitter Gebruikers",
+          type: "agg-numbers",
+          icon: "group",
+          class: "teal",
+          cols: 4,
+          rows: 4,
+          show: true,
+
+        },
+        {
+          title: "Tweets",
+          type: "agg-numbers",
+          icon: "chat",
+          class: "blue",
+          cols: 4,
+          rows: 4,
+          show: true,
+
+        },
+        {
+          title: "Hashtags",
+          type: "agg-numbers",
+          icon: "tag",
+          class: "purple",
+          cols: 4,
+          rows: 4,
+          show: true,
+
+        },
+        {
+          title: "Wordcloud van de dag",
+          type: "wordcloud",
+          cols: 4,
+          rows: 14,
+          show: true,
+
+        },
+        {
+          title: "Timeline tweets",
+          type: "plotly-plot",
+          cols: 4,
+          rows: 14,
+          show: true,
+
+          data: [
+            {
+              x: this.createDate,
+              y: this.tweetsADay,
+              type: 'bar',
+              marker: {
+                color: '#ff9800'
+              }
+            },
+          ],
+          layout: {width: 300, height: 300}
+        
+        },
+        {
+          title: "Laatste 5 tweets",
+          type: "plotly-table",
+          cols: 4,
+          rows: 14,
+          show: true,
+        }
+        ];
       
       if(xs == breakpointer.matches) {
-        return [
-          {
-            title: "Wordcloud van de dag",
-            type: "wordcloud",
-            cols: 4,
-            rows: 5,
-          },
-          {
-              title: "Timeline tweets",
-              type: "plotly-plot",
-              cols: 4,
-              rows: 5,
-              data: [
-                {
-                  x: this.createDate,
-                  y: this.tweetsADay,
-                  type: 'bar',
-                  marker: {
-                    color: '#ff9800'
-                  }
-                },
-              ],
-              layout: {width: 200, height: 300}
-            
-          },
-          {
-            title: "Laatste 5 tweets",
-            type: "plotly-table",
-            cols: 4,
-            rows: 5,
-          }
-          ];
+        layout[6].show = false;
+        return layout;
       }
 
       if(l == breakpointer.matches) {
-        return [
-          {
-            title: "Wordcloud van de dag",
-            type: "wordcloud",
-            cols: 2,
-            rows: 5,
-          },
-          {
-              title: "Timeline tweets",
-              type: "plotly-plot",
-              cols: 2,
-              rows: 5,
-              data: [
-                {
-                  x: this.createDate,
-                  y: this.tweetsADay,
-                  type: 'bar',
-                  marker: {
-                    color: '#ff9800'
-                  }
-                },
-              ],
-              layout: {width: 600, height: 400}
-            
-          },
-          {
-            title: "Laatste 5 tweets",
-            type: "plotly-table",
-            cols: 4,
-            rows: 5,
-          }
-          ];
+
+        layout[0].cols = layout[1].cols = layout[2].cols = layout[3].cols = 1;
+        layout[0].rows = layout[1].rows = layout[2].rows = layout[3].rows = 8;
+        
+
+        layout[4].cols = 2;
+        layout[4].rows= 13;
+
+        layout[5].cols = 2;
+        layout[5].rows= 13;
+        layout[5].layout = {
+          width: 500,
+          height: 300,
+        }
+
+        layout[6].cols = 4;
+        layout[6].rows= 13;
+        
+        return layout;
       }
 
       if(xl == breakpointer.matches) {
-        return [
-          {
-            title: "Wordcloud van de dag",
-            type: "wordcloud",
-            cols: 1,
-            rows: 5,
-          },
-          {
-              title: "Timeline tweets",
-              type: "plotly-plot",
-              cols: 1,
-              rows: 5,
-              data: [
-                {
-                  x: this.createDate,
-                  y: this.tweetsADay,
-                  type: 'bar',
-                  marker: {
-                    color: '#ff9800'
-                  }
-                },
-              ],
-              layout: {width: 600, height: 400}
-            
-          },
-          {
-            title: "Laatste 5 tweets",
-            type: "plotly-table",
-            cols: 2,
-            rows: 5,
-          }
-          ];
+        layout[0].cols = layout[1].cols = layout[2].cols = layout[3].cols = 1;
+        layout[0].rows = layout[1].rows = layout[2].rows = layout[3].rows = 6;
+        
+        layout[4].cols = 1;
+        layout[4].rows= 16;
+
+
+        layout[5].cols = 1;
+        layout[5].rows= 16;
+
+        layout[5].layout = {
+          width: 600,
+          height: 400,
+        }
+
+        layout[6].cols = 2;
+        layout[6].rows= 16;
+
+        return layout;
       }
       return [];
     })

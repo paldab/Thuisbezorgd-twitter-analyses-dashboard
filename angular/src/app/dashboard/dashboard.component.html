@@ -1,15 +1,25 @@
 <div class="grid-container">
   <h1 class="mat-h1" *ngIf="name != undefined;">Welcome, {{ name }}.</h1>
-  <mat-grid-list cols="4" rowHeight="6:1">
-
-    <mat-grid-tile *ngFor="let component of components | async" [colspan]="component.cols" [rowspan]="component.rows">
+  <mat-grid-list cols="4" rowHeight="2rem">
+    <ng-container *ngFor="let component of components | async">
+      <mat-grid-tile [colspan]="component.cols" [rowspan]="component.rows" *ngIf="component?.show == true;">
         <mat-card class="dashboard-card">
-          <mat-card-header>
-            <mat-card-title>
-              {{ component.title }}
-            </mat-card-title>
-          </mat-card-header>
+          <ng-container *ngIf="component.type != 'agg-numbers';">
+            <mat-card-header>
+              <mat-card-title>
+                {{ component.title }}
+              </mat-card-title>
+            </mat-card-header>
+          </ng-container>
+          
           <mat-card-content class="dashboard-card-content">
+            <ng-container *ngIf="component.type == 'agg-numbers';">
+              <div class="rad-info-box rad-txt-success">
+                <mat-icon [class]="component.class">{{ component.icon }}</mat-icon>
+                <span class="title">{{ component.title }}</span>
+                <span class="number"><span>69420</span></span>
+              </div>
+            </ng-container>
             <ng-container *ngIf="component.type == 'wordcloud';">
               <wordcloud></wordcloud>
             </ng-container>
@@ -41,4 +51,5 @@
           </mat-card-content>
         </mat-card>
       </mat-grid-tile>
+    </ng-container>
   </mat-grid-list>
