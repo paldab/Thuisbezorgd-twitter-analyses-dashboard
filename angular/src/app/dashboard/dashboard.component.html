@@ -2,36 +2,37 @@
   <h1 class="mat-h1" *ngIf="name != undefined;">Welcome, {{ name }}.</h1>
   <mat-grid-list cols="4" rowHeight="2rem">
     <ng-container *ngFor="let component of components | async">
-      <mat-grid-tile [colspan]="component.cols" [rowspan]="component.rows" *ngIf="component?.show == true;">
+      <mat-grid-tile [colspan]="component?.cols" [rowspan]="component?.rows" *ngIf="component?.show == true;">
         <mat-card class="dashboard-card">
-          <ng-container *ngIf="component.type != 'agg-numbers';">
+          <ng-container *ngIf="component?.type != 'agg-numbers';">
             <mat-card-header>
               <mat-card-title>
-                {{ component.title }}
+                {{ component?.title }}
               </mat-card-title>
             </mat-card-header>
           </ng-container>
           
           <mat-card-content class="dashboard-card-content">
-            <ng-container *ngIf="component.type == 'agg-numbers';">
+            <ng-container *ngIf="component?.type == 'agg-numbers';">
               <div class="rad-info-box rad-txt-success">
-                <mat-icon [class]="component.class">{{ component.icon }}</mat-icon>
-                <span class="title">{{ component.title }}</span>
-                <span class="number"><span>69420</span></span>
+                <mat-icon [class]="component?.class">{{ component?.icon }}</mat-icon>
+                <span class="title">{{ component?.title }}</span>
+                <span class="user" *ngIf="component?.value?.user_screenname">{{ component?.value?.user_screenname }}</span>
+                <span class="number"><span>{{ component?.value?.total }}</span></span>
               </div>
             </ng-container>
-            <ng-container *ngIf="component.type == 'wordcloud';">
+            <ng-container *ngIf="component?.type == 'wordcloud';">
               <wordcloud></wordcloud>
             </ng-container>
-            <ng-container *ngIf="component.type == 'plotly-plot';">
+            <ng-container *ngIf="component?.type == 'plotly-plot';">
               <div class="button-container">
                 <button mat-raised-button color="primary" (click)="this.getAllTweetsDay();">Toon vandaag</button>
                 <button mat-raised-button color="primary" (click)="this.getAllTweetsWeek();">Toon afgelopen week</button>
                 <button mat-raised-button color="primary" (click)="this.getAllTweetsMonth();">Toon afgelopen maand</button>
               </div>
-              <plotly-plot [data]="component.data" [layout]="component.layout"></plotly-plot>
+              <plotly-plot [data]="component?.data" [layout]="component?.layout"></plotly-plot>
             </ng-container>
-            <ng-container *ngIf="component.type == 'plotly-table';">
+            <ng-container *ngIf="component?.type == 'plotly-table';">
               <button mat-raised-button color="primary" (click)="this.loadMoreTweetsButton();" style="display: none">Load more Tweets</button>
 
               <table>

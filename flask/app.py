@@ -57,11 +57,11 @@ def agg_numbers():
     json_data = []
     
     if 't_t' in type:
-        statement = text("SELECT COUNT(id) as total_tweets, user_screenname FROM tweet GROUP BY user_screenname ORDER BY total_tweets DESC LIMIT 1").\
-            columns(Tweet.id.label('total_tweets'), Tweet.user_screenname)
+        statement = text("SELECT COUNT(id) as total, user_screenname FROM tweet GROUP BY user_screenname ORDER BY total DESC LIMIT 1").\
+            columns(Tweet.id.label('total'), Tweet.user_screenname)
 
         data = getattr(db, '_session')().query(
-            Tweet.id.label('total_tweets'), Tweet.user_screenname
+            Tweet.id.label('total'), Tweet.user_screenname
         ).from_statement(statement).all()
 
         row_headers = [x for x in data[0].keys()]
@@ -70,11 +70,11 @@ def agg_numbers():
             json_data.append(dict(zip(row_headers, number)))
 
     if 'twt' in type:
-        statement = text("SELECT COUNT(id) as total_tweets FROM tweet").\
-            columns(Tweet.id.label('total_tweets'))
+        statement = text("SELECT COUNT(id) as total FROM tweet").\
+            columns(Tweet.id.label('total'))
         
         data = getattr(db, '_session')().query(
-            Tweet.id.label('total_tweets')
+            Tweet.id.label('total')
         ).from_statement(statement).all()
 
         row_headers = [x for x in data[0].keys()]
@@ -83,11 +83,11 @@ def agg_numbers():
             json_data.append(dict(zip(row_headers, number)))
 
     if 'h' in type:
-        statement = text("SELECT COUNT(id) as total_hashtags FROM hashtag").\
-            columns(Hashtag.id.label('total_hashtags'))
+        statement = text("SELECT COUNT(id) as total FROM hashtag").\
+            columns(Hashtag.id.label('total'))
 
         data = getattr(db, '_session')().query(
-            Hashtag.id.label('total_hashtags')
+            Hashtag.id.label('total')
         ).from_statement(statement).all()
 
         row_headers = [x for x in data[0].keys()]
@@ -96,11 +96,11 @@ def agg_numbers():
             json_data.append(dict(zip(row_headers, number)))
 
     if 'u'in type:
-        statement = text("SELECT COUNT(DISTINCT user_screenname) as total_users FROM tweet").\
-            columns(Tweet.user_screenname.label('total_users'))
+        statement = text("SELECT COUNT(DISTINCT user_screenname) as total FROM tweet").\
+            columns(Tweet.user_screenname.label('total'))
 
         data = getattr(db, '_session')().query(
-            Tweet.user_screenname.label('total_users')
+            Tweet.user_screenname.label('total')
         ).from_statement(statement).all()
 
         row_headers = [x for x in data[0].keys()]
