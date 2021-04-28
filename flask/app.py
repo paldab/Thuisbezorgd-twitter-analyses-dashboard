@@ -28,6 +28,7 @@ prefix = "/api/v1"
 
 app.config["APPLICATION_ROOT"] = prefix
 
+
 # basic GET route
 @app.route('/welcome', methods=['GET'])
 def welcome():
@@ -38,20 +39,18 @@ def welcome():
     return "Welcome to localhost:5050"
 
 
-# GET route with param
-@app.route('/person/<name>', methods=['GET'])
-def test(name):
-    tweets = db.session.query(Tweet.text).all()
+@app.route(f'{prefix}/tweet/subject-count', methods=['GET'])
+def subject_count():
+    rest_count = db.session.query(Tweet.text).filter(
+        Tweet.text.like('%restaurant%')
+    ).count()
 
-    tweet_df = pd.DataFrame(tweets, columns=['text'])
-    tweet_df['text'] = tweet_df['text'].str.replace(emoji.get_emoji_regexp(),
-                                                    '', regex=True)
+    # TODO: Create regex to check if it contains 'bezorg' & ignore mentions
+    delivery_count = db.session.query(Tweet.text).filter(
+        Tweet.text.like('%bezorg%')
+    ).count()
 
-    tweet_df['text'] = tweet_df['text'].str.replace(r'#(\w+)',
-                                                    '', regex=True)
-
-    print(tweet_df['text'].tail())
-    return tweet_df['text'].iloc[2]
+    return 'Tweets about restaurant: {}\n\t about delivery: {}'.format(rest_count, delivery_count)
 
 
 
