@@ -1,3 +1,4 @@
+from utils.stopwords import dutch_stopwords
 from nltk.corpus import stopwords
 import numpy as np
 import emoji
@@ -27,8 +28,6 @@ def clean_tweet(tweet_df):
 
 
 def remove_stopwords(tweet_df):
-    dutch_stopwords = stopwords.words('dutch')
-
     # Remove Dutch stopwords and convert to lowercase
     tweet_df['text'] = tweet_df['text'].apply(
         lambda x: ' '.join(

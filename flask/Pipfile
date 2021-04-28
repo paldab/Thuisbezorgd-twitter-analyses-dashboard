@@ -24,6 +24,9 @@ matplotlib = "*"
 gunicorn = "*"
 twint = { git = "https://github.com/twintproject/twint.git" }
 pyarrow = "*"
+gensim = "*"
+sklearn = "*"
+openpyxl = "*"
 
 [dev-packages]
 
