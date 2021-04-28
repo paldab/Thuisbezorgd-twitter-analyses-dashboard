@@ -1,4 +1,4 @@
-from models.model import Tweet
+from models.model import Hashtag, Tweet
 from data import TweetCollector
 from models.database import db
 from utils.cleaner import clean_tweet, remove_stopwords
@@ -50,8 +50,66 @@ def test(name):
     return tweet_df['text'].iloc[2]
 
 
+@app.route(f'{prefix}/agg-numbers', methods=['GET'])
+def agg_numbers():
 
-# GET route with multiple params and JSON response with 418 status code
+    type = request.args.get('t', default=None, type=str)[: 11].split('-')
+    json_data = []
+    
+    if 't_t' in type:
+        statement = text("SELECT COUNT(id) as total_tweets, user_screenname FROM tweet GROUP BY user_screenname ORDER BY total_tweets DESC LIMIT 1").\
+            columns(Tweet.id.label('total_tweets'), Tweet.user_screenname)
+
+        data = getattr(db, '_session')().query(
+            Tweet.id.label('total_tweets'), Tweet.user_screenname
+        ).from_statement(statement).all()
+
+        row_headers = [x for x in data[0].keys()]
+        
+        for number in data:
+            json_data.append(dict(zip(row_headers, number)))
+
+    if 'twt' in type:
+        statement = text("SELECT COUNT(id) as total_tweets FROM tweet").\
+            columns(Tweet.id.label('total_tweets'))
+        
+        data = getattr(db, '_session')().query(
+            Tweet.id.label('total_tweets')
+        ).from_statement(statement).all()
+
+        row_headers = [x for x in data[0].keys()]
+        
+        for number in data:
+            json_data.append(dict(zip(row_headers, number)))
+
+    if 'h' in type:
+        statement = text("SELECT COUNT(id) as total_hashtags FROM hashtag").\
+            columns(Hashtag.id.label('total_hashtags'))
+
+        data = getattr(db, '_session')().query(
+            Hashtag.id.label('total_hashtags')
+        ).from_statement(statement).all()
+
+        row_headers = [x for x in data[0].keys()]
+        
+        for number in data:
+            json_data.append(dict(zip(row_headers, number)))
+
+    if 'u'in type:
+        statement = text("SELECT COUNT(DISTINCT user_screenname) as total_users FROM tweet").\
+            columns(Tweet.user_screenname.label('total_users'))
+
+        data = getattr(db, '_session')().query(
+            Tweet.user_screenname.label('total_users')
+        ).from_statement(statement).all()
+
+        row_headers = [x for x in data[0].keys()]
+
+        for number in data:
+            json_data.append(dict(zip(row_headers, number)))
+
+    return jsonify(json_data), 200
+
 @app.route(f'{prefix}/all-tweets', methods=['GET'])
 def all_tweets():
     filter = request.args.get('f', default=None, type=str)
