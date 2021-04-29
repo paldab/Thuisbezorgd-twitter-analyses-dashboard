@@ -270,6 +270,15 @@ export class DashboardComponent implements OnInit {
               return this.layout;
             }
       
+            if(s == breakpointer.matches) {
+              this.layout[6].show = false;
+              return this.layout;
+            }
+
+            if(m == breakpointer.matches) {
+              return this.layout;
+            }
+
             if(l == breakpointer.matches) {
       
               this.layout[0].cols = this.layout[1].cols = this.layout[2].cols = this.layout[3].cols = 1;
