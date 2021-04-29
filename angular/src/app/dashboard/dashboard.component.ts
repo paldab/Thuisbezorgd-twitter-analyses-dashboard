@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {map} from 'rxjs/operators';
 import {Breakpoints, BreakpointObserver} from '@angular/cdk/layout';
 import {TweetsService} from '../services/tweets.service';
+import { AggNumsService } from '../services/agg-nums.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,8 +12,12 @@ import {TweetsService} from '../services/tweets.service';
 export class DashboardComponent implements OnInit {
   req_succeeded: boolean = true;
   name: any = undefined;
+  num_data: any = undefined;
+  layout: any = undefined;
+  components: any = undefined;
 
-  constructor(private breakpointObserver: BreakpointObserver, private tweetsService: TweetsService) {
+  constructor(private breakpointObserver: BreakpointObserver, private tweetsService: TweetsService, private aggNumsService: AggNumsService) {
+    this.get_num_data('twt-t_t-h-u')
     this.mostRecentTweets('m');
 
     setTimeout(() => {
@@ -156,28 +161,173 @@ export class DashboardComponent implements OnInit {
   }
 
   /** Based on the screen size, switch from standard to one column per row */
-  timeline = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
-    map(({matches}) => {
-      return [
-        {
-          title: "Timeline tweets",
-          cols: 1,
-          rows: 4,
-          data: [
-            {
-              x: this.createDate,
-              y: this.tweetsADay,
-              type: 'bar',
-              marker: {
-                color: '#ff9800'
+
+
+  get_num_data(keyword: string) {
+    // twt-t_t-h-u
+    this.aggNumsService.get_data(keyword).subscribe(
+      data => {
+        return this.num_data = data;
+        
+      },
+      () => {},
+      () => {
+        this.components = this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Medium, Breakpoints.Large, Breakpoints.XLarge]).pipe(
+          map((breakpointer) => {
+            let indexes = Object.keys(breakpointer.breakpoints);
+            let xs = breakpointer.breakpoints[indexes[0]];
+            let s  = breakpointer.breakpoints[indexes[1]];
+            let m  = breakpointer.breakpoints[indexes[2]];
+            let l  = breakpointer.breakpoints[indexes[3]];
+            let xl = breakpointer.breakpoints[indexes[4]];
+            
+            console.log(this.num_data);
+            
+            this.layout = [
+              {
+                title: "Top Tweeter",
+                type: "agg-numbers",
+                icon: "star",
+                class: "primary",
+                value: this.num_data[0],
+                cols: 4,
+                rows: 4,
+                show: true,
+      
+              },
+              {
+                title: "Gebruikers",
+                type: "agg-numbers",
+                icon: "group",
+                class: "teal",
+                value: this.num_data[3],
+                cols: 4,
+                rows: 4,
+                show: true,
+      
+              },
+              {
+                title: "Tweets",
+                type: "agg-numbers",
+                icon: "chat",
+                class: "blue",
+                value: this.num_data[1],
+                cols: 4,
+                rows: 4,
+                show: true,
+      
+              },
+              {
+                title: "Hashtags",
+                type: "agg-numbers",
+                icon: "tag",
+                class: "purple",
+                value: this.num_data[2],
+                cols: 4,
+                rows: 4,
+                show: true,
+      
+              },
+              {
+                title: "Wordcloud van de dag",
+                type: "wordcloud",
+                cols: 4,
+                rows: 14,
+                show: true,
+      
+              },
+              {
+                title: "Timeline tweets",
+                type: "plotly-plot",
+                cols: 4,
+                rows: 14,
+                show: true,
+      
+                data: [
+                  {
+                    x: this.createDate,
+                    y: this.tweetsADay,
+                    type: 'bar',
+                    marker: {
+                      color: '#ff9800'
+                    }
+                  },
+                ],
+                layout: {width: 300, height: 300}
+              
+              },
+              {
+                title: "Laatste 5 tweets",
+                type: "plotly-table",
+                cols: 4,
+                rows: 14,
+                show: true,
               }
-            },
-          ],
-          layout: {width: 600, height: 400}
-        }
-      ];
-    })
-  );
+              ];
+            
+            if(xs == breakpointer.matches) {
+              this.layout[6].show = false;
+              return this.layout;
+            }
+      
+            if(s == breakpointer.matches) {
+              this.layout[6].show = false;
+              return this.layout;
+            }
+
+            if(m == breakpointer.matches) {
+              return this.layout;
+            }
+
+            if(l == breakpointer.matches) {
+      
+              this.layout[0].cols = this.layout[1].cols = this.layout[2].cols = this.layout[3].cols = 1;
+              this.layout[0].rows = this.layout[1].rows = this.layout[2].rows = this.layout[3].rows = 4;
+              
+      
+              this.layout[4].cols = 2;
+              this.layout[4].rows= 13;
+      
+              this.layout[5].cols = 2;
+              this.layout[5].rows= 13;
+              this.layout[5].layout = {
+                width: 500,
+                height: 300,
+              }
+      
+              this.layout[6].cols = 4;
+              this.layout[6].rows= 13;
+              
+              return this.layout;
+            }
+      
+            if(xl == breakpointer.matches) {
+              this.layout[0].cols = this.layout[1].cols = this.layout[2].cols = this.layout[3].cols = 1;
+              this.layout[0].rows = this.layout[1].rows = this.layout[2].rows = this.layout[3].rows = 6;
+              
+              this.layout[4].cols = 1;
+              this.layout[4].rows= 16;
+      
+      
+              this.layout[5].cols = 1;
+              this.layout[5].rows= 16;
+      
+              this.layout[5].layout = {
+                width: 600,
+                height: 400,
+              }
+      
+              this.layout[6].cols = 2;
+              this.layout[6].rows= 16;
+      
+              return this.layout;
+            }
+            return [];
+          })
+        );
+      }
+    )
+  }
 
   mostRecentTweets(char: string): any {
 //   this.tweetsService.all_tweets(char).subscribe(
@@ -197,7 +347,6 @@ export class DashboardComponent implements OnInit {
         for (let index = 0; index < this.countable; index++) {
           this.orderedTweetsArray[teller] = data[index];
           teller = teller + 1;
-          console.log(index);
         }
       });
   }

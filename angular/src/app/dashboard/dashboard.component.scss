@@ -1,3 +1,5 @@
+@import '../../styles.scss';
+
 .grid-container {
   margin: 20px;
 }
@@ -42,4 +44,63 @@ td, th {
 
 tr:nth-child(even) {
   background-color: #dddddd;
+}
+
+.rad-info-box {
+
+  .number, .title, .user {
+    display: block;
+    position: relative;
+    text-align: right;
+  }
+
+  .number {
+    font-size: 2.1em;
+    font-weight: 700;
+    color: mat-color($angular-primary, 300);
+    margin-top: 10px;
+  }
+
+  .title {
+    font-size: 1.2em;
+    color: #515d6e;
+    font-weight: 400;
+    text-transform: uppercase;
+  }
+
+  .user {
+    margin-top: 5px;
+    font-size: 1.2em;
+    color: #3e4349;
+    font-weight: 400;
+  }
+
+  mat-icon {
+    display: block;
+    background-clip: padding-box;
+    margin-right: 15px;
+    height: 60px;
+    width: 60px;
+    border-radius: 100%;
+    line-height: 60px;
+    text-align: center;
+    font-size: 4.4em;
+    position: absolute;
+
+    &.primary {
+      color: mat-color($angular-primary, 500);
+    }
+
+    &.blue {
+      color : mat-color(mat-palette($mat-blue), 500);
+    }
+
+    &.teal {
+      color : mat-color(mat-palette($mat-teal), 500);
+    }
+
+    &.purple {
+      color : mat-color(mat-palette($mat-purple), 500);
+    }
+  }
 }
