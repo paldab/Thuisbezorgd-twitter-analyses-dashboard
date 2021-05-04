@@ -45,12 +45,21 @@ def subject_count():
         Tweet.text.like('%restaurant%')
     ).count()
 
-    # TODO: Create regex to check if it contains 'bezorg' & ignore mentions
-    delivery_count = db.session.query(Tweet.text).filter(
+    # Get the tweets with a rough estimate about the delivery
+    delivery = db.session.query(Tweet.text).filter(
         Tweet.text.like('%bezorg%')
-    ).count()
+    ).all()
 
-    return 'Tweets about restaurant: {}\n\t about delivery: {}'.format(rest_count, delivery_count)
+    delivery_df = pd.DataFrame(delivery, columns=['text'])
+
+    # Filter out the tweets that actually use the 'bezorg' verb
+    filtered_delivery = delivery_df[
+        delivery_df['text'].str.contains('.*\s(bezorg\w*)\s.*', case=False)
+    ]
+
+    count_dict = {'restaurant': rest_count, 'delivery': len(filtered_delivery)}
+
+    return jsonify(count_dict), 200
 
 
 
