@@ -48,6 +48,6 @@ def remove_stopwords(tweet_df):
 def stem_tweets(tweet_df):
     dutchstem = SnowballStemmer('dutch')
 
-    tweet_df['text'] = tweet_df['text'].apply(lambda x: [dutchstem.stem(y) for y in x])
-    tweet_df['text'] = tweet_df['text'].apply(lambda x: ''.join(word for word in x))
+    tweet_df['text'] = tweet_df['text'].apply(lambda x: [dutchstem.stem(y) for y in x.split()])
+    tweet_df['text'] = tweet_df['text'].apply(lambda x: ' '.join(word for word in x))
     return tweet_df
