@@ -28,26 +28,38 @@ prefix = "/api/v1"
 
 app.config["APPLICATION_ROOT"] = prefix
 
+
 # basic GET route
-@app.route('/welcome/', methods=['GET'])
+@app.route('/welcome', methods=['GET'])
 def welcome():
+    df = db.filter_users('bootyroll', 'njmidm', 'cat_gaming_', 'vriendenv', 'eetleed', 'voetnootje');
+
+    print(df.head())
+
     return "Welcome to localhost:5050"
 
 
-# GET route with param
-@app.route('/person/<name>', methods=['GET'])
-def test(name):
-    tweets = db.session.query(Tweet.text).all()
+@app.route(f'{prefix}/tweet/subject-count', methods=['GET'])
+def subject_count():
+    rest_count = db.session.query(Tweet.text).filter(
+        Tweet.text.like('%restaurant%')
+    ).count()
 
-    tweet_df = pd.DataFrame(tweets, columns=['text'])
-    tweet_df['text'] = tweet_df['text'].str.replace(emoji.get_emoji_regexp(),
-                                                    '', regex=True)
+    # Get the tweets with a rough estimate about the delivery
+    delivery = db.session.query(Tweet.text).filter(
+        Tweet.text.like('%bezorg%')
+    ).all()
 
-    tweet_df['text'] = tweet_df['text'].str.replace(r'#(\w+)',
-                                                    '', regex=True)
+    delivery_df = pd.DataFrame(delivery, columns=['text'])
 
-    print(tweet_df['text'].tail())
-    return tweet_df['text'].iloc[2]
+    # Filter out the tweets that actually use the 'bezorg' verb
+    filtered_delivery = delivery_df[
+        delivery_df['text'].str.contains('.*\s(bezorg\w*)\s.*', case=False)
+    ]
+
+    count_dict = {'restaurant': rest_count, 'delivery': len(filtered_delivery)}
+
+    return jsonify(count_dict), 200
 
 
 @app.route(f'{prefix}/agg-numbers', methods=['GET'])

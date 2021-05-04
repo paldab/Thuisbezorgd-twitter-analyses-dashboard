@@ -51,3 +51,4 @@ Thumbs.db
 __pycache__/
 config.py
 **/Pipfile.lock
+*.svg

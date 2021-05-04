@@ -1,4 +1,5 @@
-from nltk.corpus import stopwords
+from utils.stopwords import dutch_stopwords
+from nltk.stem.snowball import SnowballStemmer
 import numpy as np
 import emoji
 
@@ -19,6 +20,8 @@ def clean_tweet(tweet_df):
     # Remove Retweets
     tweet_df['text'] = tweet_df['text'].str.replace(r'^RT :', '', regex=True)
 
+    tweet_df['text'] = tweet_df['text'].str.replace(r'\W+', ' ', regex=True)
+
     tweet_df['text'].replace('', np.nan, inplace=True)
     tweet_df.dropna(inplace=True)
     tweet_df.reset_index(drop=True, inplace=True)
@@ -27,8 +30,6 @@ def clean_tweet(tweet_df):
 
 
 def remove_stopwords(tweet_df):
-    dutch_stopwords = stopwords.words('dutch')
-
     # Remove Dutch stopwords and convert to lowercase
     tweet_df['text'] = tweet_df['text'].apply(
         lambda x: ' '.join(
@@ -41,4 +42,12 @@ def remove_stopwords(tweet_df):
     tweet_df.dropna(inplace=True)
     tweet_df.reset_index(drop=True, inplace=True)
 
+    return tweet_df
+
+
+def stem_tweets(tweet_df):
+    dutchstem = SnowballStemmer('dutch')
+
+    tweet_df['text'] = tweet_df['text'].apply(lambda x: [dutchstem.stem(y) for y in x.split()])
+    tweet_df['text'] = tweet_df['text'].apply(lambda x: ' '.join(word for word in x))
     return tweet_df
