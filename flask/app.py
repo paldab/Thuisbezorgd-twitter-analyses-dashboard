@@ -7,7 +7,6 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from wordcloud import WordCloud
 import nltk
-# from nltk.corpus import stopwords
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
