@@ -17,6 +17,7 @@ export class DashboardComponent implements OnInit {
   components: any = undefined;
 
   constructor(private breakpointObserver: BreakpointObserver, private tweetsService: TweetsService, private aggNumsService: AggNumsService) {
+    this.countGroupedTweets()
     this.get_num_data('twt-t_t-h-u')
     this.mostRecentTweets('m');
 
@@ -30,6 +31,9 @@ export class DashboardComponent implements OnInit {
   orderedTweetsArray = new Array();
   countable: number = 5;
   usedChar: string = 'm';
+  groupedTweetsKeys: string[] = [];
+  groupedTweetsVals: number[] = [];
+  
 
   ngOnInit(): void {
     // console.log(this.cards);
@@ -262,7 +266,26 @@ export class DashboardComponent implements OnInit {
                 cols: 4,
                 rows: 14,
                 show: true,
-              }
+              },
+              {
+                title: "Grouped tweets",
+                type: "plotly-plot",
+                cols: 4,
+                rows: 14,
+                show: true,
+      
+                data: [
+                  {
+                    x: this.groupedTweetsKeys,
+                    y: this.groupedTweetsVals,
+                    type: 'bar',
+                    // marker: {
+                    //   color: '#ff9800'
+                    // }
+                  },
+                ],
+                layout: {width: 300, height: 300}
+              },
               ];
             
             if(xs == breakpointer.matches) {
@@ -294,6 +317,13 @@ export class DashboardComponent implements OnInit {
                 width: 500,
                 height: 300,
               }
+
+              this.layout[7].cols = 2;
+              this.layout[7].rows= 13;
+              this.layout[7].layout = {
+                width: 500,
+                height: 300,
+              }
       
               this.layout[6].cols = 4;
               this.layout[6].rows= 13;
@@ -316,6 +346,14 @@ export class DashboardComponent implements OnInit {
                 width: 600,
                 height: 400,
               }
+
+              this.layout[7].cols = 1;
+              this.layout[7].rows= 16;
+      
+              this.layout[7].layout = {
+                width: 600,
+                height: 400,
+              }
       
               this.layout[6].cols = 2;
               this.layout[6].rows= 16;
@@ -329,6 +367,18 @@ export class DashboardComponent implements OnInit {
     )
   }
 
+  countGroupedTweets() {
+    this.tweetsService.grouped_tweets().subscribe(
+      data => {
+        this.groupedTweetsKeys = Object.keys(data);
+        this.groupedTweetsVals = Object.values(data);
+        console.log('keys: ', this.groupedTweetsKeys);
+
+        console.log('vals: ', this.groupedTweetsVals);
+        
+      }
+    )
+  }
   mostRecentTweets(char: string): any {
 //   this.tweetsService.all_tweets(char).subscribe(
 //     data => {
