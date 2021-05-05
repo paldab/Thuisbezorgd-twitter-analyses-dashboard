@@ -228,6 +228,7 @@ export class DashboardComponent implements OnInit {
               {
                 title: 'Timeline tweets',
                 type: 'plotly-plot',
+                enableButtons: true,
                 cols: 4,
                 rows: 14,
                 show: true,
@@ -255,6 +256,7 @@ export class DashboardComponent implements OnInit {
               {
                 title: 'Grouped tweets',
                 type: 'plotly-plot',
+                enableButtons: false,
                 cols: 4,
                 rows: 14,
                 show: true,
