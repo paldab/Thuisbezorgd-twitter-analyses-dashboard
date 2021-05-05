@@ -27,6 +27,7 @@ pyarrow = "*"
 gensim = "*"
 sklearn = "*"
 openpyxl = "*"
+textblob = "*"
 
 [dev-packages]
 
