@@ -16,5 +16,8 @@ export class TweetsService {
   all_tweets(filter = '*'): Observable<AllTweetsItem[]> {    
     return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/all-tweets?f=${filter}`)
   }
+  grouped_tweets() {
+    return this.httpClient.get(`${this.SERVER_URL}/tweet/subject-count`)
+  }
 
 }
