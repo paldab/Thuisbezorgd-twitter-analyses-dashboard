@@ -75,11 +75,6 @@ export class DashboardComponent implements OnInit {
         console.error(err);
       }
     );
-    setTimeout(() => {
-      if (this.req_succeeded == false) {
-      } else {
-      }
-    }, 7000);
   }
 
   getAllTweetsDay(): void {
@@ -114,11 +109,6 @@ export class DashboardComponent implements OnInit {
         this.req_succeeded = err.ok;
       }
     );
-    setTimeout(() => {
-      if (this.req_succeeded == false) {
-      } else {
-      }
-    }, 7000);
   }
 
   getAllTweetsWeek(): void {
@@ -157,12 +147,6 @@ export class DashboardComponent implements OnInit {
         console.error(err);
       }
     );
-
-    setTimeout(() => {
-      if (this.req_succeeded == false) {
-      } else {
-      }
-    }, 7000);
   }
 
   /** Based on the screen size, switch from standard to one column per row */
