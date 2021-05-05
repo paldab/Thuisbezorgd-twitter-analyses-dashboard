@@ -1,9 +1,7 @@
 from selenium import webdriver
 import time
-from .progressbar import printProgressBar
+from progressbar import printProgressBar
 
-def scrape_reviews():
-    return 69;
 
 if __name__ == '__main__':
     scraped_reviews = []
@@ -18,11 +16,24 @@ if __name__ == '__main__':
 
     # scrape basic information
     title = browser.find_elements_by_css_selector("h1.multi-size-header span")[0].text
-    total_reviews = browser.find_element_by_class_name("headline__review-count").text
+    total_reviews = browser.find_element_by_class_name("headline__review-count").text.replace(".", "")
     print("\n{title}".format(title=title))
     print("URL: {url}".format(url=browser.current_url))
     print("Total amount of reviews: {total_reviews}".format(total_reviews=total_reviews))
- 
+    review_list = browser.find_elements_by_css_selector("div.review-list div.review-card article.review")
+    printProgressBar(0, int(total_reviews), prefix = 'Progress:', suffix = 'Complete', length = 50)
+
+
+    for i, review in enumerate(review_list):
+        rev_content = review.find_elements_by_css_selector("section div.review-content div.review-content__body")[0]
+        
+        if rev_content is None:
+            rev_content = ''
+        
+        print(rev_content)
+
+        # printProgressBar(i + 1, int(total_reviews), prefix = 'Progress:', suffix = 'Complete', length = 50)
+
     # When you need to scroll to bottom.
     # time.sleep(0.4)
     # button = browser.find_elements_by_css_selector("nav.pagination-container a.button.next-page")[0]
