@@ -4,6 +4,8 @@ import { MatSort } from '@angular/material/sort';
 import { MatTable, MatTableDataSource } from '@angular/material/table';
 import { TweetsService } from '../services/tweets.service';
 import { UtilsService } from '../services/utils.service';
+import {FormGroup, FormControl} from '@angular/forms';
+
 
 export interface AllTweetsItem {
   created_at: string;
@@ -30,8 +32,25 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
   displayedColumns = ['id', 'trimmed_text', 'user_screenname', 'created_at'];
+
+  campaignOne: FormGroup;
+  campaignTwo: FormGroup;
   
-  constructor(private tweetsService: TweetsService, public utilsService: UtilsService) { }
+  constructor(private tweetsService: TweetsService, public utilsService: UtilsService) {
+    const today = new Date();
+    const month = today.getMonth();
+    const year = today.getFullYear();
+
+    this.campaignOne = new FormGroup({
+      start: new FormControl(new Date(year, month, 13)),
+      end: new FormControl(new Date(year, month, 16))
+    });
+
+    this.campaignTwo = new FormGroup({
+      start: new FormControl(new Date(year, month, 15)),
+      end: new FormControl(new Date(year, month, 19))
+    });
+   }
 
   ngOnInit() {
     this.dataSource = new MatTableDataSource<AllTweetsItem>();
