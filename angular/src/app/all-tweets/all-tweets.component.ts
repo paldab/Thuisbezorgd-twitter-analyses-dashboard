@@ -34,7 +34,6 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
   displayedColumns = ['id', 'trimmed_text', 'user_screenname', 'created_at'];
 
   campaignOne: FormGroup;
-  campaignTwo: FormGroup;
   
   constructor(private tweetsService: TweetsService, public utilsService: UtilsService) {
     const today = new Date();
@@ -46,10 +45,7 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
       end: new FormControl(new Date(year, month, 16))
     });
 
-    this.campaignTwo = new FormGroup({
-      start: new FormControl(new Date(year, month, 15)),
-      end: new FormControl(new Date(year, month, 19))
-    });
+ 
    }
 
   ngOnInit() {
@@ -74,6 +70,7 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
   }
 
   getAllTweets() {
+    console.log(this.campaignOne.controls['start'].value);
     this.spinnerLoading = true;
     
     this.tweetsService.all_tweets().subscribe(
@@ -123,6 +120,34 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
             
     }, 7000)
   }
+
+
+  getDateFilteredTweets() {
+    this.spinnerLoading = true;
+    
+    this.tweetsService.all_tweets('d').subscribe(
+      data => {
+        this.dataSource.data = data
+        this.filterType = 'vandaag'
+      },
+      err => {
+        this.req_succeeded = err.ok
+        console.error(err);
+      }
+    );    
+
+
+    setTimeout(() => {
+      if (this.req_succeeded == false) {
+        this.spinnerLoading = true
+      } else {
+        this.spinnerLoading = false
+      }
+            
+    }, 7000)
+  }
+
+
 
   getAllTweetsWeek() {
     this.spinnerLoading = true;
