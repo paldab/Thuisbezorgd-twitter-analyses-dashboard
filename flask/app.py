@@ -150,6 +150,8 @@ def all_tweets():
     row_headers.append('trimmed_text')
     json_data = []
 
+
+
     for tweet in tweets:
         trimmed_text = textwrap.shorten(tweet['text'], width=144,
                                         placeholder="...")
@@ -160,6 +162,42 @@ def all_tweets():
         json_data.append(dict(zip(row_headers, tweet)))
 
     return jsonify(json_data), 200
+
+
+
+
+#deze heb ik nodig voor mijn part
+@app.route(f'{prefix}/date-tweets', methods=['GET'])
+def dateFiltered_tweets():
+    startDate = request.args.get('s', default=None, type=str)
+    endDate = request.args.get('e', default=None, type=str)
+
+    print(startDate + 'hiero')
+    print(endDate + 'hiero')
+
+    statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE (DATE(created_at) between DATE(" + startDate +  ") and DATE(" + endDate + "))").\
+            columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
+
+
+    tweets = getattr(db, '_session')().query(
+        Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
+    ).from_statement(statement).all()
+
+    row_headers = [x for x in tweets[0].keys()]
+    row_headers.append('trimmed_text')
+    json_data = []
+
+    for tweet in tweets:
+        trimmed_text = textwrap.shorten(tweet['text'], width=144,
+                                        placeholder="...")
+
+        tweet = (tweet['id'], tweet['text'],
+                 tweet['user_screenname'], tweet['created_at'], trimmed_text)
+
+        json_data.append(dict(zip(row_headers, tweet)))
+
+    return jsonify(json_data), 200
+
 
 
 @app.route(f'{prefix}/wordcloud', methods=['GET'])
@@ -196,6 +234,7 @@ def generate_wordcloud():
     json_payload = {"image": img_to_str}
 
     return jsonify(json_payload), 200
+
 
 
 if __name__ == '__main__':

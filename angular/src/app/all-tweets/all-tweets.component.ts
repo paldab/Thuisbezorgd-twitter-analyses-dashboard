@@ -69,6 +69,42 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
     this.dataSource.filter = this.filter;
   }
 
+
+
+  getDateFilteredTweets() {
+    console.log(this.campaignOne.controls['start'].value);
+    console.log(this.campaignOne.controls['end'].value);
+   const end = this.campaignOne.controls['end'].value;
+   const start = this.campaignOne.controls['start'].value;
+   const date: Date = new Date();
+   console.log(date);
+   console.log(start.toISOString().slice(0, 19).replace('T', ' '));
+
+  
+    this.spinnerLoading = true;
+    
+    this.tweetsService.dateFiltered_tweets(start.toISOString().slice(0, 19).replace('T', ' '), end.toISOString().slice(0, 19).replace('T', ' ')).subscribe(
+      data => {
+        this.dataSource.data = data
+        this.filterType = 'vandaag'
+      },
+      err => {
+        this.req_succeeded = err.ok
+        console.error(err);
+      }
+    );    
+
+
+    setTimeout(() => {
+      if (this.req_succeeded == false) {
+        this.spinnerLoading = true
+      } else {
+        this.spinnerLoading = false
+      }
+            
+    }, 7000)
+  }
+
   getAllTweets() {
     console.log(this.campaignOne.controls['start'].value);
     this.spinnerLoading = true;
@@ -122,30 +158,6 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
   }
 
 
-  getDateFilteredTweets() {
-    this.spinnerLoading = true;
-    
-    this.tweetsService.all_tweets('d').subscribe(
-      data => {
-        this.dataSource.data = data
-        this.filterType = 'vandaag'
-      },
-      err => {
-        this.req_succeeded = err.ok
-        console.error(err);
-      }
-    );    
-
-
-    setTimeout(() => {
-      if (this.req_succeeded == false) {
-        this.spinnerLoading = true
-      } else {
-        this.spinnerLoading = false
-      }
-            
-    }, 7000)
-  }
 
 
 
@@ -200,5 +212,12 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
             
     }, 7000)
   }
+
+
+
+
+
+
+  
 
 }
