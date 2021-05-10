@@ -166,7 +166,6 @@ def all_tweets():
 
 
 
-#deze heb ik nodig voor mijn part
 @app.route(f'{prefix}/date-tweets', methods=['GET'])
 def dateFiltered_tweets():
     startDate = request.args.get('s', default=None, type=str)
@@ -175,7 +174,7 @@ def dateFiltered_tweets():
     print(startDate + 'hiero')
     print(endDate + 'hiero')
 
-    statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE (DATE(created_at) between DATE(" + startDate +  ") and DATE(" + endDate + "))").\
+    statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE (DATE(created_at) between DATE(" + "\"" + startDate + "\"" + ") and DATE(" + "\"" + endDate + "\"" + "))").\
             columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
 
 
