@@ -1,29 +1,41 @@
 from sqlalchemy import text
 from models.database import db
-from models.model import Hashtag, Tweet
+from models.model import Tweet
 from utils.cleaner import clean_tweet
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
 import joblib
 
-# fetching the tweet data
-statement = text("SELECT text from tweet").columns(Tweet.text)
-tweet_data = getattr(db, "_session")().query(Tweet.text).\
-    from_statement(statement).all()
+def label_sentiment(label):
+    if label == 0:
+        return "Negative"
+    if label == 2:
+        return "Positive"
+    return "Neutral"
 
-df = clean_tweet(pd.DataFrame(tweet_data, columns=["text"]))
-df.apply(lambda x:x["text"].strip(), axis=1)
-test_data = df["text"]
+def tweet_sentiment_analysis():
+    # fetching the tweet data
+    statement = text("SELECT text from tweet").columns(Tweet.text)
+    tweet_data = getattr(db, "_session")().query(Tweet.text).\
+        from_statement(statement).all() 
 
-# loading the vectorizer
-vect_name = open("ml-vectorizer/tldf-vectorizer.sav", "rb")
-vectorizer = joblib.load(vect_name)
-Xtest = vectorizer.transform(test_data)
+    df = clean_tweet(pd.DataFrame(tweet_data, columns=["text"]))
+    df.apply(lambda x:x["text"].strip(), axis=1)
+    test_data = df["text"]
 
-# loading the model
-model_name = open("ml-models/sentiment-model-gridsearch.sav", "rb")
-model = joblib.load(model_name)
+    # loading the vectorizer
+    vect_name = open("ml-vectorizer/tldf-vectorizer.sav", "rb")
+    vectorizer = joblib.load(vect_name)
+    Xtest = vectorizer.transform(test_data)
 
-pred = model.predict(Xtest)
+    # loading the model
+    model_name = open("ml-models/sentiment-model-gridsearch.sav", "rb")
+    model = joblib.load(model_name)
 
-print(pred)
+    pred = model.predict(Xtest)
+
+    # create a structured dataframe
+    df = pd.DataFrame(pred, columns=["label"])
+    df["sentiment"] = df["label"].apply(lambda x:label_sentiment(x))
+    
+    return df

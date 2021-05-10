@@ -196,6 +196,8 @@ def generate_wordcloud():
 
     return jsonify(json_payload), 200
 
+def total_sentiment_tweets():
+    pass
 
 if __name__ == '__main__':
     c = twint.Config()
