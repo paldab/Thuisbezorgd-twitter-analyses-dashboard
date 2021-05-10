@@ -76,7 +76,7 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
     console.log(this.campaignOne.controls['end'].value);
    const end = this.campaignOne.controls['end'].value;
    const start = this.campaignOne.controls['start'].value;
-  //  start.setDate(start.getDate() + 1);   
+   start.setDate(start.getDate() + 1);   
    console.log(start.toISOString().slice(0, 19).replace('T', ' '));
 
   
