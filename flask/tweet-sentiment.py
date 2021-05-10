@@ -17,11 +17,13 @@ test_data = df["text"]
 
 # loading the vectorizer
 vect_name = open("ml-vectorizer/tldf-vectorizer.sav", "rb")
+vectorizer = joblib.load(vect_name)
 Xtest = vectorizer.transform(test_data)
 
 # loading the model
 model_name = open("ml-models/sentiment-model.sav", "rb")
 model = joblib.load(model_name)
 
-model.predict(Xtest)
-print(df.head())
+pred = model.predict(Xtest)
+
+print(pred)
