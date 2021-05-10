@@ -57,9 +57,6 @@ param_grid = {
     'C': np.logspace(-4, 4)
 }
 
-
-best = 0
-
 # Split the data
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
@@ -82,4 +79,4 @@ roc = multiclass_roc_auc_score(y_test, predict)
 with open("ml-models/sentiment-model-gridsearch.sav", "wb") as f:
     joblib.dump(model, f)
 
-# display_model_stats(y_test, predict)
+display_model_stats(y_test, predict)
