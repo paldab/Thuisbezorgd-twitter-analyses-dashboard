@@ -23,7 +23,7 @@ def multiclass_roc_auc_score(y_test, y_pred, average="macro"):
     lb.fit(y_test)
     y_test = lb.transform(y_test)
     y_pred = lb.transform(y_pred)
-    return roc_auc_score(y_test, y_pred, average=average)
+    return skm.roc_auc_score(y_test, y_pred, average=average)
         
 def label_rating(rating):
     if rating < 3:
@@ -58,7 +58,7 @@ param_grid = {
 }
 
 # Split the data
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
 # Vectorizer
 vectorizer = TfidfVectorizer(ngram_range=(1, 2))
@@ -69,9 +69,9 @@ Xtest = vectorizer.transform(X_test)
 model = LogisticRegression(multi_class="multinomial", max_iter=2000)
 gridsearch = GridSearchCV(model, param_grid, n_jobs=-1, verbose=1)
 
-model.fit(Xbase, y_train)
+gridsearch.fit(Xbase, y_train)
 
-predict = model.predict(Xtest)
+predict = gridsearch.predict(Xtest)
 
 roc = multiclass_roc_auc_score(y_test, predict)
 
@@ -79,4 +79,7 @@ roc = multiclass_roc_auc_score(y_test, predict)
 with open("ml-models/sentiment-model-gridsearch.sav", "wb") as f:
     joblib.dump(model, f)
 
+# with open("ml-vectorizer/tldf-vectorizer.sav", "wb") as f:
+#     joblib.dump(vectorizer, f)
+    
 display_model_stats(y_test, predict)
