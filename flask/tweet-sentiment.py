@@ -21,7 +21,7 @@ vectorizer = joblib.load(vect_name)
 Xtest = vectorizer.transform(test_data)
 
 # loading the model
-model_name = open("ml-models/sentiment-model.sav", "rb")
+model_name = open("ml-models/sentiment-model-gridsearch.sav", "rb")
 model = joblib.load(model_name)
 
 pred = model.predict(Xtest)

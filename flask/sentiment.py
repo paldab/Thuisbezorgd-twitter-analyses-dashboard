@@ -3,7 +3,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import LabelBinarizer
-from gensim.utils import simple_preprocess
 from spacy.lang.nl.examples import sentences
 import numpy as np
 import sklearn.metrics as skm
@@ -67,19 +66,17 @@ Xtest = vectorizer.transform(X_test)
 
 # Model
 model = LogisticRegression(multi_class="multinomial", max_iter=2000)
-gridsearch = GridSearchCV(model, param_grid, n_jobs=-1, verbose=1)
+gridsearch = GridSearchCV(model, param_grid, n_jobs=2, verbose=1)
 
 gridsearch.fit(Xbase, y_train)
 
 predict = gridsearch.predict(Xtest)
 
-roc = multiclass_roc_auc_score(y_test, predict)
-
 # save model
 with open("ml-models/sentiment-model-gridsearch.sav", "wb") as f:
-    joblib.dump(model, f)
+    joblib.dump(gridsearch, f)
 
-# with open("ml-vectorizer/tldf-vectorizer.sav", "wb") as f:
-#     joblib.dump(vectorizer, f)
+with open("ml-vectorizer/tldf-vectorizer.sav", "wb") as f:
+    joblib.dump(vectorizer, f)
     
 display_model_stats(y_test, predict)
