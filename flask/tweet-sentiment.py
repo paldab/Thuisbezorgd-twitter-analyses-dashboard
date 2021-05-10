@@ -12,17 +12,16 @@ tweet_data = getattr(db, "_session")().query(Tweet.text).\
     from_statement(statement).all()
 
 df = clean_tweet(pd.DataFrame(tweet_data, columns=["text"]))
-
+df.apply(lambda x:x["text"].strip(), axis=1)
 test_data = df["text"]
 
 # loading the vectorizer
 vect_name = open("ml-vectorizer/tldf-vectorizer.sav", "rb")
 Xtest = vectorizer.transform(test_data)
 
-
 # loading the model
 model_name = open("ml-models/sentiment-model.sav", "rb")
 model = joblib.load(model_name)
 
-
-model.predict(test_data)
+model.predict(Xtest)
+print(df.head())
