@@ -3,6 +3,7 @@ from models.database import db
 from models.model import Tweet
 from utils.cleaner import clean_tweet
 from sklearn.feature_extraction.text import TfidfVectorizer
+from pathlib import Path
 import pandas as pd
 import joblib
 
@@ -24,12 +25,12 @@ def tweet_sentiment_analysis():
     test_data = df["text"]
 
     # loading the vectorizer
-    vect_name = open("ml-vectorizer/tldf-vectorizer.sav", "rb")
+    vect_name = open((Path(__file__).parent / "ml-vectorizer/tldf-vectorizer.sav").resolve(), "rb")
     vectorizer = joblib.load(vect_name)
     Xtest = vectorizer.transform(test_data)
 
     # loading the model
-    model_name = open("ml-models/sentiment-model-gridsearch.sav", "rb")
+    model_name = open((Path(__file__).parent / "ml-models/sentiment-model-gridsearch.sav").resolve(), "rb")
     model = joblib.load(model_name)
 
     pred = model.predict(Xtest)
@@ -39,3 +40,5 @@ def tweet_sentiment_analysis():
     df["sentiment"] = df["label"].apply(lambda x:label_sentiment(x))
     
     return df
+
+tweet_sentiment_analysis()
