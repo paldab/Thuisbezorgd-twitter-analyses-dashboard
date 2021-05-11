@@ -1,5 +1,6 @@
 from utils.stopwords import dutch_stopwords
 from nltk.stem.snowball import SnowballStemmer
+from nltk.corpus import stopwords
 import numpy as np
 import emoji
 
