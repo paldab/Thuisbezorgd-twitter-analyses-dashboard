@@ -6,8 +6,8 @@ from sqlalchemy import text
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from wordcloud import WordCloud
-from tweet_sentiment import tweet_sentiment_analysis
 import nltk
+# from nltk.corpus import stopwords
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -234,10 +234,6 @@ def generate_wordcloud():
 
     return jsonify(json_payload), 200
 
-@app.route(f'{prefix}/tweet_sentiment', methods=['GET'])
-def total_sentiment_tweets():
-    df = tweet_sentiment_analysis()
-    return jsonify(df.value_counts().to_json(orient='table')), 200
 
 
 if __name__ == '__main__':

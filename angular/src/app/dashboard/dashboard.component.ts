@@ -1,10 +1,8 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {map} from 'rxjs/operators';
 import {Breakpoints, BreakpointObserver} from '@angular/cdk/layout';
 import {TweetsService} from '../services/tweets.service';
 import {AggNumsService} from '../services/agg-nums.service';
-import {MatTableDataSource} from "@angular/material/table";
-import {MatSort} from "@angular/material/sort";
 
 @Component({
   selector: 'app-dashboard',
@@ -17,8 +15,6 @@ export class DashboardComponent implements OnInit {
   num_data: any = undefined;
   layout: any = [];
   components: any = undefined;
-  dataSource = new MatTableDataSource();
-  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(private breakpointObserver: BreakpointObserver, private tweetsService: TweetsService,
               private aggNumsService: AggNumsService) {
@@ -39,9 +35,9 @@ export class DashboardComponent implements OnInit {
   groupedTweetsKeys: string[] = [];
   groupedTweetsVals: number[] = [];
 
-  columnsToDisplay: string[] = ['user_screenname', 'trimmed_text', 'created_at'];
 
   ngOnInit(): void {
+    // console.log(this.cards);
     this.getAllTweetsMonth();
 
   }
@@ -392,12 +388,6 @@ export class DashboardComponent implements OnInit {
           this.orderedTweetsArray[teller] = data[index];
           teller = teller + 1;
         }
-
-        // Set data to datasource and assign MatSort to the datasource
-        this.dataSource.data = this.orderedTweetsArray;
-        this.dataSource.sort = this.sort;
-
-        console.log(this.orderedTweetsArray);
       });
   }
 
@@ -405,5 +395,6 @@ export class DashboardComponent implements OnInit {
   loadMoreTweetsButton(): void {
     this.countable = this.countable + 5;
     this.mostRecentTweets(this.usedChar);
+    console.log(this.orderedTweetsArray.length);
   }
 }

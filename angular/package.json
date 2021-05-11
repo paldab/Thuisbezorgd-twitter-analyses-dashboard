@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "scripts": {
     "ng": "ng",
-    "start": "node app.js",
-    "build": "ng build --prod",
+    "start": "ng serve",
+    "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -24,8 +24,6 @@
     "@angular/router": "~11.2.3",
     "angular-plotly.js": "^3.0.0",
     "angularx-social-login": "^3.5.4",
-    "express": "^4.17.1",
-    "path": "^0.12.7",
     "plotly.js": "^1.58.4",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",

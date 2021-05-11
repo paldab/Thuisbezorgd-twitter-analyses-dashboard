@@ -30,16 +30,20 @@
   text-align: center;
 }
 
-#last-tweet-table th {
-  background-color: #ff9800!important;
-  font-weight: 500!important;
-  color: black !important;
-  font-size: .9rem !important;
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
 }
 
 td, th {
+  border: 1px solid #dddddd;
   text-align: left;
   padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
 }
 
 .rad-info-box {
