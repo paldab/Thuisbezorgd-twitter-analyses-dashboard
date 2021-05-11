@@ -1,62 +1,70 @@
 <div class="grid-container">
   <h1 class="mat-h1" *ngIf="name != undefined;">Welcome, {{ name }}.</h1>
-  <mat-grid-list cols="2" rowHeight="6:1">
-    <mat-grid-tile colspan="1" rowspan="4">
-      <mat-card class="dashboard-card">
-        <mat-card-header>
-          <mat-card-title>Wordcloud</mat-card-title>
-        </mat-card-header>
+  <mat-grid-list cols="4" rowHeight="2rem">
+    <ng-container *ngFor="let component of components | async">
+      <mat-grid-tile [colspan]="component?.cols" [rowspan]="component?.rows" *ngIf="component?.show == true;">
+        <mat-card class="dashboard-card">
+          <ng-container *ngIf="component?.type != 'agg-numbers';">
+            <mat-card-header>
+              <mat-card-title>
+                {{ component?.title }}
+              </mat-card-title>
+            </mat-card-header>
+          </ng-container>
 
-        <mat-card-content class="dashboard-card-content">
-          <wordcloud></wordcloud>
-        </mat-card-content>
+          <mat-card-content class="dashboard-card-content">
+            <ng-container *ngIf="component?.type == 'agg-numbers';">
+              <div class="rad-info-box rad-txt-success">
+                <mat-icon [class]="component?.class">{{ component?.icon }}</mat-icon>
+                <span class="title">{{ component?.title }}</span>
+                <span class="user" *ngIf="component?.value?.user_screenname">{{ component?.value?.user_screenname }}</span>
+                <span class="number"><span>{{ component?.value?.total }}</span></span>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="component?.type == 'wordcloud';">
+              <wordcloud></wordcloud>
+            </ng-container>
+            <ng-container *ngIf="component?.type == 'plotly-plot';">
+              <ng-container *ngIf="component?.enableButtons == true;">
+                <div class="button-container">
+                  <button mat-raised-button color="primary" (click)="this.getAllTweetsDay();">Toon vandaag</button>
+                  <button mat-raised-button color="primary" (click)="this.getAllTweetsWeek();">Toon afgelopen week</button>
+                  <button mat-raised-button color="primary" (click)="this.getAllTweetsMonth();">Toon afgelopen maand</button>
+                </div>
+              </ng-container>
 
+              <plotly-plot [data]="component?.data" [layout]="component?.layout"></plotly-plot>
+            </ng-container>
+            <ng-container *ngIf="component?.type == 'plotly-table';">
+              <button mat-raised-button color="primary" (click)="this.loadMoreTweetsButton();" style="display: none">Load more Tweets</button>
+
+              <table mat-table matSort [dataSource]="dataSource" class="full-width-table" id="last-tweet-table">
+                <ng-container matColumnDef="user_screenname">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Username</th>
+                  <td mat-cell *matCellDef="let tweet"> {{tweet.user_screenname}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="trimmed_text">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Text</th>
+
+                  <td mat-cell *matCellDef="let tweet">
+                    <div class="trimmed-text-container">
+                      <span [matTooltip]="tweet.text" matTooltipClass="tweet-tooltip">{{tweet.trimmed_text}}</span>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="created_at">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Created at</th>
+                  <td mat-cell *matCellDef="let tweet">{{tweet.created_at}}</td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+                <tr mat-row *matRowDef="let myRowData; columns: columnsToDisplay"></tr>
+              </table>
+            </ng-container>
+          </mat-card-content>
         </mat-card>
-    </mat-grid-tile>
-
-
-
-  <mat-grid-tile *ngFor="let Time of timeline | async" [colspan]="Time.cols" [rowspan]="Time.rows">
-      <mat-card class="dashboard-card">
-        <mat-card-header>
-          <mat-card-title>
-            {{ Time.title }}
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content class="dashboard-card-content">
-          <div class="button-container">
-            <button mat-raised-button color="primary" (click)="this.getAllTweetsDay();">Toon vandaag</button>
-            <button mat-raised-button color="primary" (click)="this.getAllTweetsWeek();">Toon afgelopen week</button>
-            <button mat-raised-button color="primary" (click)="this.getAllTweetsMonth();">Toon afgelopen maand</button>
-          </div>
-          <plotly-plot [data]="Time.data" [layout]="Time.layout"></plotly-plot>
-        </mat-card-content>
-      </mat-card>
-    </mat-grid-tile>
-
-
-  <mat-grid-tile colspan="2" rowspan="3">
-    <mat-card class="dashboard-card">
-      <mat-card-header>
-        <mat-card-title>Laatste 5 tweets</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-           <button mat-raised-button color="primary" (click)="this.loadMoreTweetsButton();" style="display: none">Load more Tweets</button>
-
-        <table>
-          <tr>
-            <th style="background-color: sandybrown">Username</th>
-            <th style="background-color: sandybrown">Text</th>
-            <th style="background-color: sandybrown">Created at</th>
-          </tr>
-
-          <tr *ngFor="let post of orderedTweetsArray" >
-            <td>{{post.user_screenname}}</td>
-            <td>{{post.trimmed_text}}</td>
-            <td>{{post.created_at}}</td>
-          </tr>
-        </table>
-      </mat-card-content>
-    </mat-card>
-  </mat-grid-tile>
-</mat-grid-list>
+      </mat-grid-tile>
+    </ng-container>
+  </mat-grid-list>

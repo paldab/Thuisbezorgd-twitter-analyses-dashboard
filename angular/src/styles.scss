@@ -44,13 +44,17 @@ $angular-dark-theme: mat-dark-theme((
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 
+.full-width-table {
+  width: 100%;
+}
+
 .mat-slide-toggle-bar, .mat-slide-toggle-thumb {
   background-color: bisque;
 }
+
 .mat-slide-toggle-label {
   margin-right: 15px;
 }
-
 
 .trimmed-text-container {
   min-width: 500px;
@@ -61,7 +65,7 @@ $angular-dark-theme: mat-dark-theme((
   font-size: 16px;
   background-color: mat-color($angular-primary);
   min-width: 100%;
-}  
+}
 
 .darkMode {
   @include angular-material-color($angular-dark-theme);
@@ -69,14 +73,17 @@ $angular-dark-theme: mat-dark-theme((
     background-color: #303030 !important;
     color: white !important;
   }
+
   .mat-drawer {
     background-color:  #ffad33 !important;
     color: white !important;
   }
+
   .mat-sidenav-container {
     background-color: #303030 !important;
 
   }
+
   .mat-menu-item {
     color: white !important;
   }
