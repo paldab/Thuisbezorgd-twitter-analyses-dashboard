@@ -1,3 +1,4 @@
+from pathlib import Path
 from utils.stopwords import dutch_stopwords as stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
@@ -73,10 +74,13 @@ gridsearch.fit(Xbase, y_train)
 predict = gridsearch.predict(Xtest)
 
 # save model
-with open("ml-models/sentiment-model-gridsearch.sav", "wb") as f:
+grid_path = (Path(__file__).parent / 'ml-models/sentiment-model-gridsearch.sav').resolve()
+vect_path = (Path(__file__).parent / 'ml-vectorizer/tldf-vectorizer.sav.sav').resolve()
+
+with open(grid_path, "wb") as f:
     joblib.dump(gridsearch, f)
 
-with open("ml-vectorizer/tldf-vectorizer.sav", "wb") as f:
+with open(vect_path, "wb") as f:
     joblib.dump(vectorizer, f)
     
 display_model_stats(y_test, predict)
