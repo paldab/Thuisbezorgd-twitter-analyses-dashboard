@@ -23,6 +23,7 @@ export class DashboardComponent implements OnInit {
   constructor(private breakpointObserver: BreakpointObserver, private tweetsService: TweetsService,
               private aggNumsService: AggNumsService) {
     this.countGroupedTweets();
+    this.getSentimentCount()
     this.get_num_data('twt-t_t-h-u');
     this.mostRecentTweets('m');
 
@@ -38,12 +39,12 @@ export class DashboardComponent implements OnInit {
   usedChar = 'm';
   groupedTweetsKeys: string[] = [];
   groupedTweetsVals: number[] = [];
+  sentimentArray: any[] = []
 
   columnsToDisplay: string[] = ['user_screenname', 'trimmed_text', 'created_at'];
 
   ngOnInit(): void {
     this.getAllTweetsMonth();
-
   }
 
   getAllTweetsMonth(): void {
@@ -174,7 +175,7 @@ export class DashboardComponent implements OnInit {
             const l = breakpointer.breakpoints[indexes[3]];
             const xl = breakpointer.breakpoints[indexes[4]];
 
-            console.log(this.num_data);
+            // console.log(this.num_data);
 
             this.layout = [
               {
@@ -285,8 +286,8 @@ export class DashboardComponent implements OnInit {
                 show: true,
                 data: [
                   {
-                    x: this.groupedTweetsKeys,
-                    y: this.groupedTweetsVals,
+                    x: this.sentimentArray[0],
+                    y: this.sentimentArray[1],
                     type: 'bar',
                     // marker: {
                     //   color: '#ff9800'
@@ -376,6 +377,26 @@ export class DashboardComponent implements OnInit {
     );
   }
 
+
+  
+  private getSentimentCount(){
+    this.tweetsService.getSentimentCount().subscribe(sentimentData =>{
+      const parsedData = JSON.parse(sentimentData.toString())
+      const {data} = parsedData
+      const sentimentNames:string[] = []
+      const sentimentValues:number[] = []
+      
+      data.forEach((row: sentiment) =>{
+        let {sentiment, values} = row
+        sentimentNames.push(sentiment)
+        sentimentValues.push(values)
+      })
+      this.sentimentArray.push(sentimentNames, sentimentValues)
+      console.log(this.sentimentArray);
+      
+    })
+  }
+
   private countGroupedTweets(): void {
     this.tweetsService.grouped_tweets().subscribe(
       data => {
@@ -416,7 +437,7 @@ export class DashboardComponent implements OnInit {
         this.dataSource.data = this.orderedTweetsArray;
         this.dataSource.sort = this.sort;
 
-        console.log(this.orderedTweetsArray);
+        // console.log(this.orderedTweetsArray);
       });
   }
 
@@ -425,4 +446,10 @@ export class DashboardComponent implements OnInit {
     this.countable = this.countable + 5;
     this.mostRecentTweets(this.usedChar);
   }
+}
+
+interface sentiment{
+    label: number;
+    sentiment: string;
+    values: number
 }
