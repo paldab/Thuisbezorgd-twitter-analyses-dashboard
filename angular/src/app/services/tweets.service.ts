@@ -24,4 +24,8 @@ export class TweetsService {
     return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/date-tweets?s=${startDate}&e=${endDate}`)
   }
 
+  getSentimentCount(){
+    return this.httpClient.get(`${this.SERVER_URL}/tweet_sentiment`)
+  }
+
 }
