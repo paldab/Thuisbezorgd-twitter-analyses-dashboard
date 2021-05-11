@@ -383,8 +383,8 @@ export class DashboardComponent implements OnInit {
     this.tweetsService.getSentimentCount().subscribe(sentimentData =>{
       const parsedData = JSON.parse(sentimentData.toString())
       const {data} = parsedData
-      const sentimentNames:string[] = []
-      const sentimentValues:number[] = []
+      const sentimentNames: any = []
+      const sentimentValues: any = []
       
       data.forEach((row: sentiment) =>{
         let {sentiment, values} = row
@@ -392,8 +392,24 @@ export class DashboardComponent implements OnInit {
         sentimentValues.push(values)
       })
       this.sentimentArray.push(sentimentNames, sentimentValues)
-      console.log(this.sentimentArray);
       
+      const graphLayout = {
+        title: 'Sentiment tweets',
+        type: 'plotly-plot',
+        cols: 1,
+        rows: 16,
+        show: true,
+        data: [
+          {
+            x: this.sentimentArray[0],
+            y: this.sentimentArray[1],
+            type: 'bar',
+          },
+        ],
+        layout: {width: 600, height: 400}
+      };
+
+      this.layout[8] = graphLayout;
     })
   }
 
