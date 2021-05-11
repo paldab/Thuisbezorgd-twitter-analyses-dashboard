@@ -345,11 +345,11 @@ export class DashboardComponent implements OnInit {
               this.layout[0].cols = this.layout[1].cols = this.layout[2].cols = this.layout[3].cols = 1;
               this.layout[0].rows = this.layout[1].rows = this.layout[2].rows = this.layout[3].rows = 6;
 
-              this.layout[4].cols = 1;
+              this.layout[4].cols = 2;
               this.layout[4].rows = 16;
 
 
-              this.layout[5].cols = 1;
+              this.layout[5].cols = 2;
               this.layout[5].rows = 16;
 
               this.layout[5].layout = {
@@ -357,7 +357,7 @@ export class DashboardComponent implements OnInit {
                 height: 400,
               };
 
-              this.layout[7].cols = this.layout[8].cols = 1;
+              this.layout[7].cols = this.layout[8].cols = 2;
               this.layout[7].rows = this.layout[8].rows = 16;
 
               this.layout[7].layout = this.layout[8].layout = {
@@ -365,7 +365,7 @@ export class DashboardComponent implements OnInit {
                 height: 400,
               };
 
-              this.layout[6].cols = 2;
+              this.layout[6].cols = 4;
               this.layout[6].rows = 16;
 
               return this.layout;
