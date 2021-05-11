@@ -276,6 +276,25 @@ export class DashboardComponent implements OnInit {
                 ],
                 layout: {width: 300, height: 300}
               },
+              {
+                title: 'Sentiment tweets',
+                type: 'plotly-plot',
+                enableButtons: false,
+                cols: 4,
+                rows: 14,
+                show: true,
+                data: [
+                  {
+                    x: this.groupedTweetsKeys,
+                    y: this.groupedTweetsVals,
+                    type: 'bar',
+                    // marker: {
+                    //   color: '#ff9800'
+                    // }
+                  },
+                ],
+                layout: {width: 300, height: 300}
+              },
             ];
 
             if (xs == breakpointer.matches) {
