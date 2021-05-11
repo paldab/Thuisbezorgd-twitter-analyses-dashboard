@@ -40,5 +40,3 @@ def tweet_sentiment_analysis():
     df["sentiment"] = df["label"].apply(lambda x:label_sentiment(x))
     
     return df
-
-tweet_sentiment_analysis()
