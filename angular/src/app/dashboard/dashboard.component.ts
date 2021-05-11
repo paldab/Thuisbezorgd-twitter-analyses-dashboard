@@ -328,9 +328,9 @@ export class DashboardComponent implements OnInit {
                 height: 300,
               };
 
-              this.layout[7].cols = 2;
-              this.layout[7].rows = 13;
-              this.layout[7].layout = {
+              this.layout[7].cols = this.layout[8].cols = 2;
+              this.layout[7].rows = this.layout[8].rows = 13;
+              this.layout[7].layout = this.layout[8].layout = {
                 width: 500,
                 height: 300,
               };
@@ -357,10 +357,10 @@ export class DashboardComponent implements OnInit {
                 height: 400,
               };
 
-              this.layout[7].cols = 1;
-              this.layout[7].rows = 16;
+              this.layout[7].cols = this.layout[8].cols = 1;
+              this.layout[7].rows = this.layout[8].rows = 16;
 
-              this.layout[7].layout = {
+              this.layout[7].layout = this.layout[8].layout = {
                 width: 600,
                 height: 400,
               };
@@ -396,7 +396,7 @@ export class DashboardComponent implements OnInit {
       const graphLayout = {
         title: 'Sentiment tweets',
         type: 'plotly-plot',
-        cols: 1,
+        cols: 2,
         rows: 16,
         show: true,
         data: [
@@ -422,7 +422,7 @@ export class DashboardComponent implements OnInit {
         const graphLayout = {
           title: 'Grouped tweets',
           type: 'plotly-plot',
-          cols: 1,
+          cols: 2,
           rows: 16,
           show: true,
           data: [
