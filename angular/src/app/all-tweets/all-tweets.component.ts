@@ -77,16 +77,27 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
    const end = this.campaignOne.controls['end'].value;
    const start = this.campaignOne.controls['start'].value;
    start.setDate(start.getDate() + 1);   
-   console.log(start.toISOString().slice(0, 19).replace('T', ' '));
+   console.log(start.toISOString().slice(0, 19).replace('T', ' ') + " ");
+
+   const stringstart = start.toISOString().slice(0, 19).replace('T', ' ') + " "
+   const stringend = end.toISOString().slice(0, 19).replace('T', ' ') + " "
+   var splitarray = new Array();
+   splitarray= stringstart.split(" ");
+   console.log(splitarray[0])
+
+   var splitarray1 = new Array();
+   splitarray1 = stringend.split(" ");
+   console.log(splitarray1[0])
+    
 
   
     this.spinnerLoading = true;
     
-    this.tweetsService.dateFiltered_tweets(start.toISOString().slice(0, 19).replace('T', ' '), end.toISOString().slice(0, 19).replace('T', ' ')).subscribe(
+    this.tweetsService.dateFiltered_tweets  (start.toISOString().slice(0, 19).replace('T', ' '), end.toISOString().slice(0, 19).replace('T', ' ')).subscribe(
       data => {
         console.log(data)
         this.dataSource.data = data
-        this.filterType = 'vandaag'
+        this.filterType = 'Tussen ' + splitarray[0] + ' en ' + splitarray1[0]
       },
       err => {
         this.req_succeeded = err.ok
