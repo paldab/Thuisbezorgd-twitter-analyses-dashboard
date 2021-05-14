@@ -13,19 +13,19 @@ export class TweetsService {
 
   constructor(private httpClient: HttpClient) { }
 
-  all_tweets(filter = '*'): Observable<AllTweetsItem[]> {    
-    return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/all-tweets?f=${filter}`)
+  all_tweets(filter = '*'): Observable<AllTweetsItem[]> {
+    return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/tweet?f=${filter}`);
   }
   grouped_tweets() {
-    return this.httpClient.get(`${this.SERVER_URL}/tweet/subject-count`)
+    return this.httpClient.get(`${this.SERVER_URL}/tweet/subject-count`);
   }
 
-  dateFiltered_tweets(startDate = '*', endDate='*'): Observable<AllTweetsItem[]> {    
-    return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/date-tweets?s=${startDate}&e=${endDate}`)
+  dateFiltered_tweets(startDate = '*', endDate= '*'): Observable<AllTweetsItem[]> {
+    return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/tweet/date?s=${startDate}&e=${endDate}`);
   }
 
   getSentimentCount(){
-    return this.httpClient.get(`${this.SERVER_URL}/tweet_sentiment`)
+    return this.httpClient.get(`${this.SERVER_URL}/tweet/sentiment`);
   }
 
 }

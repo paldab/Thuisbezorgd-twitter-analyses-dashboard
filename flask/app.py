@@ -27,17 +27,6 @@ prefix = "/api/v1"
 app.config["APPLICATION_ROOT"] = prefix
 
 
-# basic GET route
-@app.route('/welcome', methods=['GET'])
-def welcome():
-    df = db.filter_users('bootyroll', 'njmidm', 'cat_gaming_', 'vriendenv',
-                         'eetleed', 'voetnootje')
-
-    print(df.head())
-
-    return "Welcome to localhost:5050"
-
-
 @app.route(f'{prefix}/tweet/subject-count', methods=['GET'])
 def subject_count():
     rest_count = db._session().query(Tweet.text).filter(
@@ -122,7 +111,7 @@ def agg_numbers():
     return jsonify(json_data), 200
 
 
-@app.route(f'{prefix}/all-tweets', methods=['GET'])
+@app.route(f'{prefix}/tweet', methods=['GET'])
 def all_tweets():
     filter = request.args.get('f', default=None, type=str)
 
@@ -162,7 +151,7 @@ def all_tweets():
     return jsonify(json_data), 200
 
 
-@app.route(f'{prefix}/date-tweets', methods=['GET'])
+@app.route(f'{prefix}/tweet/date', methods=['GET'])
 def dateFiltered_tweets():
     startDate = request.args.get('s', default=None, type=str)
     endDate = request.args.get('e', default=None, type=str)
@@ -226,7 +215,7 @@ def generate_wordcloud():
     return jsonify(json_payload), 200
 
 
-@app.route(f'{prefix}/tweet_sentiment', methods=['GET'])
+@app.route(f'{prefix}/tweet/sentiment', methods=['GET'])
 def total_sentiment_tweets():
     df = tweet_sentiment_analysis()
     return jsonify(df.value_counts().to_json(orient='table')), 200
