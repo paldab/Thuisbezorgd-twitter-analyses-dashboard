@@ -12,10 +12,10 @@ import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
 import base64
-import textwrap
 import twint
 import io
 import config
+from utils.basic_util import create_json
 
 matplotlib.use('Agg')
 app = Flask(__name__)
@@ -64,10 +64,7 @@ def agg_numbers():
             Tweet.id.label('total'), Tweet.user_screenname
         ).from_statement(statement).all()
 
-        row_headers = [x for x in data[0].keys()]
-
-        for number in data:
-            json_data.append(dict(zip(row_headers, number)))
+        json_data = create_json(data)
 
     if 'twt' in type:
         statement = text("SELECT COUNT(id) as total FROM tweet").\
@@ -77,10 +74,8 @@ def agg_numbers():
             Tweet.id.label('total')
         ).from_statement(statement).all()
 
-        row_headers = [x for x in data[0].keys()]
+        json_data = create_json(data)
 
-        for number in data:
-            json_data.append(dict(zip(row_headers, number)))
 
     if 'h' in type:
         statement = text("SELECT COUNT(id) as total FROM hashtag").\
@@ -89,11 +84,9 @@ def agg_numbers():
         data = db._session().query(
             Hashtag.id.label('total')
         ).from_statement(statement).all()
+        
+        json_data = create_json(data)
 
-        row_headers = [x for x in data[0].keys()]
-
-        for number in data:
-            json_data.append(dict(zip(row_headers, number)))
 
     if 'u' in type:
         statement = text("SELECT COUNT(DISTINCT user_screenname) as total FROM tweet").\
@@ -103,10 +96,8 @@ def agg_numbers():
             Tweet.user_screenname.label('total')
         ).from_statement(statement).all()
 
-        row_headers = [x for x in data[0].keys()]
+        json_data = create_json(data)
 
-        for number in data:
-            json_data.append(dict(zip(row_headers, number)))
 
     return jsonify(json_data), 200
 
@@ -135,18 +126,7 @@ def all_tweets():
         Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
     ).from_statement(statement).all()
 
-    row_headers = [x for x in tweets[0].keys()]
-    row_headers.append('trimmed_text')
-    json_data = []
-
-    for tweet in tweets:
-        trimmed_text = textwrap.shorten(tweet['text'], width=144,
-                                        placeholder="...")
-
-        tweet = (tweet['id'], tweet['text'],
-                 tweet['user_screenname'], tweet['created_at'], trimmed_text)
-
-        json_data.append(dict(zip(row_headers, tweet)))
+    json_data = create_json(tweets, add_trimmed_text=True)
 
     return jsonify(json_data), 200
 
@@ -166,18 +146,7 @@ def dateFiltered_tweets():
         Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
     ).from_statement(statement).all()
 
-    row_headers = [x for x in tweets[0].keys()]
-    row_headers.append('trimmed_text')
-    json_data = []
-
-    for tweet in tweets:
-        trimmed_text = textwrap.shorten(tweet['text'], width=144,
-                                        placeholder="...")
-
-        tweet = (tweet['id'], tweet['text'],
-                 tweet['user_screenname'], tweet['created_at'], trimmed_text)
-
-        json_data.append(dict(zip(row_headers, tweet)))
+    json_data = create_json(tweets, add_trimmed_text=True)
 
     return jsonify(json_data), 200
 
