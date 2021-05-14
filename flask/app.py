@@ -1,4 +1,4 @@
-from models.model import Hashtag, Tweet
+from models.model import Hashtag, Tweet, ProcessedTweet
 from data import TweetCollector
 from models.database import db
 from utils.cleaner import clean_tweet, remove_stopwords
@@ -84,7 +84,7 @@ def agg_numbers():
         data = db._session().query(
             Hashtag.id.label('total')
         ).from_statement(statement).all()
-        
+
         json_data += create_json(data)
 
 
@@ -158,15 +158,30 @@ def generate_wordcloud():
     if background_color == "" or background_color == None:
         background_color = "black"
 
-    tweets = db._session().query(Tweet.text).all()
-    df = pd.DataFrame(tweets, columns=["text"])
+    tweets = db._session().query(Tweet.id, Tweet.text, Tweet.created_at).all()
+    df = pd.DataFrame(tweets, columns=['id', "text", 'created_at'])
 
-    df = clean_tweet(df)
-    df = remove_stopwords(df)
+    processed_tweets = db._session().query(
+        ProcessedTweet.text, ProcessedTweet.created_at
+    ).all()
+
+    processed_df = pd.DataFrame(processed_tweets,
+                                columns=['text', 'created_at'])
+
+    newest_tweet = df.created_at.max()
+    newest_ptweet = processed_df.created_at.max()
+
+    # Check if newest tweet was already processed
+    if processed_df.empty or newest_tweet != newest_ptweet:
+        df = clean_tweet(df)
+        df = remove_stopwords(df)
+
+        df.to_sql(ProcessedTweet.__tablename__, db._engine,
+                  if_exists='replace', index=False, chunksize=250)
 
     wc = WordCloud(max_words=1000, stopwords=dutch_stopwords,
                    background_color=background_color).generate(
-        " ".join(df["text"]))
+        " ".join(processed_df["text"]))
 
     # converting image to base64
     plt.imshow(wc)
