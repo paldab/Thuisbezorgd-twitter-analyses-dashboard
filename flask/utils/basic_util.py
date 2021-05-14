@@ -10,8 +10,8 @@ def create_json(data, add_trimmed_text=False):
     for row_values in data:
 
         if add_trimmed_text is True:
-            trimmed_text = textwrap.shorten(tweet['text'], width=144, placeholder="...")
-            tweet = (tweet['id'], tweet['text'], tweet['user_screenname'], tweet['created_at'], trimmed_text)
+            trimmed_text = textwrap.shorten(row_values['text'], width=144, placeholder="...")
+            row_values = (row_values['id'], row_values['text'], row_values['user_screenname'], row_values['created_at'], trimmed_text)
 
 
         json_data.append(dict(zip(row_headers, row_values)))

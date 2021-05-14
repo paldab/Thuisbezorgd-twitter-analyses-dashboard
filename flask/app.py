@@ -64,7 +64,7 @@ def agg_numbers():
             Tweet.id.label('total'), Tweet.user_screenname
         ).from_statement(statement).all()
 
-        json_data = create_json(data)
+        json_data += create_json(data)
 
     if 'twt' in type:
         statement = text("SELECT COUNT(id) as total FROM tweet").\
@@ -74,7 +74,7 @@ def agg_numbers():
             Tweet.id.label('total')
         ).from_statement(statement).all()
 
-        json_data = create_json(data)
+        json_data += create_json(data)
 
 
     if 'h' in type:
@@ -85,7 +85,7 @@ def agg_numbers():
             Hashtag.id.label('total')
         ).from_statement(statement).all()
         
-        json_data = create_json(data)
+        json_data += create_json(data)
 
 
     if 'u' in type:
@@ -96,7 +96,7 @@ def agg_numbers():
             Tweet.user_screenname.label('total')
         ).from_statement(statement).all()
 
-        json_data = create_json(data)
+        json_data += create_json(data)
 
 
     return jsonify(json_data), 200
