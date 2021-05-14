@@ -7,7 +7,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from wordcloud import WordCloud
 from tweet_sentiment import tweet_sentiment_analysis
-import nltk
+from utils.stopwords import dutch_stopwords
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -40,12 +40,12 @@ def welcome():
 
 @app.route(f'{prefix}/tweet/subject-count', methods=['GET'])
 def subject_count():
-    rest_count = db.session.query(Tweet.text).filter(
+    rest_count = db._session().query(Tweet.text).filter(
         Tweet.text.like('%restaurant%')
     ).count()
 
     # Get the tweets with a rough estimate about the delivery
-    delivery = db.session.query(Tweet.text).filter(
+    delivery = db._session().query(Tweet.text).filter(
         Tweet.text.like('%bezorg%')
     ).all()
 
@@ -71,7 +71,7 @@ def agg_numbers():
         statement = text("SELECT COUNT(id) as total, user_screenname FROM tweet GROUP BY user_screenname ORDER BY total DESC LIMIT 1").\
             columns(Tweet.id.label('total'), Tweet.user_screenname)
 
-        data = db.session.query(
+        data = db._session().query(
             Tweet.id.label('total'), Tweet.user_screenname
         ).from_statement(statement).all()
 
@@ -84,7 +84,7 @@ def agg_numbers():
         statement = text("SELECT COUNT(id) as total FROM tweet").\
             columns(Tweet.id.label('total'))
 
-        data = db.session.query(
+        data = db._session().query(
             Tweet.id.label('total')
         ).from_statement(statement).all()
 
@@ -97,7 +97,7 @@ def agg_numbers():
         statement = text("SELECT COUNT(id) as total FROM hashtag").\
             columns(Hashtag.id.label('total'))
 
-        data = db.session.query(
+        data = db._session().query(
             Hashtag.id.label('total')
         ).from_statement(statement).all()
 
@@ -106,11 +106,11 @@ def agg_numbers():
         for number in data:
             json_data.append(dict(zip(row_headers, number)))
 
-    if 'u'in type:
+    if 'u' in type:
         statement = text("SELECT COUNT(DISTINCT user_screenname) as total FROM tweet").\
             columns(Tweet.user_screenname.label('total'))
 
-        data = db.session.query(
+        data = db._session().query(
             Tweet.user_screenname.label('total')
         ).from_statement(statement).all()
 
@@ -142,7 +142,7 @@ def all_tweets():
         statement = text("SELECT id, text, user_screenname, created_at FROM tweet").\
             columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
 
-    tweets = db.session.query(
+    tweets = db._session().query(
         Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
     ).from_statement(statement).all()
 
@@ -173,7 +173,7 @@ def dateFiltered_tweets():
     statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE (DATE(created_at) between DATE(" + "\"" + startDate + "\"" + ") and DATE(" + "\"" + endDate + "\"" + "))").\
             columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
 
-    tweets = db.session.query(
+    tweets = db._session().query(
         Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
     ).from_statement(statement).all()
 
@@ -200,10 +200,7 @@ def generate_wordcloud():
     if background_color == "" or background_color == None:
         background_color = "black"
 
-    # dutch stopwords
-    dutch_stopwords = nltk.corpus.stopwords.words("dutch")
-
-    tweets = db.session.query(Tweet.text).all()
+    tweets = db._session().query(Tweet.text).all()
     df = pd.DataFrame(tweets, columns=["text"])
 
     df = clean_tweet(df)
@@ -248,10 +245,10 @@ if __name__ == '__main__':
     collector = TweetCollector(
         config.twitter['key'], config.twitter['secret'], c
     )
-    nltk.download('stopwords')
-    # collector.recent_search(db.session)
 
-    # collector.archive_search(db.session,
+    # collector.recent_search(db._session())
+
+    # collector.archive_search(db._session(),
     #                          config.twitter['environment'])
     # collector.twint_search()
 

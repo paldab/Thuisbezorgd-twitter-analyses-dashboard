@@ -2,7 +2,6 @@ from sqlalchemy import text
 from models.database import db
 from models.model import Tweet
 from utils.cleaner import clean_tweet
-from sklearn.feature_extraction.text import TfidfVectorizer
 from pathlib import Path
 import pandas as pd
 import joblib
@@ -19,7 +18,7 @@ def label_sentiment(label):
 def tweet_sentiment_analysis():
     # fetching the tweet data
     statement = text("SELECT text from tweet").columns(Tweet.text)
-    tweet_data = db.session.query(Tweet.text).\
+    tweet_data = db._session().query(Tweet.text).\
         from_statement(statement).all()
 
     df = clean_tweet(pd.DataFrame(tweet_data, columns=["text"]))
