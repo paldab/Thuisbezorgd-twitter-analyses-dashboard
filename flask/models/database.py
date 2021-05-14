@@ -10,8 +10,9 @@ class DB():
 
         self._engine = create_engine(
             'mysql+{}://{}:{}@{}/{}?charset=utf8mb4'.format(
-                config.database['connector'], config.database['user'], config.database['password'],
-                config.database['host'], config.database['db']
+                config.database['connector'], config.database['user'],
+                config.database['password'], config.database['host'],
+                config.database['db']
             )
         )
 

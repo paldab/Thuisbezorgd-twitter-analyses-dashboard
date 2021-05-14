@@ -7,6 +7,7 @@ from pathlib import Path
 import pandas as pd
 import joblib
 
+
 def label_sentiment(label):
     if label == 0:
         return "Negative"
@@ -14,14 +15,15 @@ def label_sentiment(label):
         return "Positive"
     return "Neutral"
 
+
 def tweet_sentiment_analysis():
     # fetching the tweet data
     statement = text("SELECT text from tweet").columns(Tweet.text)
-    tweet_data = getattr(db, "_session")().query(Tweet.text).\
-        from_statement(statement).all() 
+    tweet_data = db.session.query(Tweet.text).\
+        from_statement(statement).all()
 
     df = clean_tweet(pd.DataFrame(tweet_data, columns=["text"]))
-    df.apply(lambda x:x["text"].strip(), axis=1)
+    df.apply(lambda x: x["text"].strip(), axis=1)
     test_data = df["text"]
 
     # loading the vectorizer
@@ -37,6 +39,6 @@ def tweet_sentiment_analysis():
 
     # create a structured dataframe
     df = pd.DataFrame(pred, columns=["label"])
-    df["sentiment"] = df["label"].apply(lambda x:label_sentiment(x))
-    
+    df["sentiment"] = df["label"].apply(lambda x: label_sentiment(x))
+
     return df

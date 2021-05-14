@@ -12,12 +12,10 @@ import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
 import base64
-import json
 import textwrap
 import twint
 import io
 import config
-import emoji
 
 matplotlib.use('Agg')
 app = Flask(__name__)
@@ -32,7 +30,8 @@ app.config["APPLICATION_ROOT"] = prefix
 # basic GET route
 @app.route('/welcome', methods=['GET'])
 def welcome():
-    df = db.filter_users('bootyroll', 'njmidm', 'cat_gaming_', 'vriendenv', 'eetleed', 'voetnootje');
+    df = db.filter_users('bootyroll', 'njmidm', 'cat_gaming_', 'vriendenv',
+                         'eetleed', 'voetnootje')
 
     print(df.head())
 
@@ -67,30 +66,30 @@ def agg_numbers():
 
     type = request.args.get('t', default=None, type=str)[: 11].split('-')
     json_data = []
-    
+
     if 't_t' in type:
         statement = text("SELECT COUNT(id) as total, user_screenname FROM tweet GROUP BY user_screenname ORDER BY total DESC LIMIT 1").\
             columns(Tweet.id.label('total'), Tweet.user_screenname)
 
-        data = getattr(db, '_session')().query(
+        data = db.session.query(
             Tweet.id.label('total'), Tweet.user_screenname
         ).from_statement(statement).all()
 
         row_headers = [x for x in data[0].keys()]
-        
+
         for number in data:
             json_data.append(dict(zip(row_headers, number)))
 
     if 'twt' in type:
         statement = text("SELECT COUNT(id) as total FROM tweet").\
             columns(Tweet.id.label('total'))
-        
-        data = getattr(db, '_session')().query(
+
+        data = db.session.query(
             Tweet.id.label('total')
         ).from_statement(statement).all()
 
         row_headers = [x for x in data[0].keys()]
-        
+
         for number in data:
             json_data.append(dict(zip(row_headers, number)))
 
@@ -98,12 +97,12 @@ def agg_numbers():
         statement = text("SELECT COUNT(id) as total FROM hashtag").\
             columns(Hashtag.id.label('total'))
 
-        data = getattr(db, '_session')().query(
+        data = db.session.query(
             Hashtag.id.label('total')
         ).from_statement(statement).all()
 
         row_headers = [x for x in data[0].keys()]
-        
+
         for number in data:
             json_data.append(dict(zip(row_headers, number)))
 
@@ -111,7 +110,7 @@ def agg_numbers():
         statement = text("SELECT COUNT(DISTINCT user_screenname) as total FROM tweet").\
             columns(Tweet.user_screenname.label('total'))
 
-        data = getattr(db, '_session')().query(
+        data = db.session.query(
             Tweet.user_screenname.label('total')
         ).from_statement(statement).all()
 
@@ -121,6 +120,7 @@ def agg_numbers():
             json_data.append(dict(zip(row_headers, number)))
 
     return jsonify(json_data), 200
+
 
 @app.route(f'{prefix}/all-tweets', methods=['GET'])
 def all_tweets():
@@ -142,15 +142,13 @@ def all_tweets():
         statement = text("SELECT id, text, user_screenname, created_at FROM tweet").\
             columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
 
-    tweets = getattr(db, '_session')().query(
+    tweets = db.session.query(
         Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
     ).from_statement(statement).all()
 
     row_headers = [x for x in tweets[0].keys()]
     row_headers.append('trimmed_text')
     json_data = []
-
-
 
     for tweet in tweets:
         trimmed_text = textwrap.shorten(tweet['text'], width=144,
@@ -162,8 +160,6 @@ def all_tweets():
         json_data.append(dict(zip(row_headers, tweet)))
 
     return jsonify(json_data), 200
-
-
 
 
 @app.route(f'{prefix}/date-tweets', methods=['GET'])
@@ -177,8 +173,7 @@ def dateFiltered_tweets():
     statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE (DATE(created_at) between DATE(" + "\"" + startDate + "\"" + ") and DATE(" + "\"" + endDate + "\"" + "))").\
             columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
 
-
-    tweets = getattr(db, '_session')().query(
+    tweets = db.session.query(
         Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
     ).from_statement(statement).all()
 
@@ -198,7 +193,6 @@ def dateFiltered_tweets():
     return jsonify(json_data), 200
 
 
-
 @app.route(f'{prefix}/wordcloud', methods=['GET'])
 def generate_wordcloud():
     # Check parameters
@@ -209,7 +203,7 @@ def generate_wordcloud():
     # dutch stopwords
     dutch_stopwords = nltk.corpus.stopwords.words("dutch")
 
-    tweets = getattr(db, '_session')().query(Tweet.text).all()
+    tweets = db.session.query(Tweet.text).all()
     df = pd.DataFrame(tweets, columns=["text"])
 
     df = clean_tweet(df)
@@ -224,7 +218,7 @@ def generate_wordcloud():
     plt.axis("off")
 
     img = io.BytesIO()
-    plt.savefig(img, format="png", bbox_inches ='tight', pad_inches=0)
+    plt.savefig(img, format="png", bbox_inches='tight', pad_inches=0)
     img.seek(0)
     img64 = base64.b64encode(img.read())
 
@@ -233,6 +227,7 @@ def generate_wordcloud():
     json_payload = {"image": img_to_str}
 
     return jsonify(json_payload), 200
+
 
 @app.route(f'{prefix}/tweet_sentiment', methods=['GET'])
 def total_sentiment_tweets():
@@ -247,7 +242,6 @@ if __name__ == '__main__':
     c.Lang = 'nl'
     c.Store_object = True
     c.Hide_output = False
-    # c.Limit = 1
 
     getattr(db, '_base').metadata.create_all(bind=getattr(db, '_engine'))
 
@@ -255,9 +249,9 @@ if __name__ == '__main__':
         config.twitter['key'], config.twitter['secret'], c
     )
     nltk.download('stopwords')
-    # collector.recent_search(getattr(db, 'session'))
+    # collector.recent_search(db.session)
 
-    # collector.archive_search(getattr(db, 'session'),
+    # collector.archive_search(db.session,
     #                          config.twitter['environment'])
     # collector.twint_search()
 
