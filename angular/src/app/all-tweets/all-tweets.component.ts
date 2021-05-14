@@ -102,18 +102,17 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
       err => {
         this.req_succeeded = err.ok
         console.error(err);
+      },
+      () => {
+        setTimeout(() => {
+          if (this.req_succeeded == false) {
+            this.spinnerLoading = true
+          } else {
+            this.spinnerLoading = false
+          }
+        }, 700);
       }
     );    
-
-
-    setTimeout(() => {
-      if (this.req_succeeded == false) {
-        this.spinnerLoading = true
-      } else {
-        this.spinnerLoading = false
-      }
-            
-    }, 7000)
   }
 
   getAllTweets() {
@@ -129,18 +128,17 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
       err => {
         this.req_succeeded = err.ok
         console.error(err);
+      },
+      () => {
+        setTimeout(() => {
+          if (this.req_succeeded == false) {
+            this.spinnerLoading = true
+          } else {
+            this.spinnerLoading = false
+          }
+        }, 700);
       }
-    );    
-
-
-    setTimeout(() => {
-      if (this.req_succeeded == false) {
-        this.spinnerLoading = true
-      } else {
-        this.spinnerLoading = false
-      }
-            
-    }, 7000)
+    );
   }
 
   getAllTweetsToday() {
@@ -154,18 +152,17 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
       err => {
         this.req_succeeded = err.ok
         console.error(err);
+      },
+      () => {
+        setTimeout(() => {
+          if (this.req_succeeded == false) {
+            this.spinnerLoading = true
+          } else {
+            this.spinnerLoading = false
+          }
+        }, 700);
       }
     );    
-
-
-    setTimeout(() => {
-      if (this.req_succeeded == false) {
-        this.spinnerLoading = true
-      } else {
-        this.spinnerLoading = false
-      }
-            
-    }, 7000)
   }
 
 
@@ -184,18 +181,17 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
       err => {
         this.req_succeeded = err.ok
         console.error(err);
+      },
+      () => {
+        setTimeout(() => {
+          if (this.req_succeeded == false) {
+            this.spinnerLoading = true
+          } else {
+            this.spinnerLoading = false
+          }
+        }, 700);
       }
     );    
-
-
-    setTimeout(() => {
-      if (this.req_succeeded == false) {
-        this.spinnerLoading = true
-      } else {
-        this.spinnerLoading = false
-      }
-            
-    }, 7000)
   }
 
   getAllTweetsMonth() {
@@ -210,25 +206,16 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
       err => {
         this.req_succeeded = err.ok
         console.error(err);
+      },
+      () => {
+        setTimeout(() => {
+          if (this.req_succeeded == false) {
+            this.spinnerLoading = true
+          } else {
+            this.spinnerLoading = false
+          }
+        }, 700);
       }
-    );    
-
-
-    setTimeout(() => {
-      if (this.req_succeeded == false) {
-        this.spinnerLoading = true
-      } else {
-        this.spinnerLoading = false
-      }
-            
-    }, 7000)
+    );
   }
-
-
-
-
-
-
-  
-
 }
