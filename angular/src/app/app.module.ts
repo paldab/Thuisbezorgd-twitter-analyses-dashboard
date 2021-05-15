@@ -73,6 +73,9 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { AppComponent } from './app.component';
 import { AllTweetsComponent } from './all-tweets/all-tweets.component';
 import { WordcloudComponent } from './wordcloud/wordcloud.component';
+import { AggNumberComponent } from './agg-number/agg-number.component';
+import { PlotlyPlotComponent } from './plotly-plot/plotly-plot.component';
+import { PlotlyTableComponent } from './plotly-table/plotly-table.component';
 
 
 
@@ -134,6 +137,9 @@ import { WordcloudComponent } from './wordcloud/wordcloud.component';
     LoginDialogComponent,
     AllTweetsComponent,
     WordcloudComponent,
+    AggNumberComponent,
+    PlotlyPlotComponent,
+    PlotlyTableComponent,
   ],
   imports: [
     OverlayModule,

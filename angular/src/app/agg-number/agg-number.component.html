@@ -1,0 +1,6 @@
+<div class="rad-info-box rad-txt-success">
+    <mat-icon [class]="component?.class">{{ component?.icon }}</mat-icon>
+    <span class="title">{{ component?.title }}</span>
+    <span class="user" *ngIf="component?.value?.user_screenname">{{ component?.value?.user_screenname }}</span>
+    <span class="number"><span>{{ component?.value?.total }}</span></span>
+  </div>
