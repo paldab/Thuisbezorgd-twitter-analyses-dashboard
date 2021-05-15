@@ -169,7 +169,8 @@ def generate_wordcloud():
         df = remove_stopwords(df)
 
         df.to_sql(ProcessedTweet.__tablename__, db._engine,
-                  if_exists='replace', index=False, chunksize=250)
+                  if_exists='append', index=False, chunksize=250)
+        processed_df = df
 
     wc = WordCloud(max_words=1000, stopwords=dutch_stopwords,
                    background_color=background_color).generate(
