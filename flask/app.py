@@ -165,6 +165,10 @@ def generate_wordcloud():
 
     # Check if newest tweet was already processed
     if processed_df.empty or newest_tweet != newest_ptweet:
+        # Only process new tweets to reduce computation
+        if not processed_df.empty:
+            df = df[df['created_at'] > newest_ptweet]
+
         df = clean_tweet(df)
         df = remove_stopwords(df)
 
