@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-plotly-table',
@@ -6,6 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./plotly-table.component.scss']
 })
 export class PlotlyTableComponent implements OnInit {
+  @Input() component: any;
 
   constructor() { }
 

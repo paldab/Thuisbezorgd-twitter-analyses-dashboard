@@ -14,7 +14,7 @@
 
           <mat-card-content class="dashboard-card-content">
             <ng-container *ngIf="component?.type == 'agg-numbers';">
-              <app-agg-number></app-agg-number>
+              <app-agg-number [component]="component"></app-agg-number>
             </ng-container>
             <ng-container *ngIf="component?.type == 'wordcloud';">
               <wordcloud></wordcloud>
