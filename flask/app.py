@@ -14,6 +14,7 @@ import pandas as pd
 import base64
 import twint
 import io
+import json
 import config
 from utils.basic_util import create_json
 
@@ -76,7 +77,6 @@ def agg_numbers():
 
         json_data += create_json(data)
 
-
     if 'h' in type:
         statement = text("SELECT COUNT(id) as total FROM hashtag").\
             columns(Hashtag.id.label('total'))
@@ -86,7 +86,6 @@ def agg_numbers():
         ).from_statement(statement).all()
 
         json_data += create_json(data)
-
 
     if 'u' in type:
         statement = text("SELECT COUNT(DISTINCT user_screenname) as total FROM tweet").\
@@ -98,7 +97,6 @@ def agg_numbers():
 
         json_data += create_json(data)
 
-
     return jsonify(json_data), 200
 
 
@@ -107,26 +105,27 @@ def all_tweets():
     filter = request.args.get('f', default=None, type=str)
 
     if filter == 'd':
-        statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE DATE(created_at) = CURDATE()").\
-            columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
+        procedure = 'getDailyTweets'
 
     if filter == 'w':
-        statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE WEEK (created_at) >= WEEK(CURDATE()) -1 AND YEAR(created_at) = YEAR(CURDATE())").\
-            columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
+        procedure = 'getWeeklyTweets'
 
     if filter == 'm':
-        statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE created_at > NOW() - INTERVAL 1 MONTH ORDER BY created_at").\
-            columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
+        procedure = 'getMonthlyTweets'
 
-    if filter == '*':
-        statement = text("SELECT id, text, user_screenname, created_at FROM tweet").\
-            columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
+    # Show all Tweets by default
+    if filter is None:
+        tweets = db._session().query(
+            Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
+        ).all()
 
-    tweets = db._session().query(
-        Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
-    ).from_statement(statement).all()
+        json_data = create_json(tweets, add_trimmed_text=True)
+    else:
+        tweets = db.call_procedure(procedure)
 
-    json_data = create_json(tweets, add_trimmed_text=True)
+        json_data = json.loads(
+            tweets.to_json(orient='records', date_format='iso')
+        )
 
     return jsonify(json_data), 200
 
@@ -136,19 +135,12 @@ def dateFiltered_tweets():
     startDate = request.args.get('s', default=None, type=str)
     endDate = request.args.get('e', default=None, type=str)
 
-    print(startDate + 'hiero')
-    print(endDate + 'hiero')
+    tweets = db.call_procedure('getTweetsByDatesDiff', [startDate, endDate])
+    parsed_json = json.loads(
+        tweets.to_json(orient='records', date_format='iso')
+    )
 
-    statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE (DATE(created_at) between DATE(" + "\"" + startDate + "\"" + ") and DATE(" + "\"" + endDate + "\"" + "))").\
-            columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
-
-    tweets = db._session().query(
-        Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
-    ).from_statement(statement).all()
-
-    json_data = create_json(tweets, add_trimmed_text=True)
-
-    return jsonify(json_data), 200
+    return jsonify(parsed_json), 200
 
 
 @app.route(f'{prefix}/wordcloud', methods=['GET'])
