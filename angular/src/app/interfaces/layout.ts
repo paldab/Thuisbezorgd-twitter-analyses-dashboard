@@ -6,10 +6,16 @@ export interface Layout {
     show: boolean
 }
 
+export interface sentiment {
+    label: number;
+    sentiment: string;
+    values: number
+}
+
 export interface IconLayout extends Layout {
     icon: string
+    selector: string
     class: string
-    value: object
 }
 
 export interface plotlyLayout extends Layout {

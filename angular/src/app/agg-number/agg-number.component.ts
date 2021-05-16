@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { AggNumsService } from '../services/agg-nums.service';
 
 @Component({
   selector: 'app-agg-number',
@@ -7,9 +8,21 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class AggNumberComponent implements OnInit {
   @Input() component: any;
-  constructor() { }
+  _num_data: any = undefined;
 
-  ngOnInit(): void {
+  public get num_data() {
+    return this._num_data;
   }
 
+  public set num_data(data) {
+    this._num_data = data;
+  }
+
+  constructor(private aggNumsService: AggNumsService) {}
+
+  ngOnInit(): void {
+    this.aggNumsService.get_data(this.component?.selector).subscribe((data: any) => {
+      this.num_data = data[0];
+    });
+  }
 }

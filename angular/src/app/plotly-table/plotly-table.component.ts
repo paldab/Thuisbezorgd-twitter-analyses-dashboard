@@ -1,4 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { TweetsService } from '../services/tweets.service';
 
 @Component({
   selector: 'app-plotly-table',
@@ -7,10 +10,14 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class PlotlyTableComponent implements OnInit {
   @Input() component: any;
-
-  constructor() { }
+  columnsToDisplay: string[] = ['user_screenname', 'trimmed_text', 'created_at'];
+  dataSource = new MatTableDataSource();
+  @ViewChild(MatSort) sort!: MatSort;
+  constructor(public tweetsService: TweetsService) { }
 
   ngOnInit(): void {
+    this.dataSource = this.tweetsService.mostRecentTweets('m');
+    this.dataSource.sort = this.sort;
   }
 
 }

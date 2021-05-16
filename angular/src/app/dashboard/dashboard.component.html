@@ -19,8 +19,8 @@
             <ng-container *ngIf="component?.type == 'wordcloud';">
               <wordcloud></wordcloud>
             </ng-container>
-            <ng-container *ngIf="component?.type == 'plotly-plot';">
-            <app-plotly-plot></app-plotly-plot>
+            <ng-container *ngIf="component?.type.split(':')[0] == 'plotly-plot';">
+            <app-plotly-plot [component]="component"></app-plotly-plot>
             </ng-container>
             <ng-container *ngIf="component?.type == 'plotly-table';">
               <app-plotly-table></app-plotly-table>
