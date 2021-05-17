@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, ViewChild } from '@angular/core';
-import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Observable, of } from 'rxjs';
 import {environment as env} from "../../environments/environment";
@@ -16,12 +15,15 @@ export class TweetsService {
   orderedTweetsArray: any = new Array();
   usedChar: string = 'm';
   countable: number = 5;
+  dataSource!: MatTableDataSource<any>;
   createDate: string[] = [];
   tweetsADay: number[] = [];
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient) {
+      this.dataSource = new MatTableDataSource<any>();
+   }
 
-  all_tweets(filter = '*'): Observable<AllTweetsItem[]> {
+  all_tweets(filter?: string): Observable<AllTweetsItem[]> {
     return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/tweet?f=${filter}`);
   }
   grouped_tweets() {
@@ -50,8 +52,10 @@ export class TweetsService {
           teller = teller + 1;
         }
 
+        console.log(this.orderedTweetsArray);
+        
         // Set data to datasource and assign MatSort to the datasource
-        return this.orderedTweetsArray;
+        this.dataSource.data = this.orderedTweetsArray;
 
         // console.log(this.orderedTweetsArray);
       });

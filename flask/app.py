@@ -105,13 +105,15 @@ def all_tweets():
     filter = request.args.get('f', default=None, type=str)
 
     if filter == 'd':
-        procedure = 'getDailyTweets'
-
+        statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE DATE(created_at) = CURDATE()").\
+                    columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
     if filter == 'w':
-        procedure = 'getWeeklyTweets'
+        statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE WEEK (created_at) >= WEEK(CURDATE()) -1 AND YEAR(created_at) = YEAR(CURDATE())").\
+            columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
 
     if filter == 'm':
-        procedure = 'getMonthlyTweets'
+        statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE created_at > NOW() - INTERVAL 1 MONTH ORDER BY created_at").\
+            columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
 
     # Show all Tweets by default
     if filter is None:
@@ -119,13 +121,12 @@ def all_tweets():
             Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
         ).all()
 
-        json_data = create_json(tweets, add_trimmed_text=True)
     else:
-        tweets = db.call_procedure(procedure)
+        tweets = db._session().query(
+            Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
+        ).from_statement(statement).all()
 
-        json_data = json.loads(
-            tweets.to_json(orient='records', date_format='iso')
-        )
+    json_data = create_json(tweets, add_trimmed_text=True)
 
     return jsonify(json_data), 200
 
