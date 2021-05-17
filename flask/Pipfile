@@ -18,19 +18,15 @@ cryptography = "*"
 flask-cors = "*"
 wordcloud = "*"
 nltk = "*"
-pytest = "*"
 gunicorn = "*"
-pyarrow = "*"
-gensim = "*"
 sklearn = "*"
-openpyxl = "*"
-textblob = "*"
 selenium = "*"
 spacy = "*"
 matplotlib = "*"
 
 
 [dev-packages]
+pytest = "*"
 
 [requires]
 python_version = "3"
