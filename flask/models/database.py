@@ -42,7 +42,11 @@ class DB():
 
             tweets = pd.DataFrame.from_records(results,
                                                columns=column_names_list)
-            tweets['created_at'] = tweets['created_at'].dt.strftime('%a, %d %b %Y %H:%M:%S %Z')
+
+            if pd.api.types.is_datetime64_dtype(tweets['created_at']):
+                tweets['created_at'] = tweets['created_at'].dt.strftime(
+                    '%a, %d %b %Y %H:%M:%S %Z'
+                )
 
             return tweets
         finally:
