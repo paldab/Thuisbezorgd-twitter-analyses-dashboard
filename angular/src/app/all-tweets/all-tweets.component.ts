@@ -93,7 +93,7 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
   
     this.spinnerLoading = true;
     
-    this.tweetsService.dateFiltered_tweets  (start.toISOString().slice(0, 19).replace('T', ' '), end.toISOString().slice(0, 19).replace('T', ' ')).subscribe(
+    this.tweetsService.dateFilteredTweets(start.toISOString().slice(0, 19).replace('T', ' '), end.toISOString().slice(0, 19).replace('T', ' ')).subscribe(
       data => {
         console.log(data)
         this.dataSource.data = data
@@ -119,7 +119,7 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
     console.log(this.campaignOne.controls['start'].value);
     this.spinnerLoading = true;
     
-    this.tweetsService.all_tweets().subscribe(
+    this.tweetsService.allTweets().subscribe(
       data => {
         console.log(data.length);
         this.dataSource.data = data
@@ -144,7 +144,7 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
   getAllTweetsToday() {
     this.spinnerLoading = true;
     
-    this.tweetsService.all_tweets('d').subscribe(
+    this.tweetsService.allTweets('d').subscribe(
       data => {
         this.dataSource.data = data
         this.filterType = 'vandaag'
@@ -172,7 +172,7 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
   getAllTweetsWeek() {
     this.spinnerLoading = true;
     
-    this.tweetsService.all_tweets('w').subscribe(
+    this.tweetsService.allTweets('w').subscribe(
       data => {
         this.dataSource.data = data
         this.filterType = 'afgelopen week'
@@ -197,7 +197,7 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
   getAllTweetsMonth() {
     this.spinnerLoading = true;
     
-    this.tweetsService.all_tweets('m').subscribe(
+    this.tweetsService.allTweets('m').subscribe(
       data => {
         this.dataSource.data = data
         this.filterType = 'afgelopen maand'

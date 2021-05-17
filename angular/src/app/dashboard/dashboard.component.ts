@@ -1,7 +1,7 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
-import {map} from 'rxjs/operators';
-import {Breakpoints, BreakpointObserver} from '@angular/cdk/layout';
-import {TweetsService} from '../services/tweets.service';
+import { Component, OnInit } from '@angular/core';
+import { map } from 'rxjs/operators';
+import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
+import { Layout, IconLayout } from '../interfaces/layout';
 
 
 @Component({
@@ -10,26 +10,100 @@ import {TweetsService} from '../services/tweets.service';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-  req_succeeded = true;
   name: any = undefined;
-  layout: any = [];
+  layout: Layout[] = [];
   components: any = undefined;
 
-  constructor(private breakpointObserver: BreakpointObserver, private tweetsService: TweetsService) {
+  constructor(private breakpointObserver: BreakpointObserver) {
 
     setTimeout(() => { 
       this.name = window.sessionStorage.getItem('user_name')?.replace(/['"]+/g, '');
     }, 4000);
   }
 
-  createDate: string[] = [];
-  tweetsADay: number[] = [];
-  orderedTweetsArray = new Array();
-  countable = 5;
-  usedChar = 'm';
-
   ngOnInit(): void {
-    // this.getAllTweetsMonth();
+    let topTweeterLayout: IconLayout = {
+      title: 'Top Tweeter',
+      type: 'agg-numbers',
+      icon: 'star',
+      selector: 't_t',
+      class: 'primary',
+      cols: 4,
+      rows: 4,
+      show: true,
+    }
+    let tweetUsersLayout: IconLayout = {
+      title: 'Gebruikers',
+      type: 'agg-numbers',
+      selector: 'u',
+      icon: 'group',
+      class: 'teal',
+      cols: 4,
+      rows: 4,
+      show: true,
+    }
+    let tweetsLayout: IconLayout = {
+      title: 'Tweets',
+      type: 'agg-numbers',
+      selector: 'twt',
+      icon: 'chat',
+      class: 'blue',
+      cols: 4,
+      rows: 4,
+      show: true,
+    }
+    let hashtagsLayout: IconLayout = {
+      title: 'Hashtags',
+      type: 'agg-numbers',
+      selector: 'h',
+      icon: 'tag',
+      class: 'purple',
+      cols: 4,
+      rows: 4,
+      show: true,
+    }
+    let wordcloudLayout: Layout = {
+      title: 'Wordcloud van de dag',
+      type: 'wordcloud',
+      cols: 4,
+      rows: 14,
+      show: true,
+    }
+    let timelineLayout: Layout = {
+      title: 'Timeline tweets',
+      type: 'plotly-plot:timeline',
+      enableButtons: true,
+      cols: 4,
+      rows: 14,
+      show: true,
+      layout: {width: 600, height: 400}
+    }
+    let last5TweetsLayout: Layout = {
+      title: 'Laatste 5 tweets',
+      type: 'plotly-table',
+      cols: 4,
+      rows: 14,
+      show: true,
+    }
+    let groupedTweetsLayout: Layout = {
+      title: 'Grouped tweets',
+      type: 'plotly-plot:grouped',
+      enableButtons: false,
+      cols: 4,
+      rows: 14,
+      show: true,
+      layout: {width: 600, height: 400}
+    }
+    let sentimentTweetsLayout: Layout = {
+      title: 'Sentiment tweets',
+      type: 'plotly-plot:sentiment',
+      enableButtons: false,
+      cols: 4,
+      rows: 14,
+      show: true,
+      layout: {width: 600, height: 400}
+    }
+
     this.components = this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small,
       Breakpoints.Medium, Breakpoints.Large, Breakpoints.XLarge]).pipe(
       map((breakpointer) => {
@@ -43,89 +117,15 @@ export class DashboardComponent implements OnInit {
         // console.log(this.num_data);
 
         this.layout = [
-          {
-            title: 'Top Tweeter',
-            type: 'agg-numbers',
-            icon: 'star',
-            selector: 't_t',
-            class: 'primary',
-            cols: 4,
-            rows: 4,
-            show: true,
-
-          },
-          {
-            title: 'Gebruikers',
-            type: 'agg-numbers',
-            selector: 'u',
-            icon: 'group',
-            class: 'teal',
-            cols: 4,
-            rows: 4,
-            show: true,
-
-          },
-          {
-            title: 'Tweets',
-            type: 'agg-numbers',
-            selector: 'twt',
-            icon: 'chat',
-            class: 'blue',
-            cols: 4,
-            rows: 4,
-            show: true,
-
-          },
-          {
-            title: 'Hashtags',
-            type: 'agg-numbers',
-            selector: 'h',
-            icon: 'tag',
-            class: 'purple',
-            cols: 4,
-            rows: 4,
-            show: true,
-
-          },
-          {
-            title: 'Wordcloud van de dag',
-            type: 'wordcloud',
-            cols: 4,
-            rows: 14,
-            show: true,
-          },
-          {
-            title: 'Timeline tweets',
-            type: 'plotly-plot:timeline',
-            enableButtons: true,
-            cols: 4,
-            rows: 14,
-            show: true,
-
-          },
-          {
-            title: 'Laatste 5 tweets',
-            type: 'plotly-table',
-            cols: 4,
-            rows: 14,
-            show: true,
-          },
-          {
-            title: 'Grouped tweets',
-            type: 'plotly-plot:grouped',
-            enableButtons: false,
-            cols: 4,
-            rows: 14,
-            show: true,
-          },
-          {
-            title: 'Sentiment tweets',
-            type: 'plotly-plot:sentiment',
-            enableButtons: false,
-            cols: 4,
-            rows: 14,
-            show: true,
-          },
+          topTweeterLayout,
+          tweetUsersLayout,
+          tweetsLayout,
+          hashtagsLayout,
+          wordcloudLayout,
+          timelineLayout,
+          last5TweetsLayout,
+          groupedTweetsLayout,
+          sentimentTweetsLayout,
         ];
 
         if (xs == breakpointer.matches) {

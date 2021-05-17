@@ -4,6 +4,8 @@ export interface Layout {
     cols: number
     rows: number
     show: boolean
+    enableButtons?: boolean
+    layout?: object
 }
 
 export interface sentiment {
@@ -16,10 +18,4 @@ export interface IconLayout extends Layout {
     icon: string
     selector: string
     class: string
-}
-
-export interface plotlyLayout extends Layout {
-    enableButtons: boolean
-    data: object
-    layout: object
 }
