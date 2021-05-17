@@ -10,7 +10,7 @@ export class AggNumsService {
 
   constructor(private httpClient: HttpClient) { }
 
-  get_data(type: string) {    
+  getData(type: string) {    
     return this.httpClient.get(`${this.SERVER_URL}/agg-numbers?t=${type}`)
   }
 }

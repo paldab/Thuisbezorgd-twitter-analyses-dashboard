@@ -21,7 +21,7 @@ export class AggNumberComponent implements OnInit {
   constructor(private aggNumsService: AggNumsService) {}
 
   ngOnInit(): void {
-    this.aggNumsService.get_data(this.component?.selector).subscribe((data: any) => {
+    this.aggNumsService.getData(this.component?.selector).subscribe((data: any) => {
       this.num_data = data[0];
     });
   }

@@ -23,14 +23,14 @@ export class TweetsService {
       this.dataSource = new MatTableDataSource<any>();
    }
 
-  all_tweets(filter?: string): Observable<AllTweetsItem[]> {
+  allTweets(filter?: string): Observable<AllTweetsItem[]> {
     return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/tweet?f=${filter}`);
   }
-  grouped_tweets() {
+  groupedTweets() {
     return this.httpClient.get(`${this.SERVER_URL}/tweet/subject-count`);
   }
 
-  dateFiltered_tweets(startDate = '*', endDate= '*'): Observable<AllTweetsItem[]> {
+  dateFilteredTweets(startDate = '*', endDate= '*'): Observable<AllTweetsItem[]> {
     return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/tweet/date?s=${startDate}&e=${endDate}`);
   }
 
@@ -44,7 +44,7 @@ export class TweetsService {
   }
 
   mostRecentTweets(char: string): any {
-    this.all_tweets(char).subscribe(
+    this.allTweets(char).subscribe(
       data => {
         let teller = 0;
         for (let index = 0; index < this.countable; index++) {

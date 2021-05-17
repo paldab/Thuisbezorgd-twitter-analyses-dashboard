@@ -81,7 +81,7 @@ export class PlotlyPlotComponent implements OnInit {
   }
 
   private getGroupedCount(): void {
-    this.tweetsService.grouped_tweets().subscribe(
+    this.tweetsService.groupedTweets().subscribe(
       data => {
         this.groupedTweetsKeys = Object.keys(data);
         this.groupedTweetsVals = Object.values(data);
@@ -111,7 +111,7 @@ export class PlotlyPlotComponent implements OnInit {
 
     this.tweetsService.createDate.length = 0;
     this.tweetsService.tweetsADay.length = 0;
-    this.tweetsService.all_tweets('m').subscribe(
+    this.tweetsService.allTweets('m').subscribe(
       data => {
         let counter = 0;
         for (let index = 1; index < data.length - 1; index++) {
@@ -157,7 +157,7 @@ export class PlotlyPlotComponent implements OnInit {
 
     this.tweetsService.createDate.length = 0;
     this.tweetsService.tweetsADay.length = 0;
-    this.tweetsService.all_tweets('d').subscribe(
+    this.tweetsService.allTweets('d').subscribe(
       data => {
         console.log(data);
         let counter = 0;
@@ -203,7 +203,7 @@ export class PlotlyPlotComponent implements OnInit {
 
     this.tweetsService.createDate.length = 0;
     this.tweetsService.tweetsADay.length = 0;
-    this.tweetsService.all_tweets('w').subscribe(
+    this.tweetsService.allTweets('w').subscribe(
       data => {
         console.log(data);
         console.log(data[0].created_at.substr(0, 17));
