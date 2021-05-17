@@ -1,9 +1,9 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable, ViewChild } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
-import { Observable, of } from 'rxjs';
+import {HttpClient} from '@angular/common/http';
+import {Injectable, ViewChild} from '@angular/core';
+import {MatTableDataSource} from '@angular/material/table';
+import {Observable, of} from 'rxjs';
 import {environment as env} from "../../environments/environment";
-import { AllTweetsItem } from '../all-tweets/all-tweets.component';
+import {AllTweetsItem} from '../all-tweets/all-tweets.component';
 
 
 @Injectable({
@@ -20,21 +20,26 @@ export class TweetsService {
   tweetsADay: number[] = [];
 
   constructor(private httpClient: HttpClient) {
-      this.dataSource = new MatTableDataSource<any>();
-   }
+    this.dataSource = new MatTableDataSource<any>();
+  }
 
   allTweets(filter?: string): Observable<AllTweetsItem[]> {
+    if (!filter) {
+      return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/tweet`);
+    }
+
     return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/tweet?f=${filter}`);
   }
+
   groupedTweets() {
     return this.httpClient.get(`${this.SERVER_URL}/tweet/subject-count`);
   }
 
-  dateFilteredTweets(startDate = '*', endDate= '*'): Observable<AllTweetsItem[]> {
+  dateFilteredTweets(startDate = '*', endDate = '*'): Observable<AllTweetsItem[]> {
     return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/tweet/date?s=${startDate}&e=${endDate}`);
   }
 
-  getSentimentCount(){
+  getSentimentCount() {
     return this.httpClient.get(`${this.SERVER_URL}/tweet/sentiment`);
   }
 
@@ -53,7 +58,7 @@ export class TweetsService {
         }
 
         console.log(this.orderedTweetsArray);
-        
+
         // Set data to datasource and assign MatSort to the datasource
         this.dataSource.data = this.orderedTweetsArray;
 

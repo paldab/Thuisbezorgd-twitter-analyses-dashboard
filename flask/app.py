@@ -120,6 +120,8 @@ def all_tweets():
             Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
         ).all()
 
+        json_data = create_json(tweets, True)
+
     else:
 
         tweets_df = db.call_procedure(procedure)
