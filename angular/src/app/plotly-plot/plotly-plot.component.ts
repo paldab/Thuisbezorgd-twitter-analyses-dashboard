@@ -10,9 +10,9 @@ import { sentiment } from '../interfaces/layout'
 })
 export class PlotlyPlotComponent implements OnInit {
   @Input() component: any;
-  
+
   req_succeeded: any;
-  
+
   groupedTweetsKeys!: string[];
   groupedTweetsVals!: any[];
 
@@ -44,11 +44,11 @@ export class PlotlyPlotComponent implements OnInit {
         break;
 
       case "timeline":
-        this.getAllTweetsMonth();
+        this.getAllTweetsByFilter('m');
         break;
     }
   }
-    
+
   private getSentimentCount(){
     this.tweetsService.getSentimentCount().subscribe(
       sentimentData =>{
@@ -56,7 +56,7 @@ export class PlotlyPlotComponent implements OnInit {
         const {data} = parsedData
         const sentimentNames: any = []
         const sentimentValues: any = []
-        
+
         data.forEach((row: sentiment) =>{
           let {sentiment, values} = row
           sentimentNames.push(sentiment)
@@ -103,6 +103,54 @@ export class PlotlyPlotComponent implements OnInit {
     );
   }
 
+  getAllTweetsByFilter(filter: string): void {
+    console.log(filter);
+    this.tweetsService.mostRecentTweets(filter);
+    this.tweetsService.usedChar = filter;
+    this.tweetsService.countable = 5;
+
+    this.tweetsService.createDate.length = 0;
+    this.tweetsService.tweetsADay.length = 0;
+    this.tweetsService.allTweets(filter).subscribe(
+      data => {
+        let counter = 0;
+        for (let index = 1; index < data.length - 1; index++) {
+          if (data[index - 1].created_at.substr(5, 7) !== data[index].created_at.substr(5, 7) || filter == 'd') {
+            counter = counter + 1;
+            this.tweetsService.createDate.push(data[index].created_at.substr(5, 7));
+          }
+        }
+
+        let teller = 0;
+        for (let index = 0; index < this.tweetsService.createDate.length; index++) {
+          let tweetscounter = 0;
+          for (let index = 0; index < data.length; index++) {
+            if (this.tweetsService.createDate[teller] === data[index].created_at.substr(5, 7)) {
+              tweetscounter = tweetscounter + 1;
+            }
+          }
+          teller = teller + 1;
+          this.tweetsService.tweetsADay[index] = tweetscounter;
+        }
+
+        this.plot_data = {
+          data: [{
+            x: this.tweetsService.createDate,
+            y: this.tweetsService.tweetsADay,
+            type: 'bar',
+            marker: {
+              color: '#ff9800'
+            }
+          }],
+          layout: {width: 300, height: 300}
+        };
+      },
+      err => {
+        this.req_succeeded = err.ok;
+        console.error(err);
+      }
+    );
+  }
 
   getAllTweetsMonth(): void {
     this.tweetsService.mostRecentTweets('m');

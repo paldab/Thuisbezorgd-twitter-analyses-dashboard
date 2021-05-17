@@ -1,8 +1,8 @@
 <ng-container *ngIf="component?.enableButtons == true;">
     <div class="button-container">
-      <button mat-raised-button color="primary" (click)="this.getAllTweetsDay();">Toon vandaag</button>
-      <button mat-raised-button color="primary" (click)="this.getAllTweetsWeek();">Toon afgelopen week</button>
-      <button mat-raised-button color="primary" (click)="this.getAllTweetsMonth();">Toon afgelopen maand</button>
+      <button mat-raised-button color="primary" (click)="this.getAllTweetsByFilter('d');">Toon vandaag</button>
+      <button mat-raised-button color="primary" (click)="this.getAllTweetsByFilter('w');">Toon afgelopen week</button>
+      <button mat-raised-button color="primary" (click)="this.getAllTweetsByFilter('m');">Toon afgelopen maand</button>
     </div>
 </ng-container>
 
