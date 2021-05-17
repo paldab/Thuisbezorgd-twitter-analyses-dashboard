@@ -1,3 +1,4 @@
+import textwrap
 from models.model import Hashtag, Tweet, ProcessedTweet
 from data import TweetCollector
 from models.database import db
@@ -105,15 +106,13 @@ def all_tweets():
     filter = request.args.get('f', default=None, type=str)
 
     if filter == 'd':
-        statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE DATE(created_at) = CURDATE()").\
-                    columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
+        procedure = 'getDailyTweets'
+
     if filter == 'w':
-        statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE WEEK (created_at) >= WEEK(CURDATE()) -1 AND YEAR(created_at) = YEAR(CURDATE())").\
-            columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
+        procedure = 'getWeeklyTweets'
 
     if filter == 'm':
-        statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE created_at > NOW() - INTERVAL 1 MONTH ORDER BY created_at").\
-            columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
+        procedure = 'getMonthlyTweets'
 
     # Show all Tweets by default
     if filter is None:
@@ -122,11 +121,15 @@ def all_tweets():
         ).all()
 
     else:
-        tweets = db._session().query(
-            Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
-        ).from_statement(statement).all()
 
-    json_data = create_json(tweets, add_trimmed_text=True)
+        tweets_df = db.call_procedure(procedure)
+
+        # add trimmed_text to dataframe.
+        tweets_df['trimmed_text'] = tweets_df['text'].apply(lambda x: textwrap.shorten(x, width=144, placeholder="..."))
+
+        json_data = json.loads(
+            tweets_df.to_json(orient='records', date_format='iso')
+        )
 
     return jsonify(json_data), 200
 
