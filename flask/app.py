@@ -17,7 +17,7 @@ import twint
 import io
 import json
 import config
-import emoji
+import nltk
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 from utils.basic_util import create_json
