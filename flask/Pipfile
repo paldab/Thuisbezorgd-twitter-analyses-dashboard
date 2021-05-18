@@ -18,12 +18,12 @@ cryptography = "*"
 flask-cors = "*"
 wordcloud = "*"
 nltk = "*"
+apscheduler = "*"
 gunicorn = "*"
 sklearn = "*"
 selenium = "*"
 spacy = "*"
 matplotlib = "*"
-
 
 [dev-packages]
 pytest = "*"
@@ -31,5 +31,6 @@ pytest = "*"
 [requires]
 python_version = "3"
 
-[twint.packages]
-{git = "https://github.com/twintproject/twint.git"}
+[packages.twint]
+git = "https://github.com/twintproject/twint.git"
+

@@ -17,6 +17,9 @@ import twint
 import io
 import json
 import config
+import emoji
+import atexit
+from apscheduler.schedulers.background import BackgroundScheduler
 from utils.basic_util import create_json
 
 matplotlib.use('Agg')
@@ -201,6 +204,9 @@ def generate_wordcloud():
 
     return jsonify(json_payload), 200
 
+def run_job():
+    print("running task...")
+    collector.recent_search(getattr(db, 'session'))
 
 @app.route(f'{prefix}/tweet/sentiment', methods=['GET'])
 def total_sentiment_tweets():
@@ -209,6 +215,9 @@ def total_sentiment_tweets():
 
 
 if __name__ == '__main__':
+
+    scheduler = BackgroundScheduler()
+
     c = twint.Config()
     c.Search = '#thuisbezorgd OR @Thuisbezorgd'
     c.Since = '2020-12-31'
@@ -222,6 +231,11 @@ if __name__ == '__main__':
         config.twitter['key'], config.twitter['secret'], c
     )
 
+    scheduler.add_job(func=run_job, trigger="cron", day_of_week='mon-sun', hour=2, minute=30)
+    scheduler.start()
+
+    nltk.download('stopwords')
+
     # collector.recent_search(db._session())
 
     # collector.archive_search(db._session(),
@@ -229,3 +243,5 @@ if __name__ == '__main__':
     # collector.twint_search()
 
     app.run(host='127.0.0.1', port=5000, debug=False)
+
+atexit.register(lambda: scheduler.shutdown())
