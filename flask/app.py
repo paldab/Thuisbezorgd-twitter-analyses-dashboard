@@ -239,6 +239,10 @@ def total_sentiment_tweets():
     df = tweet_sentiment_analysis()
     return jsonify(df.value_counts().to_json(orient='table')), 200
 
+@app.route(f'{prefix}/grouped_sentiment', methods=['GET'])
+def get_grouped_sentiment():
+    df = tweet_sentiment_analysis()
+    pass
 
 if __name__ == '__main__':
     c = twint.Config()

@@ -20,9 +20,9 @@ def tweet_sentiment_analysis():
     tweet_data = getattr(db, "_session")().query(Tweet.text).\
         from_statement(statement).all() 
 
-    df = clean_tweet(pd.DataFrame(tweet_data, columns=["text"]))
-    df.apply(lambda x:x["text"].strip(), axis=1)
-    test_data = df["text"]
+    fetch_df = clean_tweet(pd.DataFrame(tweet_data, columns=["text"]))
+    fetch_df.apply(lambda x:x["text"].strip(), axis=1)
+    test_data = fetch_df["text"]
 
     # loading the vectorizer
     vect_name = open((Path(__file__).parent / "ml-vectorizer/tldf-vectorizer.sav").resolve(), "rb")
@@ -37,6 +37,7 @@ def tweet_sentiment_analysis():
 
     # create a structured dataframe
     df = pd.DataFrame(pred, columns=["label"])
+    df["review"] = fetch_df["text"]
     df["sentiment"] = df["label"].apply(lambda x:label_sentiment(x))
     
     return df
