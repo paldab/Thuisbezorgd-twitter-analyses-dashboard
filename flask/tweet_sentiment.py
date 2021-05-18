@@ -14,16 +14,24 @@ def label_sentiment(label):
         return "Positive"
     return "Neutral"
 
-def tweet_sentiment_analysis():
-    # fetching the tweet data
-    statement = text("SELECT text from tweet").columns(Tweet.text)
-    tweet_data = getattr(db, "_session")().query(Tweet.text).\
-        from_statement(statement).all() 
+def tweet_sentiment_analysis(target=None):
+    test_data = None
+    
+    if not target:
+        # fetching the tweet data
+        statement = text("SELECT text from tweet").columns(Tweet.text)
+        tweet_data = getattr(db, "_session")().query(Tweet.text).\
+            from_statement(statement).all() 
 
-    fetch_df = clean_tweet(pd.DataFrame(tweet_data, columns=["text"]))
-    fetch_df.apply(lambda x:x["text"].strip(), axis=1)
-    test_data = fetch_df["text"]
-
+        fetch_df = clean_tweet(pd.DataFrame(tweet_data, columns=["text"]))
+        fetch_df.apply(lambda x:x["text"].strip(), axis=1)
+        
+        test_data = fetch_df["text"]
+    else:
+        fetch_df = clean_tweet(pd.DataFrame(tweet_data, columns=["text"]))
+        fetch_df.apply(lambda x:x["text"].strip(), axis=1)
+        test_data = target
+        
     # loading the vectorizer
     vect_name = open((Path(__file__).parent / "ml-vectorizer/tldf-vectorizer.sav").resolve(), "rb")
     vectorizer = joblib.load(vect_name)
@@ -37,7 +45,7 @@ def tweet_sentiment_analysis():
 
     # create a structured dataframe
     df = pd.DataFrame(pred, columns=["label"])
-    df["review"] = fetch_df["text"]
+    df["review"] = test_data
     df["sentiment"] = df["label"].apply(lambda x:label_sentiment(x))
     
     return df
