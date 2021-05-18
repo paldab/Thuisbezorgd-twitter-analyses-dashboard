@@ -1,9 +1,7 @@
-<button mat-raised-button color="primary" (click)="this.tweetsService.loadMoreTweetsButton();" style="display: none">Load more Tweets</button>
-
 <table mat-table matSort class="full-width-table" id="last-tweet-table">
   <ng-container matColumnDef="user_screenname">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Username</th>
-    <td mat-cell *matCellDef="let tweet"> {{tweet.user_screenname}}</td>
+    <td mat-cell *matCellDef="let tweet"> {{tweet?.user_screenname}}</td>
   </ng-container>
 
   <ng-container matColumnDef="trimmed_text">
@@ -11,14 +9,14 @@
 
     <td mat-cell *matCellDef="let tweet">
       <div class="trimmed-text-container">
-        <span [matTooltip]="tweet.text" matTooltipClass="tweet-tooltip">{{tweet.trimmed_text}}</span>
+        <span [matTooltip]="tweet?.text" matTooltipClass="tweet-tooltip">{{tweet?.trimmed_text}}</span>
       </div>
     </td>
   </ng-container>
 
   <ng-container matColumnDef="created_at">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Created at</th>
-    <td mat-cell *matCellDef="let tweet">{{tweet.created_at}}</td>
+    <td mat-cell *matCellDef="let tweet">{{tweet?.created_at}}</td>
   </ng-container>
 
   <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>

@@ -15,14 +15,10 @@ export class PlotlyTableComponent implements OnInit {
   @ViewChild(MatTable) table!: MatTable<any>;
     constructor(public tweetsService: TweetsService) { }
 
-  ngOnInit(): void {
-    this.tweetsService.mostRecentTweets('m');    
-  }
+  ngOnInit(): void { }
 
   ngAfterViewInit() {
     this.tweetsService.dataSource.sort = this.sort;
     this.table.dataSource = this.tweetsService.dataSource;
-    console.log(this.tweetsService.dataSource.data);
-
   }
 }

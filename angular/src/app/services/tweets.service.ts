@@ -13,11 +13,10 @@ export class TweetsService {
   private SERVER_URL = env.apiUrl;
 
   orderedTweetsArray: any = new Array();
-  usedChar: string = 'm';
-  countable: number = 5;
+  tweetLimit: number = 5;
   dataSource!: MatTableDataSource<any>;
-  createDate: string[] = [];
-  tweetsADay: number[] = [];
+  tweetDates: string[] = [];
+  amountOfTweets: number[] = [];
 
   constructor(private httpClient: HttpClient) {
     this.dataSource = new MatTableDataSource<any>();
@@ -43,27 +42,7 @@ export class TweetsService {
     return this.httpClient.get(`${this.SERVER_URL}/tweet/sentiment`);
   }
 
-  loadMoreTweetsButton(): void {
-    this.countable = this.countable + 5;
-    this.mostRecentTweets(this.usedChar);
+  unique(value: any, index: any, self: any) {
+    return self.indexOf(value) === index;
   }
-
-  mostRecentTweets(char: string): any {
-    this.allTweets(char).subscribe(
-      data => {
-        let teller = 0;
-        for (let index = 0; index < this.countable; index++) {
-          this.orderedTweetsArray[teller] = data[index];
-          teller = teller + 1;
-        }
-
-        console.log(this.orderedTweetsArray);
-
-        // Set data to datasource and assign MatSort to the datasource
-        this.dataSource.data = this.orderedTweetsArray;
-
-        // console.log(this.orderedTweetsArray);
-      });
-  }
-
 }
