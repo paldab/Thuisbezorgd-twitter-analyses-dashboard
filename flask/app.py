@@ -145,6 +145,10 @@ def dateFiltered_tweets():
     endDate = request.args.get('e', default=None, type=str)
 
     tweets = db.call_procedure('getTweetsByDatesDiff', [startDate, endDate])
+    tweets['trimmed_text'] = tweets['text'].apply(
+        lambda x: textwrap.shorten(x, width=144, placeholder="...")
+    )
+
     parsed_json = json.loads(
         tweets.to_json(orient='records', date_format='iso')
     )
