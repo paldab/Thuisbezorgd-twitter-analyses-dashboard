@@ -11,46 +11,19 @@
               </mat-card-title>
             </mat-card-header>
           </ng-container>
-          
+
           <mat-card-content class="dashboard-card-content">
             <ng-container *ngIf="component?.type == 'agg-numbers';">
-              <div class="rad-info-box rad-txt-success">
-                <mat-icon [class]="component?.class">{{ component?.icon }}</mat-icon>
-                <span class="title">{{ component?.title }}</span>
-                <span class="user" *ngIf="component?.value?.user_screenname">{{ component?.value?.user_screenname }}</span>
-                <span class="number"><span>{{ component?.value?.total }}</span></span>
-              </div>
+              <app-agg-number [component]="component"></app-agg-number>
             </ng-container>
             <ng-container *ngIf="component?.type == 'wordcloud';">
               <wordcloud></wordcloud>
             </ng-container>
-            <ng-container *ngIf="component?.type == 'plotly-plot';">
-              <ng-container *ngIf="component?.enableButtons == true;">
-                <div class="button-container">
-                  <button mat-raised-button color="primary" (click)="this.getAllTweetsDay();">Toon vandaag</button>
-                  <button mat-raised-button color="primary" (click)="this.getAllTweetsWeek();">Toon afgelopen week</button>
-                  <button mat-raised-button color="primary" (click)="this.getAllTweetsMonth();">Toon afgelopen maand</button>
-                </div>
-              </ng-container>
-
-              <plotly-plot [data]="component?.data" [layout]="component?.layout"></plotly-plot>
+            <ng-container *ngIf="component?.type.split(':')[0] == 'plotly-plot';">
+            <app-plotly-plot [component]="component"></app-plotly-plot>
             </ng-container>
             <ng-container *ngIf="component?.type == 'plotly-table';">
-              <button mat-raised-button color="primary" (click)="this.loadMoreTweetsButton();" style="display: none">Load more Tweets</button>
-
-              <table>
-                <tr>
-                  <th style="background-color: sandybrown">Username</th>
-                  <th style="background-color: sandybrown">Text</th>
-                  <th style="background-color: sandybrown">Created at</th>
-                </tr>
-    
-                <tr *ngFor="let post of orderedTweetsArray" >
-                  <td>{{post.user_screenname}}</td>
-                  <td>{{post.trimmed_text}}</td>
-                  <td>{{post.created_at}}</td>
-                </tr>
-              </table>
+              <app-plotly-table></app-plotly-table>
             </ng-container>
           </mat-card-content>
         </mat-card>

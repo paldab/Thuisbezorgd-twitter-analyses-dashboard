@@ -16,17 +16,21 @@ emoji = "*"
 pymysql = "*"
 cryptography = "*"
 flask-cors = "*"
-matplotlib = "*"
 wordcloud = "*"
 nltk = "*"
-pytest = "*"
-sklearn = "*"
 apscheduler = "*"
+gunicorn = "*"
+sklearn = "*"
+selenium = "*"
+spacy = "*"
+matplotlib = "*"
 
 [dev-packages]
+pytest = "*"
 
 [requires]
 python_version = "3"
 
 [packages.twint]
 git = "https://github.com/twintproject/twint.git"
+

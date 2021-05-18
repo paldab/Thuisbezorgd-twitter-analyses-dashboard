@@ -1,4 +1,5 @@
-from models.model import Hashtag, Tweet
+import textwrap
+from models.model import Hashtag, Tweet, ProcessedTweet
 from data import TweetCollector
 from models.database import db
 from utils.cleaner import clean_tweet, remove_stopwords
@@ -6,20 +7,20 @@ from sqlalchemy import text
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from wordcloud import WordCloud
-import nltk
-# from nltk.corpus import stopwords
+from tweet_sentiment import tweet_sentiment_analysis
+from utils.stopwords import dutch_stopwords
 import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
 import base64
-import json
-import textwrap
 import twint
 import io
+import json
 import config
 import emoji
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
+from utils.basic_util import create_json
 
 matplotlib.use('Agg')
 app = Flask(__name__)
@@ -31,24 +32,14 @@ prefix = "/api/v1"
 app.config["APPLICATION_ROOT"] = prefix
 
 
-# basic GET route
-@app.route('/welcome', methods=['GET'])
-def welcome():
-    df = db.filter_users('bootyroll', 'njmidm', 'cat_gaming_', 'vriendenv', 'eetleed', 'voetnootje');
-
-    print(df.head())
-
-    return "Welcome to localhost:5050"
-
-
 @app.route(f'{prefix}/tweet/subject-count', methods=['GET'])
 def subject_count():
-    rest_count = db.session.query(Tweet.text).filter(
+    rest_count = db._session().query(Tweet.text).filter(
         Tweet.text.like('%restaurant%')
     ).count()
 
     # Get the tweets with a rough estimate about the delivery
-    delivery = db.session.query(Tweet.text).filter(
+    delivery = db._session().query(Tweet.text).filter(
         Tweet.text.like('%bezorg%')
     ).all()
 
@@ -69,99 +60,96 @@ def agg_numbers():
 
     type = request.args.get('t', default=None, type=str)[: 11].split('-')
     json_data = []
-    
+
     if 't_t' in type:
         statement = text("SELECT COUNT(id) as total, user_screenname FROM tweet GROUP BY user_screenname ORDER BY total DESC LIMIT 1").\
             columns(Tweet.id.label('total'), Tweet.user_screenname)
 
-        data = getattr(db, '_session')().query(
+        data = db._session().query(
             Tweet.id.label('total'), Tweet.user_screenname
         ).from_statement(statement).all()
 
-        row_headers = [x for x in data[0].keys()]
-        
-        for number in data:
-            json_data.append(dict(zip(row_headers, number)))
+        json_data += create_json(data)
 
     if 'twt' in type:
         statement = text("SELECT COUNT(id) as total FROM tweet").\
             columns(Tweet.id.label('total'))
-        
-        data = getattr(db, '_session')().query(
+
+        data = db._session().query(
             Tweet.id.label('total')
         ).from_statement(statement).all()
 
-        row_headers = [x for x in data[0].keys()]
-        
-        for number in data:
-            json_data.append(dict(zip(row_headers, number)))
+        json_data += create_json(data)
 
     if 'h' in type:
         statement = text("SELECT COUNT(id) as total FROM hashtag").\
             columns(Hashtag.id.label('total'))
 
-        data = getattr(db, '_session')().query(
+        data = db._session().query(
             Hashtag.id.label('total')
         ).from_statement(statement).all()
 
-        row_headers = [x for x in data[0].keys()]
-        
-        for number in data:
-            json_data.append(dict(zip(row_headers, number)))
+        json_data += create_json(data)
 
-    if 'u'in type:
+    if 'u' in type:
         statement = text("SELECT COUNT(DISTINCT user_screenname) as total FROM tweet").\
             columns(Tweet.user_screenname.label('total'))
 
-        data = getattr(db, '_session')().query(
+        data = db._session().query(
             Tweet.user_screenname.label('total')
         ).from_statement(statement).all()
 
-        row_headers = [x for x in data[0].keys()]
-
-        for number in data:
-            json_data.append(dict(zip(row_headers, number)))
+        json_data += create_json(data)
 
     return jsonify(json_data), 200
 
-@app.route(f'{prefix}/all-tweets', methods=['GET'])
+
+@app.route(f'{prefix}/tweet', methods=['GET'])
 def all_tweets():
     filter = request.args.get('f', default=None, type=str)
 
     if filter == 'd':
-        statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE DATE(created_at) = CURDATE()").\
-            columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
+        procedure = 'getDailyTweets'
 
     if filter == 'w':
-        statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE WEEK (created_at) >= WEEK(CURDATE()) -1 AND YEAR(created_at) = YEAR(CURDATE())").\
-            columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
+        procedure = 'getWeeklyTweets'
 
     if filter == 'm':
-        statement = text("SELECT id, text, user_screenname, created_at FROM tweet WHERE created_at > NOW() - INTERVAL 1 MONTH ORDER BY created_at").\
-            columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
+        procedure = 'getMonthlyTweets'
 
-    if filter == '*':
-        statement = text("SELECT id, text, user_screenname, created_at FROM tweet").\
-            columns(Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at)
+    # Show all Tweets by default
+    if filter is None:
+        tweets = db._session().query(
+            Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
+        ).all()
 
-    tweets = getattr(db, '_session')().query(
-        Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
-    ).from_statement(statement).all()
+        json_data = create_json(tweets, True)
 
-    row_headers = [x for x in tweets[0].keys()]
-    row_headers.append('trimmed_text')
-    json_data = []
+    else:
 
-    for tweet in tweets:
-        trimmed_text = textwrap.shorten(tweet['text'], width=144,
-                                        placeholder="...")
+        tweets_df = db.call_procedure(procedure)
 
-        tweet = (tweet['id'], tweet['text'],
-                 tweet['user_screenname'], tweet['created_at'], trimmed_text)
+        # add trimmed_text to dataframe.
+        tweets_df['trimmed_text'] = tweets_df['text'].apply(lambda x: textwrap.shorten(x, width=144, placeholder="..."))
 
-        json_data.append(dict(zip(row_headers, tweet)))
+        json_data = json.loads(
+            tweets_df.to_json(orient='records', date_format='iso')
+        )
 
     return jsonify(json_data), 200
+
+
+@app.route(f'{prefix}/tweet/date', methods=['GET'])
+def dateFiltered_tweets():
+    startDate = request.args.get('s', default=None, type=str)
+    endDate = request.args.get('e', default=None, type=str)
+
+    tweets = db.call_procedure('getTweetsByDatesDiff', [startDate, endDate])
+    parsed_json = json.loads(
+        tweets.to_json(orient='records', date_format='iso')
+    )
+
+    return jsonify(parsed_json), 200
 
 
 @app.route(f'{prefix}/wordcloud', methods=['GET'])
@@ -171,25 +159,42 @@ def generate_wordcloud():
     if background_color == "" or background_color == None:
         background_color = "black"
 
-    # dutch stopwords
-    dutch_stopwords = nltk.corpus.stopwords.words("dutch")
+    tweets = db._session().query(Tweet.id, Tweet.text, Tweet.created_at).all()
+    df = pd.DataFrame(tweets, columns=['id', "text", 'created_at'])
 
-    tweets = getattr(db, '_session')().query(Tweet.text).all()
-    df = pd.DataFrame(tweets, columns=["text"])
+    processed_tweets = db._session().query(
+        ProcessedTweet.text, ProcessedTweet.created_at
+    ).all()
 
-    df = clean_tweet(df)
-    df = remove_stopwords(df)
+    processed_df = pd.DataFrame(processed_tweets,
+                                columns=['text', 'created_at'])
+
+    newest_tweet = df.created_at.max()
+    newest_ptweet = processed_df.created_at.max()
+
+    # Check if newest tweet was already processed
+    if processed_df.empty or newest_tweet != newest_ptweet:
+        # Only process new tweets to reduce computation
+        if not processed_df.empty:
+            df = df[df['created_at'] > newest_ptweet]
+
+        df = clean_tweet(df)
+        df = remove_stopwords(df)
+
+        df.to_sql(ProcessedTweet.__tablename__, db._engine,
+                  if_exists='append', index=False, chunksize=250)
+        processed_df = df
 
     wc = WordCloud(max_words=1000, stopwords=dutch_stopwords,
                    background_color=background_color).generate(
-        " ".join(df["text"]))
+        " ".join(processed_df["text"]))
 
     # converting image to base64
     plt.imshow(wc)
     plt.axis("off")
 
     img = io.BytesIO()
-    plt.savefig(img, format="png", bbox_inches ='tight', pad_inches=0)
+    plt.savefig(img, format="png", bbox_inches='tight', pad_inches=0)
     img.seek(0)
     img64 = base64.b64encode(img.read())
 
@@ -203,6 +208,12 @@ def run_job():
     print("running task...")
     collector.recent_search(getattr(db, 'session'))
 
+@app.route(f'{prefix}/tweet/sentiment', methods=['GET'])
+def total_sentiment_tweets():
+    df = tweet_sentiment_analysis()
+    return jsonify(df.value_counts().to_json(orient='table')), 200
+
+
 if __name__ == '__main__':
 
     scheduler = BackgroundScheduler()
@@ -213,7 +224,6 @@ if __name__ == '__main__':
     c.Lang = 'nl'
     c.Store_object = True
     c.Hide_output = False
-    # c.Limit = 1
 
     getattr(db, '_base').metadata.create_all(bind=getattr(db, '_engine'))
 
@@ -226,7 +236,9 @@ if __name__ == '__main__':
 
     nltk.download('stopwords')
 
-    # collector.archive_search(getattr(db, 'session'),
+    # collector.recent_search(db._session())
+
+    # collector.archive_search(db._session(),
     #                          config.twitter['environment'])
     # collector.twint_search()
 

@@ -24,10 +24,23 @@
     </mat-form-field>
   </p>
   <div class="button-container">
-    <button mat-raised-button color="primary" (click)="this.getAllTweetsToday();">Toon Vandaag</button>
-    <button mat-raised-button color="primary" (click)="this.getAllTweetsWeek();">Toon Afgelopen week</button>
-    <button mat-raised-button color="primary" (click)="this.getAllTweetsMonth();">Toon Afgelopen maand</button>
-    <button mat-raised-button color="primary" (click)="this.getAllTweets();">Toon Alles</button>
+    <button mat-raised-button color="primary" (click)="this.getAllTweetsByFilter( 'vandaag', 'd');">Toon Vandaag</button>
+    <button mat-raised-button color="primary" (click)="this.getAllTweetsByFilter('afgelopen week', 'w');">Toon Afgelopen week</button>
+    <button mat-raised-button color="primary" (click)="this.getAllTweetsByFilter('afgelopen maand', 'm');">Toon Afgelopen maand</button>
+    <button mat-raised-button color="primary" (click)="this.getAllTweetsByFilter('alles');">Toon Alles</button>
+
+<mat-form-field class="example-form-field" appearance="fill">
+  <mat-label>Filter on date</mat-label>
+  <mat-date-range-input
+    [formGroup]="campaignOne"
+    [rangePicker]="campaignOnePicker">
+    <input matStartDate placeholder="Start date" formControlName="start" >
+    <input matEndDate placeholder="End date" formControlName="end">
+  </mat-date-range-input >
+  <mat-datepicker-toggle matSuffix [for]="campaignOnePicker"></mat-datepicker-toggle>
+  <mat-date-range-picker #campaignOnePicker></mat-date-range-picker>
+</mat-form-field>
+<button mat-raised-button color="primary" (click)="this.getDateFilteredTweets();">Vind tweets</button>
   </div>
   <p class="filterType" *ngIf="this.filterType != null">Zoek resultaten van: {{this.filterType}}</p>
     <table mat-table class="full-width-table" matSort aria-label="Tweets">
@@ -36,7 +49,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
         <td mat-cell *matCellDef="let row">{{row.id}}</td>
       </ng-container>
-  
+
       <!-- Name Column -->
       <ng-container matColumnDef="trimmed_text">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Text</th>
@@ -46,23 +59,23 @@
           </div>
         </td>
       </ng-container>
-  
+
       <!-- Username Column -->
       <ng-container matColumnDef="user_screenname">
         <th mat-header-cell *matHeaderCellDef mat-sort-header id="user_screenname_column">User</th>
         <td mat-cell *matCellDef="let row">{{row.user_screenname}}</td>
       </ng-container>
-  
+
       <!-- Created at Column -->
       <ng-container matColumnDef="created_at">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Created at</th>
         <td mat-cell *matCellDef="let row">{{row.created_at}}</td>
       </ng-container>
-  
+
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
-  
+
     <mat-paginator #paginator [length]="dataSource?.data?.length" [pageIndex]="0" [pageSize]="10"
       [pageSizeOptions]="[5, 10, 25]">
     </mat-paginator>

@@ -44,3 +44,16 @@ class Hashtag(getattr(db, '_base')):
 
     def __repr__(self):
         return '<Hashtag(id={}, name={})>'.format(self.id, self.name)
+
+
+class ProcessedTweet(getattr(db, '_base')):
+    __tablename__ = 'processed_tweet'
+
+    id = Column(String(255), primary_key=True, index=True)
+    text = Column(Text, nullable=False)
+    created_at = Column(DateTime, nullable=False)
+
+    def __repr__(self):
+        return '<ProcessedTweet(id={}, text={})>'.format(
+            self.id, self.text
+        )

@@ -1,9 +1,11 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTable, MatTableDataSource } from '@angular/material/table';
-import { TweetsService } from '../services/tweets.service';
-import { UtilsService } from '../services/utils.service';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatSort} from '@angular/material/sort';
+import {MatTable, MatTableDataSource} from '@angular/material/table';
+import {TweetsService} from '../services/tweets.service';
+import {UtilsService} from '../services/utils.service';
+import {FormGroup, FormControl} from '@angular/forms';
+
 
 export interface AllTweetsItem {
   created_at: string;
@@ -22,7 +24,7 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatTable) table!: MatTable<AllTweetsItem>;
-  filter: string ='';
+  filter: string = '';
   dataSource!: MatTableDataSource<AllTweetsItem>;
   spinnerLoading: boolean = false;
   req_succeeded: boolean = true;
@@ -30,12 +32,23 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
 
   /** Columns displayed in the table. Columns IDs can be added, removed, or reordered. */
   displayedColumns = ['id', 'trimmed_text', 'user_screenname', 'created_at'];
-  
-  constructor(private tweetsService: TweetsService, public utilsService: UtilsService) { }
+
+  campaignOne: FormGroup;
+
+  constructor(private tweetsService: TweetsService, public utilsService: UtilsService) {
+    const today = new Date();
+    const month = today.getMonth();
+    const year = today.getFullYear();
+
+    this.campaignOne = new FormGroup({
+      start: new FormControl(new Date(year, month, 13)),
+      end: new FormControl(new Date(year, month, 16))
+    });
+  }
 
   ngOnInit() {
     this.dataSource = new MatTableDataSource<AllTweetsItem>();
-    this.getAllTweetsWeek();
+    this.getAllTweetsByFilter('afgelopen week', 'w');
   }
 
   search(filterValue: any) {
@@ -54,107 +67,71 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
     this.dataSource.filter = this.filter;
   }
 
-  getAllTweets() {
+
+  getDateFilteredTweets() {
+    console.log(this.campaignOne.controls['start'].value);
+    console.log(this.campaignOne.controls['end'].value);
+    const end = this.campaignOne.controls['end'].value;
+    const start = this.campaignOne.controls['start'].value;
+    start.setDate(start.getDate() + 1);
+    console.log(start.toISOString().slice(0, 19).replace('T', ' ') + " ");
+
+    const stringstart = start.toISOString().slice(0, 19).replace('T', ' ') + " "
+    const stringend = end.toISOString().slice(0, 19).replace('T', ' ') + " "
+    var splitarray = new Array();
+    splitarray = stringstart.split(" ");
+    console.log(splitarray[0])
+
+    var splitarray1 = new Array();
+    splitarray1 = stringend.split(" ");
+    console.log(splitarray1[0])
+
     this.spinnerLoading = true;
-    
-    this.tweetsService.all_tweets().subscribe(
+
+    this.tweetsService.dateFilteredTweets(start.toISOString().slice(0, 19).replace('T', ' '), end.toISOString().slice(0, 19).replace('T', ' ')).subscribe(
       data => {
-        console.log(data.length);
+        console.log(data)
         this.dataSource.data = data
-        this.filterType = 'alles'
+        this.filterType = 'Tussen ' + splitarray[0] + ' en ' + splitarray1[0]
       },
       err => {
         this.req_succeeded = err.ok
         console.error(err);
+      },
+      () => {
+        setTimeout(() => {
+          if (this.req_succeeded == false) {
+            this.spinnerLoading = true
+          } else {
+            this.spinnerLoading = false
+          }
+        }, 700);
       }
-    );    
-
-
-    setTimeout(() => {
-      if (this.req_succeeded == false) {
-        this.spinnerLoading = true
-      } else {
-        this.spinnerLoading = false
-      }
-            
-    }, 7000)
+    );
   }
 
-  getAllTweetsToday() {
+  getAllTweetsByFilter(type: string, filter?: string): void {
+    console.log(filter, type);
     this.spinnerLoading = true;
-    
-    this.tweetsService.all_tweets('d').subscribe(
+
+    this.tweetsService.allTweets(filter).subscribe(
       data => {
-        this.dataSource.data = data
-        this.filterType = 'vandaag'
+        this.dataSource.data = data;
+        this.filterType = type;
       },
       err => {
-        this.req_succeeded = err.ok
+        this.req_succeeded = err.ok;
         console.error(err);
-      }
-    );    
-
-
-    setTimeout(() => {
-      if (this.req_succeeded == false) {
-        this.spinnerLoading = true
-      } else {
-        this.spinnerLoading = false
-      }
-            
-    }, 7000)
-  }
-
-  getAllTweetsWeek() {
-    this.spinnerLoading = true;
-    
-    this.tweetsService.all_tweets('w').subscribe(
-      data => {
-        this.dataSource.data = data
-        this.filterType = 'afgelopen week'
-
       },
-      err => {
-        this.req_succeeded = err.ok
-        console.error(err);
+      () => {
+        setTimeout(() => {
+          if (!this.req_succeeded) {
+            this.spinnerLoading = true;
+          } else {
+            this.spinnerLoading = false;
+          }
+        }, 700);
       }
-    );    
-
-
-    setTimeout(() => {
-      if (this.req_succeeded == false) {
-        this.spinnerLoading = true
-      } else {
-        this.spinnerLoading = false
-      }
-            
-    }, 7000)
+    );
   }
-
-  getAllTweetsMonth() {
-    this.spinnerLoading = true;
-    
-    this.tweetsService.all_tweets('m').subscribe(
-      data => {
-        this.dataSource.data = data
-        this.filterType = 'afgelopen maand'
-
-      },
-      err => {
-        this.req_succeeded = err.ok
-        console.error(err);
-      }
-    );    
-
-
-    setTimeout(() => {
-      if (this.req_succeeded == false) {
-        this.spinnerLoading = true
-      } else {
-        this.spinnerLoading = false
-      }
-            
-    }, 7000)
-  }
-
 }
