@@ -10,8 +10,9 @@ class DB():
 
         self._engine = create_engine(
             'mysql+{}://{}:{}@{}/{}?charset=utf8mb4'.format(
-                config.database['connector'], config.database['user'], config.database['password'],
-                config.database['host'], config.database['db']
+                config.database['connector'], config.database['user'],
+                config.database['password'], config.database['host'],
+                config.database['db']
             )
         )
 
@@ -41,6 +42,11 @@ class DB():
 
             tweets = pd.DataFrame.from_records(results,
                                                columns=column_names_list)
+
+            if pd.api.types.is_datetime64_dtype(tweets['created_at']):
+                tweets['created_at'] = tweets['created_at'].dt.strftime(
+                    '%a, %d %b %Y %H:%M:%S %Z'
+                )
 
             return tweets
         finally:

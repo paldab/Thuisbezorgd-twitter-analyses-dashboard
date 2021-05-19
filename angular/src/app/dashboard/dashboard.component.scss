@@ -3,15 +3,7 @@
 .grid-container {
   margin: 20px;
 }
-
-.button-container {
-  display:flex;
-  padding: 0 15px;
-  button {
-    margin-right: 15px;
-  }
-}
-
+  
 .dashboard-card {
   position: absolute;
   top: 15px;
@@ -20,83 +12,6 @@
   bottom: 15px;
 }
 
-.more-button {
-  position: absolute;
-  top: 5px;
-  right: 10px;
-}
-
 .dashboard-card-content {
   text-align: center;
-}
-
-#last-tweet-table th {
-  background-color: #ff9800!important;
-  font-weight: 500!important;
-  color: black !important;
-  font-size: .9rem !important;
-}
-
-td, th {
-  text-align: left;
-  padding: 8px;
-}
-
-.rad-info-box {
-
-  .number, .title, .user {
-    display: block;
-    position: relative;
-    text-align: right;
-  }
-
-  .number {
-    font-size: 2.1em;
-    font-weight: 700;
-    color: mat-color($angular-primary, 300);
-    margin-top: 10px;
-  }
-
-  .title {
-    font-size: 1.2em;
-    color: #515d6e;
-    font-weight: 400;
-    text-transform: uppercase;
-  }
-
-  .user {
-    margin-top: 5px;
-    font-size: 1.2em;
-    color: #3e4349;
-    font-weight: 400;
-  }
-
-  mat-icon {
-    display: block;
-    background-clip: padding-box;
-    margin-right: 15px;
-    height: 60px;
-    width: 60px;
-    border-radius: 100%;
-    line-height: 60px;
-    text-align: center;
-    font-size: 4.4em;
-    position: absolute;
-
-    &.primary {
-      color: mat-color($angular-primary, 500);
-    }
-
-    &.blue {
-      color : mat-color(mat-palette($mat-blue), 500);
-    }
-
-    &.teal {
-      color : mat-color(mat-palette($mat-teal), 500);
-    }
-
-    &.purple {
-      color : mat-color(mat-palette($mat-purple), 500);
-    }
-  }
 }

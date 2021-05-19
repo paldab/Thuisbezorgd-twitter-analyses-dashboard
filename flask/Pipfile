@@ -18,22 +18,19 @@ cryptography = "*"
 flask-cors = "*"
 wordcloud = "*"
 nltk = "*"
-pytest = "*"
+apscheduler = "*"
 gunicorn = "*"
-pyarrow = "*"
-gensim = "*"
 sklearn = "*"
-openpyxl = "*"
-textblob = "*"
 selenium = "*"
 spacy = "*"
 matplotlib = "*"
 
-
 [dev-packages]
+pytest = "*"
 
 [requires]
 python_version = "3"
 
-[twint.packages]
-{git = "https://github.com/twintproject/twint.git"}
+[packages.twint]
+git = "https://github.com/twintproject/twint.git"
+
