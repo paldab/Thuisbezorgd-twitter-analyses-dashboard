@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import {HttpClient} from '@angular/common/http';
+import {Injectable, ViewChild} from '@angular/core';
+import {MatTableDataSource} from '@angular/material/table';
+import {Observable, of} from 'rxjs';
 import {environment as env} from "../../environments/environment";
-import { AllTweetsItem } from '../all-tweets/all-tweets.component';
+import {AllTweetsItem} from '../all-tweets/all-tweets.component';
 
 
 @Injectable({
@@ -11,21 +12,37 @@ import { AllTweetsItem } from '../all-tweets/all-tweets.component';
 export class TweetsService {
   private SERVER_URL = env.apiUrl;
 
-  constructor(private httpClient: HttpClient) { }
+  orderedTweetsArray: any = new Array();
+  tweetLimit: number = 5;
+  dataSource!: MatTableDataSource<any>;
+  tweetDates: string[] = [];
+  amountOfTweets: number[] = [];
 
-  all_tweets(filter = '*'): Observable<AllTweetsItem[]> {    
-    return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/all-tweets?f=${filter}`)
-  }
-  grouped_tweets() {
-    return this.httpClient.get(`${this.SERVER_URL}/tweet/subject-count`)
-  }
-
-  dateFiltered_tweets(startDate = '*', endDate='*'): Observable<AllTweetsItem[]> {    
-    return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/date-tweets?s=${startDate}&e=${endDate}`)
+  constructor(private httpClient: HttpClient) {
+    this.dataSource = new MatTableDataSource<any>();
   }
 
-  getSentimentCount(){
-    return this.httpClient.get(`${this.SERVER_URL}/tweet_sentiment`)
+  allTweets(filter?: string): Observable<AllTweetsItem[]> {
+    if (!filter) {
+      return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/tweet`);
+    }
+
+    return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/tweet?f=${filter}`);
   }
 
+  groupedTweets() {
+    return this.httpClient.get(`${this.SERVER_URL}/tweet/subject-count`);
+  }
+
+  dateFilteredTweets(startDate = '*', endDate = '*'): Observable<AllTweetsItem[]> {
+    return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/tweet/date?s=${startDate}&e=${endDate}`);
+  }
+
+  getSentimentCount() {
+    return this.httpClient.get(`${this.SERVER_URL}/tweet/sentiment`);
+  }
+
+  unique(value: any, index: any, self: any) {
+    return self.indexOf(value) === index;
+  }
 }

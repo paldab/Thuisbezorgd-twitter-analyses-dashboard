@@ -1,5 +1,4 @@
 import twint
-import config
 import tweepy
 from models.database import db
 from models import model
@@ -13,6 +12,10 @@ class TweetCollector():
         self.twint_config = twint_config
 
     def twint_search(self):
+        """
+        Executes a Twint search based on the provided config
+        and inserts the data into the db
+        """
         twint.run.Search(self.twint_config)
         tweet_list = twint.output.tweets_list
 
@@ -30,13 +33,20 @@ class TweetCollector():
             )
 
             tweet.hashtags.extend(
-                self.get_hashtags_list(getattr(db, '_session')(), item.hashtags)
+                self.get_hashtags_list(db.session, item.hashtags)
             )
 
-            getattr(db, '_session')().merge(tweet)
-            getattr(db, '_session')().commit()
+            db.session.merge(tweet)
+            db.session.commit()
 
     def insert_tweets(self, item, session):
+        """
+        Inserts the given Tweet into the db with the associated hashtags
+
+        @params:
+            item - Required : Given tweet that to be inserted (Tweet)
+            session - Required : SQLAlchemy database session (Session)
+        """
         if item.geo is None:
             location = item.geo
         else:
@@ -58,6 +68,13 @@ class TweetCollector():
         session.commit()
 
     def get_hashtags_list(self, session, hashtags):
+        """
+        Creates a unique set of hashtags from a Tweet
+
+        @params:
+            session - Required : SQLAlchemy database session (Session)
+            hashtags - Required : List of hashtags from the Tweet  (list)
+        """
         tags = []
         unique_names = set()
 
@@ -83,8 +100,16 @@ class TweetCollector():
         return tags
 
     def archive_search(self, session, env):
-        # TODO: Add FromDate - ToDate
+        """
+        Executes a full archive search  towards the Twitter API
+        and inserts the data into the db
 
+        @params:
+            session - Required : SQLAlchemy database session (Session)
+            env - Required : Twitter API dev environment label (str)
+        """
+
+        # TODO: Add FromDate - ToDate
         cursor = tweepy.Cursor(
             self.api.search_full_archive,
             environment_name=env,
@@ -96,6 +121,13 @@ class TweetCollector():
             self.insert_tweets(item, session)
 
     def recent_search(self, session):
+        """
+        Executes a recent search towards the Twitter API
+        and inserts the data into the db
+
+        @params:
+            session - Required : SQLAlchemy database session (Session)
+        """
         cursor = tweepy.Cursor(
             self.api.search,
             q='@Thuisbezorgd OR #thuisbezorgd',
