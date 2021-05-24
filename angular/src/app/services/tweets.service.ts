@@ -30,8 +30,12 @@ export class TweetsService {
     return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/tweet?f=${filter}`);
   }
 
-  groupedTweets() {
-    return this.httpClient.get(`${this.SERVER_URL}/tweet/subject-count`);
+  groupedTweets(dateFilter?: string) {
+    if (!dateFilter) {
+      return this.httpClient.get(`${this.SERVER_URL}/tweet/subject-count`);
+    }
+
+    return this.httpClient.get(`${this.SERVER_URL}/tweet/subject-count?date=${dateFilter}`);
   }
 
   dateFilteredTweets(startDate = '*', endDate = '*'): Observable<AllTweetsItem[]> {

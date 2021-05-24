@@ -1,6 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { TweetsService } from '../services/tweets.service';
-import { sentiment } from '../interfaces/layout'
+import {Component, Input, OnInit} from '@angular/core';
+import {TweetsService} from '../services/tweets.service';
+import {sentiment} from '../interfaces/layout'
+import {ActivatedRoute, Router} from "@angular/router";
+
 @Component({
   selector: 'app-plotly-plot',
   templateUrl: './plotly-plot.component.html',
@@ -26,34 +28,43 @@ export class PlotlyPlotComponent implements OnInit {
     this._plot_data = data;
   }
 
-  constructor(private tweetsService: TweetsService) { }
-
-  ngOnInit(): void {
-
-    switch(this.component.type.split(':')[1]) {
-      case "grouped":
-        this.getGroupedCount();
-        break;
-
-      case "sentiment":
-        this.getSentimentCount();
-        break;
-
-      case "timeline":
-        this.getAllTweetsByFilter('m');
-        break;
-    }
+  constructor(private tweetsService: TweetsService, private router: Router, private activatedRoute: ActivatedRoute) {
   }
 
-  private getSentimentCount(){
+  ngOnInit(): void {
+    this.activatedRoute.queryParams.subscribe(value => {
+      let filter: any = null;
+
+      if (value.filter) {
+        filter = value.filter;
+      }
+
+      switch (this.component.type.split(':')[1]) {
+        case "grouped":
+          this.getGroupedCount(filter);
+          break;
+
+        case "sentiment":
+          this.getSentimentCount();
+          break;
+
+        case "timeline":
+          this.getAllTweetsByFilter('m');
+          break;
+      }
+    });
+  }
+
+  private getSentimentCount() {
     this.tweetsService.getSentimentCount().subscribe(
-      sentimentData =>{
+      sentimentData => {
+        console.log('test')
         const parsedData = JSON.parse(sentimentData.toString())
         const {data} = parsedData
         const sentimentNames: any = []
         const sentimentValues: any = []
 
-        data.forEach((row: sentiment) =>{
+        data.forEach((row: sentiment) => {
           let {sentiment, values} = row
           sentimentNames.push(sentiment)
           sentimentValues.push(values)
@@ -76,8 +87,8 @@ export class PlotlyPlotComponent implements OnInit {
     )
   }
 
-  private getGroupedCount(): void {
-    this.tweetsService.groupedTweets().subscribe(
+  private getGroupedCount(dateFilter?: string): void {
+    this.tweetsService.groupedTweets(dateFilter).subscribe(
       data => {
         this.groupedTweetsKeys = Object.keys(data);
         this.groupedTweetsVals = Object.values(data);
@@ -100,13 +111,12 @@ export class PlotlyPlotComponent implements OnInit {
   }
 
   getAllTweetsByFilter(filter: string): void {
-    console.log(filter);
-
     this.tweetsService.tweetDates = [];
     this.tweetsService.amountOfTweets = [];
 
     this.tweetsService.allTweets(filter).subscribe(
       data => {
+        console.log('test3')
         // retrieve 5 tweets from data.
         for (let i = 0; i < this.tweetsService.tweetLimit; i++) {
           this.tweetsService.orderedTweetsArray[i] = data[i];
@@ -114,19 +124,19 @@ export class PlotlyPlotComponent implements OnInit {
         // Set data to datasource
         this.tweetsService.dataSource.data = this.tweetsService.orderedTweetsArray;
 
-        if(filter == 'd') {
+        if (filter == 'd') {
           // retrieve date from first entry and push it to the tweetDates array.
           this.tweetsService.tweetDates.push(data[0].created_at.substr(5, 7));
           // retrieve the length of data and push it to the amountOfTweets array.
           this.tweetsService.amountOfTweets.push(data.length);
         }
 
-        if(filter == 'm' || filter == 'w') {
+        if (filter == 'm' || filter == 'w') {
           // retrieve all created_at values and store them in an array.
           let tweetDates: string[] = data.map(tweet => tweet['created_at'].substr(5, 7));
           // filter unique dates out of the array.
           this.tweetsService.tweetDates = tweetDates.filter(this.tweetsService.unique);
-          
+
           // foreach unique tweet date
           for (let i = 0; i < this.tweetsService.tweetDates.length; i++) {
             let totalTweets = 0;
@@ -152,5 +162,18 @@ export class PlotlyPlotComponent implements OnInit {
         }
       },
     );
+  }
+
+  filterByDate(event: any, type: string): void {
+    if (type.split(':')[1] === 'timeline') {
+      const selectedDate = new Date(event.points[0].x);
+      selectedDate.setFullYear(new Date().getFullYear());
+
+      this.router.navigate(['dashboard'], {
+          queryParams:
+            {filter: `${selectedDate.getFullYear()}-${selectedDate.getMonth()}-${selectedDate.getDate()}`}
+        }
+      );
+    }
   }
 }

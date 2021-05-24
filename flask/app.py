@@ -3,7 +3,7 @@ from models.model import Hashtag, Tweet, ProcessedTweet
 from data import TweetCollector
 from models.database import db
 from utils.cleaner import clean_tweet, remove_stopwords
-from sqlalchemy import text
+from sqlalchemy import text, func
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from wordcloud import WordCloud
@@ -34,23 +34,33 @@ app.config["APPLICATION_ROOT"] = prefix
 
 @app.route(f'{prefix}/tweet/subject-count', methods=['GET'])
 def subject_count():
+    date_filter = request.args.get('date', default=None, type=str)
+
     rest_count = db._session().query(Tweet.text).filter(
-        Tweet.text.like('%restaurant%')
-    ).count()
+        Tweet.text.like('%restaurant%'),
+    )
 
     # Get the tweets with a rough estimate about the delivery
     delivery = db._session().query(Tweet.text).filter(
         Tweet.text.like('%bezorg%')
-    ).all()
+    )
 
-    delivery_df = pd.DataFrame(delivery, columns=['text'])
+    if date_filter:
+        rest_count = rest_count.filter(
+            func.date(Tweet.created_at) == date_filter
+        )
+
+        delivery = delivery.filter(func.date(Tweet.created_at) == date_filter)
+
+    delivery_df = pd.DataFrame(delivery.all(), columns=['text'])
 
     # Filter out the tweets that actually use the 'bezorg' verb
     filtered_delivery = delivery_df[
         delivery_df['text'].str.contains('.*\s(bezorg\w*)\s.*', case=False)
     ]
 
-    count_dict = {'restaurant': rest_count, 'delivery': len(filtered_delivery)}
+    count_dict = {'restaurant': rest_count.count(),
+                  'delivery': len(filtered_delivery)}
 
     return jsonify(count_dict), 200
 
