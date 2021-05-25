@@ -36,7 +36,7 @@ export class WordcloudComponent implements OnInit {
       const {image} = data;
       imgUrl = image;
 
-      this.wordcloudImg += `${base64ImgTemplate}${imgUrl}`;
+      this.wordcloudImg = `${base64ImgTemplate}${imgUrl}`;
     });
   }
 }
