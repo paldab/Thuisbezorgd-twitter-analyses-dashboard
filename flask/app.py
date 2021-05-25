@@ -1,9 +1,9 @@
 import textwrap
-from models.model import Hashtag, Tweet, ProcessedTweet
+from models.model import Hashtag, Tweet, ProcessedTweet, hashtag_tweet
 from data import TweetCollector
 from models.database import db
 from utils.cleaner import clean_tweet, remove_stopwords
-from sqlalchemy import text, func
+from sqlalchemy import text, func, desc
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from wordcloud import WordCloud
@@ -67,47 +67,53 @@ def subject_count():
 
 @app.route(f'{prefix}/agg-numbers', methods=['GET'])
 def agg_numbers():
-
+    date_filter = request.args.get('date', default=None, type=str)
     type = request.args.get('t', default=None, type=str)[: 11].split('-')
     json_data = []
 
     if 't_t' in type:
-        statement = text("SELECT COUNT(id) as total, user_screenname FROM tweet GROUP BY user_screenname ORDER BY total DESC LIMIT 1").\
-            columns(Tweet.id.label('total'), Tweet.user_screenname)
-
         data = db._session().query(
-            Tweet.id.label('total'), Tweet.user_screenname
-        ).from_statement(statement).all()
+            func.count(Tweet.id).label('total'), Tweet.user_screenname
+        ).group_by(Tweet.user_screenname).order_by(
+            desc(func.count(Tweet.id).label('total'))
+        )
 
-        json_data += create_json(data)
+        if date_filter:
+            data = data.filter(
+                func.date(Tweet.created_at) == date_filter
+            )
+
+        json_data += create_json(data.limit(1).all())
 
     if 'twt' in type:
-        statement = text("SELECT COUNT(id) as total FROM tweet").\
-            columns(Tweet.id.label('total'))
+        data = db._session().query(func.count(Tweet.id).label('total'))
 
-        data = db._session().query(
-            Tweet.id.label('total')
-        ).from_statement(statement).all()
+        if date_filter:
+            data = data.filter(
+                func.date(Tweet.created_at) == date_filter
+            )
 
-        json_data += create_json(data)
+        json_data += create_json(data.all())
 
     if 'h' in type:
-        statement = text("SELECT COUNT(id) as total FROM hashtag").\
-            columns(Hashtag.id.label('total'))
+        data = db._session().query(func.count(Hashtag.id).label('total'))
 
-        data = db._session().query(
-            Hashtag.id.label('total')
-        ).from_statement(statement).all()
+        if date_filter:
+            data = data.join(hashtag_tweet).join(Tweet).filter(
+                func.date(Tweet.created_at) == date_filter
+            )
 
-        json_data += create_json(data)
+        json_data += create_json(data.all())
 
     if 'u' in type:
-        statement = text("SELECT COUNT(DISTINCT user_screenname) as total FROM tweet").\
-            columns(Tweet.user_screenname.label('total'))
-
         data = db._session().query(
-            Tweet.user_screenname.label('total')
-        ).from_statement(statement).all()
+            func.count(Tweet.user_screenname.distinct()).label('total')
+        )
+
+        if date_filter:
+            data = data.filter(
+                func.date(Tweet.created_at) == date_filter
+            )
 
         json_data += create_json(data)
 
