@@ -17,7 +17,7 @@ def label_sentiment(label):
 def tweet_sentiment_analysis(target=None):
     test_data = None
     
-    if not target:
+    if len(target.index) == 0:
         # fetching the tweet data
         statement = text("SELECT text from tweet").columns(Tweet.text)
         tweet_data = getattr(db, "_session")().query(Tweet.text).\
@@ -28,13 +28,14 @@ def tweet_sentiment_analysis(target=None):
         
         test_data = fetch_df["text"]
     else:
-        fetch_df = clean_tweet(pd.DataFrame(tweet_data, columns=["text"]))
+        fetch_df = clean_tweet(pd.DataFrame(target, columns=["text"]))
         fetch_df.apply(lambda x:x["text"].strip(), axis=1)
-        test_data = target
-        
+        test_data = target["text"].to_list()
+    
     # loading the vectorizer
     vect_name = open((Path(__file__).parent / "ml-vectorizer/tldf-vectorizer.sav").resolve(), "rb")
     vectorizer = joblib.load(vect_name)
+    
     Xtest = vectorizer.transform(test_data)
 
     # loading the model
@@ -42,10 +43,9 @@ def tweet_sentiment_analysis(target=None):
     model = joblib.load(model_name)
 
     pred = model.predict(Xtest)
-
     # create a structured dataframe
-    df = pd.DataFrame(pred, columns=["label"])
-    df["review"] = test_data
+    df = pd.DataFrame(test_data, columns=["review"])
+    df["label"] = pred
     df["sentiment"] = df["label"].apply(lambda x:label_sentiment(x))
     
     return df

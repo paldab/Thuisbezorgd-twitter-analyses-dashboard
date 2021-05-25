@@ -41,9 +41,11 @@ def welcome():
 
 @app.route(f'{prefix}/tweet/subject-count', methods=['GET'])
 def subject_count():
-    rest_count = db.session.query(Tweet.text).filter(
+    restaurant_data = db.session.query(Tweet.text).filter(
         Tweet.text.like('%restaurant%')
-    ).count()
+    ).all()
+    
+    restaurant_df = pd.DataFrame(restaurant_data, columns=["text"]) 
 
     # Get the tweets with a rough estimate about the delivery
     delivery = db.session.query(Tweet.text).filter(
@@ -56,8 +58,17 @@ def subject_count():
     filtered_delivery = delivery_df[
         delivery_df['text'].str.contains('.*\s(bezorg\w*)\s.*', case=False)
     ]
-
-    count_dict = {'restaurant': rest_count, 'delivery': len(filtered_delivery)}
+    
+    # labeled data
+    labeled_delivery = tweet_sentiment_analysis(filtered_delivery)
+    labeled_restaurant = tweet_sentiment_analysis(restaurant_df)
+    
+    # json transformed data
+    restaurant_data_json = labeled_restaurant.to_json(orient="records")
+    delivery_data_json = labeled_delivery.to_json(orient="records")
+    
+    count_dict = {'restaurant': len(labeled_restaurant), 'delivery': len(filtered_delivery),
+                  'restaurant_data': restaurant_data_json, 'delivery_data': delivery_data_json}
 
     return jsonify(count_dict), 200
 
