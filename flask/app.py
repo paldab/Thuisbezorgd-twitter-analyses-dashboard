@@ -170,17 +170,29 @@ def dateFiltered_tweets():
 def generate_wordcloud():
     # Check parameters
     background_color = request.args.get('backgroundcolor')
+    date_filter = request.args.get('date', default=None, type=str)
+
     if background_color == "" or background_color == None:
         background_color = "black"
 
-    tweets = db._session().query(Tweet.id, Tweet.text, Tweet.created_at).all()
-    df = pd.DataFrame(tweets, columns=['id', "text", 'created_at'])
+    tweets = db._session().query(Tweet.id, Tweet.text, Tweet.created_at)
 
     processed_tweets = db._session().query(
         ProcessedTweet.text, ProcessedTweet.created_at
-    ).all()
+    )
 
-    processed_df = pd.DataFrame(processed_tweets,
+    if date_filter:
+        tweets = tweets.filter(
+            func.date(Tweet.created_at) == date_filter
+        )
+
+        processed_tweets = processed_tweets.filter(
+            func.date(ProcessedTweet.created_at) == date_filter
+        )
+
+    df = pd.DataFrame(tweets.all(), columns=['id', "text", 'created_at'])
+
+    processed_df = pd.DataFrame(processed_tweets.all(),
                                 columns=['text', 'created_at'])
 
     newest_tweet = df.created_at.max()
@@ -218,9 +230,11 @@ def generate_wordcloud():
 
     return jsonify(json_payload), 200
 
+
 def run_job():
     print("running task...")
     collector.recent_search(getattr(db, 'session'))
+
 
 @app.route(f'{prefix}/tweet/sentiment', methods=['GET'])
 def total_sentiment_tweets():

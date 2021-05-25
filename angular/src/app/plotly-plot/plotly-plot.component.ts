@@ -55,10 +55,9 @@ export class PlotlyPlotComponent implements OnInit {
     });
   }
 
-  private getSentimentCount() {
+  private getSentimentCount(): void {
     this.tweetsService.getSentimentCount().subscribe(
       sentimentData => {
-        console.log('test')
         const parsedData = JSON.parse(sentimentData.toString())
         const {data} = parsedData
         const sentimentNames: any = []
@@ -116,7 +115,6 @@ export class PlotlyPlotComponent implements OnInit {
 
     this.tweetsService.allTweets(filter).subscribe(
       data => {
-        console.log('test3')
         // retrieve 5 tweets from data.
         for (let i = 0; i < this.tweetsService.tweetLimit; i++) {
           this.tweetsService.orderedTweetsArray[i] = data[i];
