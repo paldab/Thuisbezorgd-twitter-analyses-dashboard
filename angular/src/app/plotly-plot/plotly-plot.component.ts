@@ -29,14 +29,14 @@ export class PlotlyPlotComponent implements OnInit {
   constructor(private tweetsService: TweetsService) { }
 
   ngOnInit(): void {
-
+    
     switch(this.component.type.split(':')[1]) {
       case "grouped":
         this.getGroupedCount();
         break;
 
       case "sentiment":
-        this.getSentimentCount();
+        this.getSortedGroupedTweets()
         break;
 
       case "timeline":
@@ -74,6 +74,79 @@ export class PlotlyPlotComponent implements OnInit {
         }
       }
     )
+  }
+
+  private getSortedGroupedTweets(): void{
+    this.tweetsService.groupedTweets().subscribe((data: any) =>{
+      data.delivery_data = JSON.parse(data.delivery_data)
+      data.restaurant_data = JSON.parse(data.restaurant_data)
+      const {delivery_data, restaurant_data} = data
+      console.log(data);
+      
+      let deliveryStats = {
+        negCount: 0,
+        posCount: 0,
+        neutralCount: 0
+      }
+
+      let restaurantStats = {
+        negCount: 0,
+        posCount: 0,
+        neutralCount: 0
+      }
+
+      delivery_data.forEach((row: any) =>{
+        if (row.sentiment == "Negative"){
+          deliveryStats.negCount++;
+        }
+        if (row.sentiment == "Positive"){
+          deliveryStats.posCount++;
+        }
+        if (row.sentiment == "Neutral"){
+          deliveryStats.neutralCount++;
+        }
+      })
+
+      restaurant_data.forEach((row: any) =>{
+        if (row.sentiment == "Negative"){
+          restaurantStats.negCount++;
+        }
+        if (row.sentiment == "Positive"){
+          restaurantStats.posCount++;
+        }
+        if (row.sentiment == "Neutral"){
+          restaurantStats.neutralCount++;
+        }
+      })
+
+
+      const labels = ["Negative", "Neutral", "Positive"]
+
+      const deliverySentiment = {
+        x: labels,
+        y: [deliveryStats.negCount, deliveryStats.neutralCount, deliveryStats.posCount],
+        name: "Delivery",
+        type: 'bar'
+      }
+      const restaurantSentiment = {
+        x: labels,
+        y: [restaurantStats.negCount, restaurantStats.neutralCount, restaurantStats.posCount],
+        name: "Restaurant",
+        type: 'bar'
+      }
+
+      // const otherSentiment = {
+      //   x: labels,
+      //   y: [],
+      //   name: "Overig",
+      //   type: 'bar'
+      // }
+
+      const mergedData = [restaurantSentiment, deliverySentiment]
+      const layout = {barmode: 'stack'}
+      
+      // plot the graph
+    })
   }
 
   private getGroupedCount(): void {

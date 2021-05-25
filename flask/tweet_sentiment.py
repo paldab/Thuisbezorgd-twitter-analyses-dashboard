@@ -17,8 +17,12 @@ def label_sentiment(label):
 def tweet_sentiment_analysis(target=None):
     test_data = None
     
-    if len(target.index) == 0:
-        # fetching the tweet data
+    if type(target) != None:
+        fetch_df = clean_tweet(pd.DataFrame(target, columns=["text"]))
+        fetch_df.apply(lambda x:x["text"].strip(), axis=1)
+        test_data = fetch_df["text"].to_list()
+    else:
+    # fetching the tweet data
         statement = text("SELECT text from tweet").columns(Tweet.text)
         tweet_data = getattr(db, "_session")().query(Tweet.text).\
             from_statement(statement).all() 
@@ -27,10 +31,6 @@ def tweet_sentiment_analysis(target=None):
         fetch_df.apply(lambda x:x["text"].strip(), axis=1)
         
         test_data = fetch_df["text"]
-    else:
-        fetch_df = clean_tweet(pd.DataFrame(target, columns=["text"]))
-        fetch_df.apply(lambda x:x["text"].strip(), axis=1)
-        test_data = target["text"].to_list()
     
     # loading the vectorizer
     vect_name = open((Path(__file__).parent / "ml-vectorizer/tldf-vectorizer.sav").resolve(), "rb")

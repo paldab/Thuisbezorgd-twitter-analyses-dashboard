@@ -34,9 +34,12 @@ app.config["APPLICATION_ROOT"] = prefix
 
 @app.route(f'{prefix}/tweet/subject-count', methods=['GET'])
 def subject_count():
+    # all_data_count = pd.DataFrame(db.session.query(Tweet.text).all(), columns=["text"])
+    # label_all = tweet_sentiment_analysis(all_data_count)
+    
     restaurant_data = db.session.query(Tweet.text).filter(
         Tweet.text.like('%restaurant%')
-    ).all()
+    ).all() 
     
     restaurant_df = pd.DataFrame(restaurant_data, columns=["text"]) 
 
