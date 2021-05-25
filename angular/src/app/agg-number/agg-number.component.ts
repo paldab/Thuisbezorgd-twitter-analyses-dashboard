@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { AggNumsService } from '../services/agg-nums.service';
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-agg-number',
@@ -18,11 +19,19 @@ export class AggNumberComponent implements OnInit {
     this._num_data = data;
   }
 
-  constructor(private aggNumsService: AggNumsService) {}
+  constructor(private aggNumsService: AggNumsService, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.aggNumsService.getData(this.component?.selector).subscribe((data: any) => {
-      this.num_data = data[0];
+    this.activatedRoute.queryParams.subscribe(value => {
+      let filter: any = null;
+
+      if (value.filter) {
+        filter = value.filter;
+      }
+
+      this.aggNumsService.getData(this.component?.selector, filter).subscribe((data: any) => {
+        this.num_data = data[0];
+      });
     });
   }
 }

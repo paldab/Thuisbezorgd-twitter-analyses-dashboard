@@ -167,9 +167,11 @@ export class PlotlyPlotComponent implements OnInit {
       const selectedDate = new Date(event.points[0].x);
       selectedDate.setFullYear(new Date().getFullYear());
 
+
+
       this.router.navigate(['dashboard'], {
           queryParams:
-            {filter: `${selectedDate.getFullYear()}-${selectedDate.getMonth()}-${selectedDate.getDate()}`}
+            {filter: `${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}`}
         }
       );
     }

@@ -10,8 +10,12 @@ export class AggNumsService {
 
   constructor(private httpClient: HttpClient) { }
 
-  getData(type: string) {
-    const params = new HttpParams().set('t', type);
+  getData(type: string, dateFilter?: string) {
+    let params = new HttpParams().set('t', type);
+
+    if (dateFilter) {
+      params = params.set('date', dateFilter);
+    }
 
     return this.httpClient.get(`${this.SERVER_URL}/agg-numbers`, {params});
   }
