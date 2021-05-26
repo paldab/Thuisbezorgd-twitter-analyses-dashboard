@@ -143,9 +143,12 @@ export class PlotlyPlotComponent implements OnInit {
       // }
 
       const mergedData = [restaurantSentiment, deliverySentiment]
-      const layout = {barmode: 'stack'}
       
       // plot the graph
+      this.plot_data = {
+        data: mergedData,
+        layout: {width: 600, height: 400, barmode: 'stack'}
+      }
     })
   }
 
