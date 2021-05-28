@@ -16,6 +16,8 @@ export class PlotlyPlotComponent implements OnInit {
 
   array1: any[] = []
   array2: any[] = []
+  array3: any[] = []
+  array4: any[] = []
 
 
 
@@ -128,6 +130,25 @@ export class PlotlyPlotComponent implements OnInit {
       }
       );
 
+      this.tweetsService.hashtags().subscribe(
+        hashtagdata => {
+          console.log(hashtagdata)
+          const hoi = Object.values(hashtagdata);
+         
+          
+          for (let index = 0; index < hoi.length; index++) {
+            this.array3.push(hoi[index].created_at);
+            this.array4.push(hoi[index].id);          
+          }
+        
+  
+          console.log(this.array3);
+          console.log(this.array4);
+
+
+        }
+        );
+
       
 
         this.plot_data = {
@@ -140,11 +161,22 @@ export class PlotlyPlotComponent implements OnInit {
                 marker: {
                   color: '#ff9800'
                 }
+              },
+            {
+              x: this.array3,
+              y: this.array4,
+              name: 'Hashtags',
+              type: 'line',
+              marker: {
+                color: '#0000FF'
               }
+            
+
+            }
           ],
           layout: {width: 600, height: 400}
         }
-      
+
   }
 
   getAllTweetsByFilter(filter: string): void {

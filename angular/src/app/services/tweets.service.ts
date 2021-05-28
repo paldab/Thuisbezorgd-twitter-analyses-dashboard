@@ -38,6 +38,9 @@ export class TweetsService {
     return this.httpClient.get(`${this.SERVER_URL}/agg-numbers-graph`);
   }
 
+  hashtags() {
+    return this.httpClient.get(`${this.SERVER_URL}/agg-hastags-graph`);
+  }
 
 
 

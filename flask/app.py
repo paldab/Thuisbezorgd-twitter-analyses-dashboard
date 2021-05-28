@@ -18,7 +18,7 @@ import io
 import json
 import config
 import nltk
-import atexit
+import atexit 
 from apscheduler.schedulers.background import BackgroundScheduler
 from utils.basic_util import create_json
 
@@ -158,6 +158,35 @@ def agg_numbers_graph():
 
 
 
+@app.route(f'{prefix}/agg-hastags-graph', methods=['GET'])
+def agg_hastags_graph():
+    # procedure = 'getMonthlyTweets'
+    # tweets_df = db.call_procedure(procedure)
+
+    #     # add trimmed_text to dataframe.
+    # tweets_df['trimmed_text'] = tweets_df['text'].apply(lambda x: textwrap.shorten(x, width=144, placeholder="..."))
+
+    # json_data = json.loads(
+    #     tweets_df.to_json(orient='records', date_format='iso')
+    #     )
+
+    # return jsonify(json_data), 200
+
+
+
+
+    json_data = []
+
+    statement = text("select count(hashtag.id) as hashtag_sum, DATE(tweet.created_at) from hashtag inner join hashtag_tweet on hashtag_tweet.hashtag_id = hashtag.id inner join tweet on hashtag_tweet.tweet_id = tweet.id where DATE(tweet.created_at) >= DATE_ADD(LAST_DAY(DATE_SUB(NOW(), INTERVAL 2 MONTH)), INTERVAL 1 DAY) and DATE(tweet.created_at) <= DATE_SUB(NOW(), INTERVAL 1 MONTH)group by DATE(tweet.created_at) order by DATE(tweet.created_at);").\
+            columns(Hashtag.id, Tweet.created_at)
+
+    data = db._session().query(
+            Hashtag.id, Tweet.created_at
+        ).from_statement(statement).all()
+
+    json_data += create_json(data)
+
+    return jsonify(json_data), 200 
 
     
 
