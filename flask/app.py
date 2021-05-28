@@ -34,11 +34,15 @@ app.config["APPLICATION_ROOT"] = prefix
 
 @app.route(f'{prefix}/tweet/subject-count', methods=['GET'])
 def subject_count():
+    # all_data_count = pd.DataFrame(db.session.query(Tweet.text).all(), columns=["text"])
+    # label_all = tweet_sentiment_analysis(all_data_count)
     date_filter = request.args.get('date', default=None, type=str)
 
-    rest_count = db._session().query(Tweet.text).filter(
-        Tweet.text.like('%restaurant%'),
-    )
+    restaurant_data = db.session.query(Tweet.text).filter(
+        Tweet.text.like('%restaurant%')
+    ).all() 
+    
+    restaurant_df = pd.DataFrame(restaurant_data, columns=["text"]) 
 
     # Get the tweets with a rough estimate about the delivery
     delivery = db._session().query(Tweet.text).filter(
@@ -58,9 +62,17 @@ def subject_count():
     filtered_delivery = delivery_df[
         delivery_df['text'].str.contains('.*\s(bezorg\w*)\s.*', case=False)
     ]
-
-    count_dict = {'restaurant': rest_count.count(),
-                  'delivery': len(filtered_delivery)}
+    
+    # labeled data
+    labeled_delivery = tweet_sentiment_analysis(filtered_delivery)
+    labeled_restaurant = tweet_sentiment_analysis(restaurant_df)
+    
+    # json transformed data
+    restaurant_data_json = labeled_restaurant.to_json(orient="records")
+    delivery_data_json = labeled_delivery.to_json(orient="records")
+    
+    count_dict = {'restaurant': len(labeled_restaurant), 'delivery': len(filtered_delivery),
+                  'restaurant_data': restaurant_data_json, 'delivery_data': delivery_data_json}
 
     return jsonify(count_dict), 200
 
@@ -245,8 +257,14 @@ def run_job():
 @app.route(f'{prefix}/tweet/sentiment', methods=['GET'])
 def total_sentiment_tweets():
     df = tweet_sentiment_analysis()
-    return jsonify(df.value_counts().to_json(orient='table')), 200
+    return jsonify(df["sentiment"].value_counts().to_json(orient='table')), 200
 
+@app.route(f'{prefix}/grouped_sentiment', methods=['GET'])
+def get_grouped_sentiment():
+    delivery = tweet_sentiment_analysis()
+    restaurant = tweet_sentiment_analysis()
+    payload = {"delivery": delivery, "restaurant": restaurant}
+    return jsonify(payload), 200
 
 if __name__ == '__main__':
 

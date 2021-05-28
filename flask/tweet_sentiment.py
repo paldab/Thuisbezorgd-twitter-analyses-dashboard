@@ -14,20 +14,28 @@ def label_sentiment(label):
         return "Positive"
     return "Neutral"
 
-
-def tweet_sentiment_analysis():
+def tweet_sentiment_analysis(target=None):
+    test_data = None
+    
+    if type(target) != None:
+        fetch_df = clean_tweet(pd.DataFrame(target, columns=["text"]))
+        fetch_df.apply(lambda x:x["text"].strip(), axis=1)
+        test_data = fetch_df["text"].to_list()
+    else:
     # fetching the tweet data
-    statement = text("SELECT text from tweet").columns(Tweet.text)
-    tweet_data = db._session().query(Tweet.text).\
-        from_statement(statement).all()
+        statement = text("SELECT text from tweet").columns(Tweet.text)
+        tweet_data = getattr(db, "_session")().query(Tweet.text).\
+            from_statement(statement).all() 
 
-    df = clean_tweet(pd.DataFrame(tweet_data, columns=["text"]))
-    df.apply(lambda x: x["text"].strip(), axis=1)
-    test_data = df["text"]
-
+        fetch_df = clean_tweet(pd.DataFrame(tweet_data, columns=["text"]))
+        fetch_df.apply(lambda x:x["text"].strip(), axis=1)
+        
+        test_data = fetch_df["text"]
+    
     # loading the vectorizer
     vect_name = open((Path(__file__).parent / "ml-vectorizer/tldf-vectorizer.sav").resolve(), "rb")
     vectorizer = joblib.load(vect_name)
+    
     Xtest = vectorizer.transform(test_data)
 
     # loading the model
@@ -35,9 +43,9 @@ def tweet_sentiment_analysis():
     model = joblib.load(model_name)
 
     pred = model.predict(Xtest)
-
     # create a structured dataframe
-    df = pd.DataFrame(pred, columns=["label"])
-    df["sentiment"] = df["label"].apply(lambda x: label_sentiment(x))
-
+    df = pd.DataFrame(test_data, columns=["review"])
+    df["label"] = pred
+    df["sentiment"] = df["label"].apply(lambda x:label_sentiment(x))
+    
     return df
