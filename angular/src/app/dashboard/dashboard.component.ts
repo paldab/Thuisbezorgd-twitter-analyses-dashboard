@@ -14,6 +14,8 @@ export class DashboardComponent implements OnInit {
   layout: Layout[] = [];
   components: any = undefined;
 
+  
+
   constructor(private breakpointObserver: BreakpointObserver) {
 
     setTimeout(() => { 
@@ -103,7 +105,15 @@ export class DashboardComponent implements OnInit {
       show: true,
       layout: {width: 600, height: 400}
     }
-
+    let hashtagAndUsersLayout: Layout = {
+      title: 'Hashtags + users',
+      type: 'plotly-plot:hashtag',
+      enableButtons: false,
+      cols: 4,
+      rows: 14,
+      show: true,
+      layout: {width: 600, height: 400}
+    }
     this.components = this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small,
       Breakpoints.Medium, Breakpoints.Large, Breakpoints.XLarge]).pipe(
       map((breakpointer) => {
@@ -126,6 +136,7 @@ export class DashboardComponent implements OnInit {
           last5TweetsLayout,
           groupedTweetsLayout,
           sentimentTweetsLayout,
+          hashtagAndUsersLayout,
         ];
 
         if (xs == breakpointer.matches) {

@@ -138,6 +138,29 @@ def all_tweets():
 
     return jsonify(json_data), 200
 
+@app.route(f'{prefix}/agg-numbers-graph', methods=['GET'])
+def agg_numbers_graph():
+
+    json_data = []
+
+
+   
+    statement = text("select count(DISTINCT tweet.user_id), DATE(tweet.created_at) from hashtag inner join hashtag_tweet on hashtag_tweet.hashtag_id = hashtag.id inner join tweet on hashtag_tweet.tweet_id = tweet.id where DATE(tweet.created_at) >= DATE_ADD(LAST_DAY(DATE_SUB(NOW(), INTERVAL 2 MONTH)), INTERVAL 1 DAY) and DATE(tweet.created_at) <= DATE_SUB(NOW(), INTERVAL 1 MONTH) group by DATE(tweet.created_at) order by DATE(tweet.created_at);").\
+            columns(Tweet.user_screenname, Tweet.created_at)
+
+    data = db._session().query(
+            Tweet.user_screenname, Tweet.created_at
+        ).from_statement(statement).all()
+
+    json_data += create_json(data)
+
+    return jsonify(json_data), 200
+
+
+
+
+    
+
 
 @app.route(f'{prefix}/tweet/date', methods=['GET'])
 def dateFiltered_tweets():
@@ -154,6 +177,9 @@ def dateFiltered_tweets():
     )
 
     return jsonify(parsed_json), 200
+
+
+
 
 
 @app.route(f'{prefix}/wordcloud', methods=['GET'])

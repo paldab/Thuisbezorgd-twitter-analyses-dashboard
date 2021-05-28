@@ -14,6 +14,14 @@ export class PlotlyPlotComponent implements OnInit {
   groupedTweetsKeys!: string[];
   groupedTweetsVals!: any[];
 
+  array1: any[] = []
+  array2: any[] = []
+
+
+
+
+
+
 
   _plot_data: any = undefined;
   sentimentArray: any[] = []
@@ -33,6 +41,10 @@ export class PlotlyPlotComponent implements OnInit {
     switch(this.component.type.split(':')[1]) {
       case "grouped":
         this.getGroupedCount();
+        break;
+
+      case "hashtag":
+        this.getHashtags();
         break;
 
       case "sentiment":
@@ -97,6 +109,42 @@ export class PlotlyPlotComponent implements OnInit {
         }
       }
     );
+  }
+
+
+  private getHashtags(): void {
+    this.tweetsService.users().subscribe(
+      userdata => {
+        console.log(userdata)
+        const hoi = Object.values(userdata);
+       
+        
+        for (let index = 0; index < hoi.length; index++) {
+          this.array1.push(hoi[index].created_at);
+          this.array2.push(hoi[index].user_screenname);          
+        }
+      
+
+      }
+      );
+
+      
+
+        this.plot_data = {
+          data: [
+              {
+                x: this.array1,
+                y: this.array2,
+                name: 'Users',
+                type: 'line',
+                marker: {
+                  color: '#ff9800'
+                }
+              }
+          ],
+          layout: {width: 600, height: 400}
+        }
+      
   }
 
   getAllTweetsByFilter(filter: string): void {

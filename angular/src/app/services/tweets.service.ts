@@ -34,6 +34,13 @@ export class TweetsService {
     return this.httpClient.get(`${this.SERVER_URL}/tweet/subject-count`);
   }
 
+  users() {
+    return this.httpClient.get(`${this.SERVER_URL}/agg-numbers-graph`);
+  }
+
+
+
+
   dateFilteredTweets(startDate = '*', endDate = '*'): Observable<AllTweetsItem[]> {
     return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/tweet/date?s=${startDate}&e=${endDate}`);
   }
