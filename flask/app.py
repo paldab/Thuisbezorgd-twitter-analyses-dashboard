@@ -3,7 +3,7 @@ from models.model import Hashtag, Tweet, ProcessedTweet, hashtag_tweet
 from data import TweetCollector
 from models.database import db
 from utils.cleaner import clean_tweet, remove_stopwords
-from sqlalchemy import text, func, desc
+from sqlalchemy import func, desc
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from wordcloud import WordCloud
@@ -40,9 +40,9 @@ def subject_count():
 
     restaurant_data = db.session.query(Tweet.text).filter(
         Tweet.text.like('%restaurant%')
-    ).all() 
-    
-    restaurant_df = pd.DataFrame(restaurant_data, columns=["text"]) 
+    ).all()
+
+    restaurant_df = pd.DataFrame(restaurant_data, columns=["text"])
 
     # Get the tweets with a rough estimate about the delivery
     delivery = db._session().query(Tweet.text).filter(
@@ -62,15 +62,15 @@ def subject_count():
     filtered_delivery = delivery_df[
         delivery_df['text'].str.contains('.*\s(bezorg\w*)\s.*', case=False)
     ]
-    
+
     # labeled data
     labeled_delivery = tweet_sentiment_analysis(filtered_delivery)
     labeled_restaurant = tweet_sentiment_analysis(restaurant_df)
-    
+
     # json transformed data
     restaurant_data_json = labeled_restaurant.to_json(orient="records")
     delivery_data_json = labeled_delivery.to_json(orient="records")
-    
+
     count_dict = {'restaurant': len(labeled_restaurant), 'delivery': len(filtered_delivery),
                   'restaurant_data': restaurant_data_json, 'delivery_data': delivery_data_json}
 
@@ -80,6 +80,7 @@ def subject_count():
 @app.route(f'{prefix}/agg-numbers', methods=['GET'])
 def agg_numbers():
     date_filter = request.args.get('date', default=None, type=str)
+    filter = request.args.get('f', default=None, type=str)
     type = request.args.get('t', default=None, type=str)[: 11].split('-')
     json_data = []
 
@@ -91,9 +92,10 @@ def agg_numbers():
         )
 
         if date_filter:
-            data = data.filter(
-                func.date(Tweet.created_at) == date_filter
-            )
+            data = data.filter(Tweet.get_day_filter(date_filter))
+
+        if filter:
+            data = Tweet.get_filter_by_param(query=data, param=filter)
 
         json_data += create_json(data.limit(1).all())
 
@@ -101,9 +103,10 @@ def agg_numbers():
         data = db._session().query(func.count(Tweet.id).label('total'))
 
         if date_filter:
-            data = data.filter(
-                func.date(Tweet.created_at) == date_filter
-            )
+            data = data.filter(Tweet.get_day_filter(date_filter))
+
+        if filter:
+            data = Tweet.get_filter_by_param(query=data, param=filter)
 
         json_data += create_json(data.all())
 
@@ -112,7 +115,13 @@ def agg_numbers():
 
         if date_filter:
             data = data.join(hashtag_tweet).join(Tweet).filter(
-                func.date(Tweet.created_at) == date_filter
+                Tweet.get_day_filter(date_filter)
+            )
+
+        if filter:
+            data = Tweet.get_filter_by_param(
+                query=data.join(hashtag_tweet).join(Tweet),
+                param=filter
             )
 
         json_data += create_json(data.all())
@@ -123,9 +132,10 @@ def agg_numbers():
         )
 
         if date_filter:
-            data = data.filter(
-                func.date(Tweet.created_at) == date_filter
-            )
+            data = data.filter(Tweet.get_day_filter(date_filter))
+
+        if filter:
+            data = Tweet.get_filter_by_param(query=data, param=filter)
 
         json_data += create_json(data)
 
@@ -135,18 +145,10 @@ def agg_numbers():
 @app.route(f'{prefix}/tweet', methods=['GET'])
 def all_tweets():
     filter = request.args.get('f', default=None, type=str)
-
-    if filter == 'd':
-        procedure = 'getDailyTweets'
-
-    if filter == 'w':
-        procedure = 'getWeeklyTweets'
-
-    if filter == 'm':
-        procedure = 'getMonthlyTweets'
+    procedure = db.get_procedure_name(filter)
 
     # Show all Tweets by default
-    if filter is None:
+    if procedure is None:
         tweets = db._session().query(
             Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
         ).all()
@@ -154,7 +156,6 @@ def all_tweets():
         json_data = create_json(tweets, True)
 
     else:
-
         tweets_df = db.call_procedure(procedure)
 
         # add trimmed_text to dataframe.
@@ -259,12 +260,16 @@ def total_sentiment_tweets():
     df = tweet_sentiment_analysis()
     return jsonify(df["sentiment"].value_counts().to_json(orient='table')), 200
 
+
 @app.route(f'{prefix}/grouped_sentiment', methods=['GET'])
 def get_grouped_sentiment():
     delivery = tweet_sentiment_analysis()
     restaurant = tweet_sentiment_analysis()
+
     payload = {"delivery": delivery, "restaurant": restaurant}
+
     return jsonify(payload), 200
+
 
 if __name__ == '__main__':
 
