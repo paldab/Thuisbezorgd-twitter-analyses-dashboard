@@ -41,9 +41,6 @@ export class PlotlyPlotComponent implements OnInit {
       }
 
       switch (this.component.type.split(':')[1]) {
-        case "grouped":
-          this.getGroupedCount(filter);
-          break;
 
         case "sentiment":
           this.getSortedGroupedTweets();
@@ -54,37 +51,6 @@ export class PlotlyPlotComponent implements OnInit {
           break;
       }
     });
-  }
-
-  private getSentimentCount(): void {
-    this.tweetsService.getSentimentCount().subscribe(
-      sentimentData => {
-        const parsedData = JSON.parse(sentimentData.toString())
-        const {data} = parsedData
-        const sentimentNames: any = []
-        const sentimentValues: any = []
-
-        data.forEach((row: sentiment) => {
-          let {sentiment, values} = row
-          sentimentNames.push(sentiment)
-          sentimentValues.push(values)
-        })
-        this.sentimentArray.push(sentimentNames, sentimentValues)
-        this.plot_data = {
-          data: [
-            {
-              x: this.sentimentArray[0],
-              y: this.sentimentArray[1],
-              type: 'bar',
-              marker: {
-                color: '#ff9800'
-              }
-            },
-          ],
-          layout: {width: 600, height: 400}
-        }
-      }
-    )
   }
 
   private getSortedGroupedTweets(): void {
@@ -181,29 +147,6 @@ export class PlotlyPlotComponent implements OnInit {
         layout: {width: 600, height: 400, barmode: 'stack'}
       }
     })
-  }
-
-  private getGroupedCount(dateFilter?: string): void {
-    this.tweetsService.groupedTweets(dateFilter).subscribe(
-      data => {
-        this.groupedTweetsKeys = Object.keys(data);
-        this.groupedTweetsVals = Object.values(data);
-
-        this.plot_data = {
-          data: [
-            {
-              x: this.groupedTweetsKeys,
-              y: this.groupedTweetsVals,
-              type: 'bar',
-              marker: {
-                color: '#ff9800'
-              }
-            },
-          ],
-          layout: {width: 600, height: 400}
-        }
-      }
-    );
   }
 
   getAllTweetsByFilter(filter?: string, dateFilter?: string): void {

@@ -93,15 +93,6 @@ export class DashboardComponent implements OnInit {
       rows: 14,
       show: true,
     }
-    let groupedTweetsLayout: Layout = {
-      title: 'Grouped tweets',
-      type: 'plotly-plot:grouped',
-      enableButtons: false,
-      cols: 4,
-      rows: 14,
-      show: true,
-      layout: {width: 600, height: 400}
-    }
     let sentimentTweetsLayout: Layout = {
       title: 'Sentiment tweets',
       type: 'plotly-plot:sentiment',
@@ -132,7 +123,6 @@ export class DashboardComponent implements OnInit {
           wordcloudLayout,
           timelineLayout,
           last5TweetsLayout,
-          groupedTweetsLayout,
           sentimentTweetsLayout,
         ];
 
@@ -166,9 +156,9 @@ export class DashboardComponent implements OnInit {
             height: 300,
           };
 
-          this.layout[7].cols = this.layout[8].cols = 2;
-          this.layout[7].rows = this.layout[8].rows = 13;
-          this.layout[7].layout = this.layout[8].layout = {
+          this.layout[7].cols = 2;
+          this.layout[7].rows = 13;
+          this.layout[7].layout = {
             width: 500,
             height: 300,
           };
@@ -195,10 +185,9 @@ export class DashboardComponent implements OnInit {
             height: 400,
           };
 
-          this.layout[7].cols = this.layout[8].cols = 2;
-          this.layout[7].rows = this.layout[8].rows = 16;
-
-          this.layout[7].layout = this.layout[8].layout = {
+          this.layout[7].cols = 2;
+          this.layout[7].rows = 16;
+          this.layout[7].layout = {
             width: 600,
             height: 400,
           };
