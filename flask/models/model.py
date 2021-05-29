@@ -2,6 +2,8 @@ from sqlalchemy.sql.elements import Null
 from sqlalchemy import Table, Column, Integer, String, ForeignKey
 from sqlalchemy.types import DateTime, Boolean, Text
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.hybrid import hybrid_method
+from sqlalchemy import text, func, and_
 from .database import db
 
 hashtag_tweet = Table(
@@ -32,6 +34,38 @@ class Tweet(getattr(db, '_base')):
             self.user_screenname, self.user_geo_enabled,
             self.user_verified, self.text
         )
+
+    @hybrid_method
+    def get_day_filter(self, date_filter):
+        return func.date(Tweet.created_at) == date_filter
+
+    @hybrid_method
+    def get_daily_filter(self):
+        return func.date(self.created_at) == func.current_date()
+
+    @hybrid_method
+    def get_weekly_filter(self):
+        return and_(
+            self.created_at >= func.date_sub(func.date(func.now()), text('INTERVAL 7 DAY')),
+            func.year(self.created_at) == func.year(func.now())
+        )
+
+    @hybrid_method
+    def get_monthly_filter(self):
+        return self.created_at > func.date_sub(func.now(), text('INTERVAL 1 MONTH'))
+
+    @hybrid_method
+    def get_filter_by_param(self, query, param):
+        if param == 'm':
+            query = query.filter(Tweet.get_monthly_filter())
+
+        if param == 'w':
+            query = query.filter(Tweet.get_weekly_filter())
+
+        if param == 'd':
+            query = query.filter(Tweet.get_daily_filter())
+
+        return query
 
 
 class Hashtag(getattr(db, '_base')):
