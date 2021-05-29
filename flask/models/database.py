@@ -26,6 +26,20 @@ class DB():
 
         return self.call_procedure('filter_users', [cn_str])
 
+    def get_procedure_name(self, procedure_name):
+        procedure = None
+
+        if procedure_name == 'd':
+            procedure = 'getDailyTweets'
+
+        if procedure_name == 'w':
+            procedure = 'getWeeklyTweets'
+
+        if procedure_name == 'm':
+            procedure = 'getMonthlyTweets'
+
+        return procedure
+
     def call_procedure(self, name, params=None):
         if params is None:
             params = []

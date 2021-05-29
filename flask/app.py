@@ -1,9 +1,9 @@
 import textwrap
-from models.model import Hashtag, Tweet, ProcessedTweet
+from models.model import Hashtag, Tweet, ProcessedTweet, hashtag_tweet
 from data import TweetCollector
 from models.database import db
 from utils.cleaner import clean_tweet, remove_stopwords
-from sqlalchemy import text
+from sqlalchemy import func, desc
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from wordcloud import WordCloud
@@ -34,70 +34,119 @@ app.config["APPLICATION_ROOT"] = prefix
 
 @app.route(f'{prefix}/tweet/subject-count', methods=['GET'])
 def subject_count():
-    rest_count = db._session().query(Tweet.text).filter(
+    all_data_df = pd.DataFrame(db.session.query(Tweet.id, Tweet.text).all(), columns=["id", "text"])
+
+    date_filter = request.args.get('date', default=None, type=str)
+
+    restaurant_data = db.session.query(Tweet.id, Tweet.text).filter(
         Tweet.text.like('%restaurant%')
-    ).count()
+    ).all() 
+    
+    restaurant_df = pd.DataFrame(restaurant_data, columns=["id", "text"]) 
 
     # Get the tweets with a rough estimate about the delivery
-    delivery = db._session().query(Tweet.text).filter(
+    delivery = db._session().query(Tweet.id, Tweet.text).filter(
         Tweet.text.like('%bezorg%')
-    ).all()
+    )
 
-    delivery_df = pd.DataFrame(delivery, columns=['text'])
+    if date_filter:
+        restaurant_data = restaurant_data.filter(
+            func.date(Tweet.created_at) == date_filter
+        )
+
+        delivery = delivery.filter(func.date(Tweet.created_at) == date_filter)
+
+    delivery_df = pd.DataFrame(delivery.all(), columns=["id", "text"])
 
     # Filter out the tweets that actually use the 'bezorg' verb
     filtered_delivery = delivery_df[
         delivery_df['text'].str.contains('.*\s(bezorg\w*)\s.*', case=False)
     ]
+    
+    combined_df = pd.concat([all_data_df, restaurant_df, filtered_delivery])
+    all_df = combined_df.drop_duplicates(subset=['id'], keep=False)
 
-    count_dict = {'restaurant': rest_count, 'delivery': len(filtered_delivery)}
+    # labeled data
+    labeled_all = tweet_sentiment_analysis(all_df)
+    labeled_delivery = tweet_sentiment_analysis(filtered_delivery)
+    labeled_restaurant = tweet_sentiment_analysis(restaurant_df)
+
+    # json transformed data
+    restaurant_data_json = labeled_restaurant.to_json(orient="records")
+    all_data_json = labeled_all.to_json(orient="records")
+    delivery_data_json = labeled_delivery.to_json(orient="records")
+    
+    count_dict = {
+        'restaurant': len(labeled_restaurant),
+        'delivery': len(filtered_delivery),
+        'restaurant_data': restaurant_data_json,
+        'delivery_data': delivery_data_json,
+        'remaining': len(labeled_all),
+        'remaining_data': all_data_json,
+    }
 
     return jsonify(count_dict), 200
 
 
 @app.route(f'{prefix}/agg-numbers', methods=['GET'])
 def agg_numbers():
-
+    date_filter = request.args.get('date', default=None, type=str)
+    filter = request.args.get('f', default=None, type=str)
     type = request.args.get('t', default=None, type=str)[: 11].split('-')
     json_data = []
 
     if 't_t' in type:
-        statement = text("SELECT COUNT(id) as total, user_screenname FROM tweet GROUP BY user_screenname ORDER BY total DESC LIMIT 1").\
-            columns(Tweet.id.label('total'), Tweet.user_screenname)
-
         data = db._session().query(
-            Tweet.id.label('total'), Tweet.user_screenname
-        ).from_statement(statement).all()
+            func.count(Tweet.id).label('total'), Tweet.user_screenname
+        ).group_by(Tweet.user_screenname).order_by(
+            desc(func.count(Tweet.id).label('total'))
+        )
 
-        json_data += create_json(data)
+        if date_filter:
+            data = data.filter(Tweet.get_day_filter(date_filter))
+
+        if filter:
+            data = Tweet.get_filter_by_param(query=data, param=filter)
+
+        json_data += create_json(data.limit(1).all())
 
     if 'twt' in type:
-        statement = text("SELECT COUNT(id) as total FROM tweet").\
-            columns(Tweet.id.label('total'))
+        data = db._session().query(func.count(Tweet.id).label('total'))
 
-        data = db._session().query(
-            Tweet.id.label('total')
-        ).from_statement(statement).all()
+        if date_filter:
+            data = data.filter(Tweet.get_day_filter(date_filter))
 
-        json_data += create_json(data)
+        if filter:
+            data = Tweet.get_filter_by_param(query=data, param=filter)
+
+        json_data += create_json(data.all())
 
     if 'h' in type:
-        statement = text("SELECT COUNT(id) as total FROM hashtag").\
-            columns(Hashtag.id.label('total'))
+        data = db._session().query(func.count(Hashtag.id).label('total'))
 
-        data = db._session().query(
-            Hashtag.id.label('total')
-        ).from_statement(statement).all()
+        if date_filter:
+            data = data.join(hashtag_tweet).join(Tweet).filter(
+                Tweet.get_day_filter(date_filter)
+            )
 
-        json_data += create_json(data)
+        if filter:
+            data = Tweet.get_filter_by_param(
+                query=data.join(hashtag_tweet).join(Tweet),
+                param=filter
+            )
+
+        json_data += create_json(data.all())
 
     if 'u' in type:
-        statement = text("SELECT COUNT(DISTINCT user_screenname) as total FROM tweet").\
-            columns(Tweet.user_screenname.label('total'))
-
         data = db._session().query(
-            Tweet.user_screenname.label('total')
-        ).from_statement(statement).all()
+            func.count(Tweet.user_screenname.distinct()).label('total')
+        )
+
+        if date_filter:
+            data = data.filter(Tweet.get_day_filter(date_filter))
+
+        if filter:
+            data = Tweet.get_filter_by_param(query=data, param=filter)
 
         json_data += create_json(data)
 
@@ -107,18 +156,10 @@ def agg_numbers():
 @app.route(f'{prefix}/tweet', methods=['GET'])
 def all_tweets():
     filter = request.args.get('f', default=None, type=str)
-
-    if filter == 'd':
-        procedure = 'getDailyTweets'
-
-    if filter == 'w':
-        procedure = 'getWeeklyTweets'
-
-    if filter == 'm':
-        procedure = 'getMonthlyTweets'
+    procedure = db.get_procedure_name(filter)
 
     # Show all Tweets by default
-    if filter is None:
+    if procedure is None:
         tweets = db._session().query(
             Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
         ).all()
@@ -126,7 +167,6 @@ def all_tweets():
         json_data = create_json(tweets, True)
 
     else:
-
         tweets_df = db.call_procedure(procedure)
 
         # add trimmed_text to dataframe.
@@ -215,17 +255,29 @@ def dateFiltered_tweets():
 def generate_wordcloud():
     # Check parameters
     background_color = request.args.get('backgroundcolor')
+    date_filter = request.args.get('date', default=None, type=str)
+
     if background_color == "" or background_color == None:
         background_color = "black"
 
-    tweets = db._session().query(Tweet.id, Tweet.text, Tweet.created_at).all()
-    df = pd.DataFrame(tweets, columns=['id', "text", 'created_at'])
+    tweets = db._session().query(Tweet.id, Tweet.text, Tweet.created_at)
 
     processed_tweets = db._session().query(
         ProcessedTweet.text, ProcessedTweet.created_at
-    ).all()
+    )
 
-    processed_df = pd.DataFrame(processed_tweets,
+    if date_filter:
+        tweets = tweets.filter(
+            func.date(Tweet.created_at) == date_filter
+        )
+
+        processed_tweets = processed_tweets.filter(
+            func.date(ProcessedTweet.created_at) == date_filter
+        )
+
+    df = pd.DataFrame(tweets.all(), columns=['id', "text", 'created_at'])
+
+    processed_df = pd.DataFrame(processed_tweets.all(),
                                 columns=['text', 'created_at'])
 
     newest_tweet = df.created_at.max()
@@ -263,14 +315,26 @@ def generate_wordcloud():
 
     return jsonify(json_payload), 200
 
+
 def run_job():
     print("running task...")
     collector.recent_search(getattr(db, 'session'))
 
+
 @app.route(f'{prefix}/tweet/sentiment', methods=['GET'])
 def total_sentiment_tweets():
     df = tweet_sentiment_analysis()
-    return jsonify(df.value_counts().to_json(orient='table')), 200
+    return jsonify(df["sentiment"].value_counts().to_json(orient='table')), 200
+
+
+@app.route(f'{prefix}/grouped_sentiment', methods=['GET'])
+def get_grouped_sentiment():
+    delivery = tweet_sentiment_analysis()
+    restaurant = tweet_sentiment_analysis()
+
+    payload = {"delivery": delivery, "restaurant": restaurant}
+
+    return jsonify(payload), 200
 
 
 if __name__ == '__main__':

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { Layout, IconLayout } from '../interfaces/layout';
+import {ActivatedRoute, Router} from "@angular/router";
 
 
 @Component({
@@ -13,14 +14,19 @@ export class DashboardComponent implements OnInit {
   name: any = undefined;
   layout: Layout[] = [];
   components: any = undefined;
+  activeFilter: any;
 
-  
+  constructor(private breakpointObserver: BreakpointObserver, private activatedRoute: ActivatedRoute, private route: Router) {
 
-  constructor(private breakpointObserver: BreakpointObserver) {
+    this.activatedRoute.queryParams.subscribe(value => {
+      if (value.filter) {
+        this.activeFilter = value.filter;
+      }
 
-    setTimeout(() => { 
-      this.name = window.sessionStorage.getItem('user_name')?.replace(/['"]+/g, '');
-    }, 4000);
+      setTimeout(() => {
+        this.name = window.sessionStorage.getItem('user_name')?.replace(/['"]+/g, '');
+      }, 4000);
+    });
   }
 
   ngOnInit(): void {
@@ -78,7 +84,7 @@ export class DashboardComponent implements OnInit {
       cols: 4,
       rows: 14,
       show: true,
-      layout: {width: 600, height: 400}
+      layout: {autosize: true}
     }
     let last5TweetsLayout: Layout = {
       title: 'Laatste 5 tweets',
@@ -87,15 +93,6 @@ export class DashboardComponent implements OnInit {
       rows: 14,
       show: true,
     }
-    let groupedTweetsLayout: Layout = {
-      title: 'Grouped tweets',
-      type: 'plotly-plot:grouped',
-      enableButtons: false,
-      cols: 4,
-      rows: 14,
-      show: true,
-      layout: {width: 600, height: 400}
-    }
     let sentimentTweetsLayout: Layout = {
       title: 'Sentiment tweets',
       type: 'plotly-plot:sentiment',
@@ -103,7 +100,7 @@ export class DashboardComponent implements OnInit {
       cols: 4,
       rows: 14,
       show: true,
-      layout: {width: 600, height: 400}
+      layout: {autosize: true}
     }
     let hashtagAndUsersLayout: Layout = {
       title: 'Hashtags + users',
@@ -131,21 +128,20 @@ export class DashboardComponent implements OnInit {
           tweetUsersLayout,
           tweetsLayout,
           hashtagsLayout,
-          wordcloudLayout,
           timelineLayout,
-          last5TweetsLayout,
-          groupedTweetsLayout,
           sentimentTweetsLayout,
           hashtagAndUsersLayout,
+          wordcloudLayout,
+          last5TweetsLayout,
         ];
 
         if (xs == breakpointer.matches) {
-          // this.layout[6].show = false;
+          // this.layout[7].show = false;
           return this.layout;
         }
 
         if (s == breakpointer.matches) {
-          // this.layout[6].show = false;
+          // this.layout[7].show = false;
           return this.layout;
         }
 
@@ -158,26 +154,14 @@ export class DashboardComponent implements OnInit {
           this.layout[0].cols = this.layout[1].cols = this.layout[2].cols = this.layout[3].cols = 1;
           this.layout[0].rows = this.layout[1].rows = this.layout[2].rows = this.layout[3].rows = 4;
 
-
-          this.layout[4].cols = 2;
-          this.layout[4].rows = 13;
+          this.layout[6].cols = 2;
+          this.layout[6].rows = 13;
 
           this.layout[5].cols = 2;
           this.layout[5].rows = 13;
-          this.layout[5].layout = {
-            width: 500,
-            height: 300,
-          };
 
-          this.layout[7].cols = this.layout[8].cols = 2;
-          this.layout[7].rows = this.layout[8].rows = 13;
-          this.layout[7].layout = this.layout[8].layout = {
-            width: 500,
-            height: 300,
-          };
-
-          this.layout[6].cols = 4;
-          this.layout[6].rows = 13;
+          this.layout[4].cols = this.layout[7].cols = 4;
+          this.layout[4].rows = this.layout[7].rows = 13;
 
           return this.layout;
         }
@@ -186,33 +170,24 @@ export class DashboardComponent implements OnInit {
           this.layout[0].cols = this.layout[1].cols = this.layout[2].cols = this.layout[3].cols = 1;
           this.layout[0].rows = this.layout[1].rows = this.layout[2].rows = this.layout[3].rows = 6;
 
-          this.layout[4].cols = 2;
-          this.layout[4].rows = 16;
-
+          this.layout[6].cols = 2;
+          this.layout[6].rows = 16;
 
           this.layout[5].cols = 2;
           this.layout[5].rows = 16;
 
-          this.layout[5].layout = {
-            width: 600,
-            height: 400,
-          };
-
-          this.layout[7].cols = this.layout[8].cols = 2;
-          this.layout[7].rows = this.layout[8].rows = 16;
-
-          this.layout[7].layout = this.layout[8].layout = {
-            width: 600,
-            height: 400,
-          };
-
-          this.layout[6].cols = 4;
-          this.layout[6].rows = 16;
+          this.layout[4].cols = this.layout[7].cols = 4;
+          this.layout[4].rows = this.layout[7].rows = 16;
 
           return this.layout;
         }
         return [];
       })
     );
+  }
+
+  removeFilter(): void {
+    this.activeFilter = null;
+    this.route.navigate(['dashboard']);
   }
 }
