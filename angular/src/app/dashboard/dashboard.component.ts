@@ -84,7 +84,7 @@ export class DashboardComponent implements OnInit {
       cols: 4,
       rows: 14,
       show: true,
-      layout: {width: 600, height: 400}
+      layout: {autosize: true}
     }
     let last5TweetsLayout: Layout = {
       title: 'Laatste 5 tweets',
@@ -100,7 +100,7 @@ export class DashboardComponent implements OnInit {
       cols: 4,
       rows: 14,
       show: true,
-      layout: {width: 600, height: 400}
+      layout: {autosize: true}
     }
 
     this.components = this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small,
@@ -120,19 +120,19 @@ export class DashboardComponent implements OnInit {
           tweetUsersLayout,
           tweetsLayout,
           hashtagsLayout,
-          wordcloudLayout,
           timelineLayout,
-          last5TweetsLayout,
           sentimentTweetsLayout,
+          wordcloudLayout,
+          last5TweetsLayout,
         ];
 
         if (xs == breakpointer.matches) {
-          // this.layout[6].show = false;
+          // this.layout[7].show = false;
           return this.layout;
         }
 
         if (s == breakpointer.matches) {
-          // this.layout[6].show = false;
+          // this.layout[7].show = false;
           return this.layout;
         }
 
@@ -145,26 +145,14 @@ export class DashboardComponent implements OnInit {
           this.layout[0].cols = this.layout[1].cols = this.layout[2].cols = this.layout[3].cols = 1;
           this.layout[0].rows = this.layout[1].rows = this.layout[2].rows = this.layout[3].rows = 4;
 
-
-          this.layout[4].cols = 2;
-          this.layout[4].rows = 13;
+          this.layout[6].cols = 2;
+          this.layout[6].rows = 13;
 
           this.layout[5].cols = 2;
           this.layout[5].rows = 13;
-          this.layout[5].layout = {
-            width: 500,
-            height: 300,
-          };
 
-          this.layout[7].cols = 2;
-          this.layout[7].rows = 13;
-          this.layout[7].layout = {
-            width: 500,
-            height: 300,
-          };
-
-          this.layout[6].cols = 4;
-          this.layout[6].rows = 13;
+          this.layout[4].cols = this.layout[7].cols = 4;
+          this.layout[4].rows = this.layout[7].rows = 13;
 
           return this.layout;
         }
@@ -173,27 +161,14 @@ export class DashboardComponent implements OnInit {
           this.layout[0].cols = this.layout[1].cols = this.layout[2].cols = this.layout[3].cols = 1;
           this.layout[0].rows = this.layout[1].rows = this.layout[2].rows = this.layout[3].rows = 6;
 
-          this.layout[4].cols = 2;
-          this.layout[4].rows = 16;
-
+          this.layout[6].cols = 2;
+          this.layout[6].rows = 16;
 
           this.layout[5].cols = 2;
           this.layout[5].rows = 16;
 
-          this.layout[5].layout = {
-            width: 600,
-            height: 400,
-          };
-
-          this.layout[7].cols = 2;
-          this.layout[7].rows = 16;
-          this.layout[7].layout = {
-            width: 600,
-            height: 400,
-          };
-
-          this.layout[6].cols = 4;
-          this.layout[6].rows = 16;
+          this.layout[4].cols = this.layout[7].cols = 4;
+          this.layout[4].rows = this.layout[7].rows = 16;
 
           return this.layout;
         }

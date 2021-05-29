@@ -144,7 +144,7 @@ export class PlotlyPlotComponent implements OnInit {
       // plot the graph
       this.plot_data = {
         data: mergedData,
-        layout: {width: 600, height: 400, barmode: 'stack'}
+        layout: {autosize: true, barmode: 'stack'}
       }
     })
   }
@@ -207,7 +207,7 @@ export class PlotlyPlotComponent implements OnInit {
               color: '#ff9800'
             }
           }],
-          layout: {width: 300, height: 300}
+          layout: {autosize: true}
         }
       },
     );
