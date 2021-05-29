@@ -91,7 +91,9 @@ export class PlotlyPlotComponent implements OnInit {
     this.tweetsService.groupedTweets().subscribe((data: any) => {
       data.delivery_data = JSON.parse(data.delivery_data)
       data.restaurant_data = JSON.parse(data.restaurant_data)
-      const {delivery_data, restaurant_data} = data
+      data.remaining_data = JSON.parse(data.remaining_data)
+
+      const {delivery_data, restaurant_data, remaining_data} = data
       console.log(data);
 
       let deliveryStats = {
@@ -101,6 +103,12 @@ export class PlotlyPlotComponent implements OnInit {
       }
 
       let restaurantStats = {
+        negCount: 0,
+        posCount: 0,
+        neutralCount: 0
+      }
+
+      let remainingStats = {
         negCount: 0,
         posCount: 0,
         neutralCount: 0
@@ -130,6 +138,18 @@ export class PlotlyPlotComponent implements OnInit {
         }
       })
 
+      remaining_data.forEach((row: any) => {
+        if (row.sentiment == "Negative") {
+          remainingStats.negCount++;
+        }
+        if (row.sentiment == "Positive") {
+          remainingStats.posCount++;
+        }
+        if (row.sentiment == "Neutral") {
+          remainingStats.neutralCount++;
+        }
+      })
+
 
       const labels = ["Negative", "Neutral", "Positive"]
 
@@ -146,14 +166,14 @@ export class PlotlyPlotComponent implements OnInit {
         type: 'bar'
       }
 
-      // const otherSentiment = {
-      //   x: labels,
-      //   y: [],
-      //   name: "Overig",
-      //   type: 'bar'
-      // }
+      const remainingSentiment = {
+        x: labels,
+        y: [remainingStats.negCount, remainingStats.neutralCount, remainingStats.posCount],
+        name: "Overig",
+        type: 'bar'
+      }
 
-      const mergedData = [restaurantSentiment, deliverySentiment]
+      const mergedData = [restaurantSentiment, deliverySentiment, remainingSentiment]
 
       // plot the graph
       this.plot_data = {

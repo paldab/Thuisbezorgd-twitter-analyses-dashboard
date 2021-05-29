@@ -34,45 +34,56 @@ app.config["APPLICATION_ROOT"] = prefix
 
 @app.route(f'{prefix}/tweet/subject-count', methods=['GET'])
 def subject_count():
-    # all_data_count = pd.DataFrame(db.session.query(Tweet.text).all(), columns=["text"])
-    # label_all = tweet_sentiment_analysis(all_data_count)
+    all_data_df = pd.DataFrame(db.session.query(Tweet.id, Tweet.text).all(), columns=["id", "text"])
+
     date_filter = request.args.get('date', default=None, type=str)
 
-    restaurant_data = db.session.query(Tweet.text).filter(
+    restaurant_data = db.session.query(Tweet.id, Tweet.text).filter(
         Tweet.text.like('%restaurant%')
     ).all() 
     
-    restaurant_df = pd.DataFrame(restaurant_data, columns=["text"]) 
+    restaurant_df = pd.DataFrame(restaurant_data, columns=["id", "text"]) 
 
     # Get the tweets with a rough estimate about the delivery
-    delivery = db._session().query(Tweet.text).filter(
+    delivery = db._session().query(Tweet.id, Tweet.text).filter(
         Tweet.text.like('%bezorg%')
     )
 
     if date_filter:
-        rest_count = rest_count.filter(
+        restaurant_data = restaurant_data.filter(
             func.date(Tweet.created_at) == date_filter
         )
 
         delivery = delivery.filter(func.date(Tweet.created_at) == date_filter)
 
-    delivery_df = pd.DataFrame(delivery.all(), columns=['text'])
+    delivery_df = pd.DataFrame(delivery.all(), columns=["id", "text"])
 
     # Filter out the tweets that actually use the 'bezorg' verb
     filtered_delivery = delivery_df[
         delivery_df['text'].str.contains('.*\s(bezorg\w*)\s.*', case=False)
     ]
     
+    combined_df = pd.concat([all_data_df, restaurant_df, filtered_delivery])
+    all_df = combined_df.drop_duplicates(subset=['id'], keep=False)
+
     # labeled data
+    labeled_all = tweet_sentiment_analysis(all_df)
     labeled_delivery = tweet_sentiment_analysis(filtered_delivery)
     labeled_restaurant = tweet_sentiment_analysis(restaurant_df)
     
     # json transformed data
     restaurant_data_json = labeled_restaurant.to_json(orient="records")
+    all_data_json = labeled_all.to_json(orient="records")
     delivery_data_json = labeled_delivery.to_json(orient="records")
     
-    count_dict = {'restaurant': len(labeled_restaurant), 'delivery': len(filtered_delivery),
-                  'restaurant_data': restaurant_data_json, 'delivery_data': delivery_data_json}
+    count_dict = {
+        'restaurant': len(labeled_restaurant),
+        'delivery': len(filtered_delivery),
+        'restaurant_data': restaurant_data_json,
+        'delivery_data': delivery_data_json,
+        'remaining': len(labeled_all),
+        'remaining_data': all_data_json,
+    }
 
     return jsonify(count_dict), 200
 
