@@ -50,7 +50,7 @@ export class PlotlyPlotComponent implements OnInit {
           break;
 
         case "timeline":
-          this.getAllTweetsByFilter('m');
+          this.getAllTweetsByFilter(undefined, filter);
           break;
       }
     });
@@ -87,13 +87,13 @@ export class PlotlyPlotComponent implements OnInit {
     )
   }
 
-  private getSortedGroupedTweets(): void{
-    this.tweetsService.groupedTweets().subscribe((data: any) =>{
+  private getSortedGroupedTweets(): void {
+    this.tweetsService.groupedTweets().subscribe((data: any) => {
       data.delivery_data = JSON.parse(data.delivery_data)
       data.restaurant_data = JSON.parse(data.restaurant_data)
       const {delivery_data, restaurant_data} = data
       console.log(data);
-      
+
       let deliveryStats = {
         negCount: 0,
         posCount: 0,
@@ -106,26 +106,26 @@ export class PlotlyPlotComponent implements OnInit {
         neutralCount: 0
       }
 
-      delivery_data.forEach((row: any) =>{
-        if (row.sentiment == "Negative"){
+      delivery_data.forEach((row: any) => {
+        if (row.sentiment == "Negative") {
           deliveryStats.negCount++;
         }
-        if (row.sentiment == "Positive"){
+        if (row.sentiment == "Positive") {
           deliveryStats.posCount++;
         }
-        if (row.sentiment == "Neutral"){
+        if (row.sentiment == "Neutral") {
           deliveryStats.neutralCount++;
         }
       })
 
-      restaurant_data.forEach((row: any) =>{
-        if (row.sentiment == "Negative"){
+      restaurant_data.forEach((row: any) => {
+        if (row.sentiment == "Negative") {
           restaurantStats.negCount++;
         }
-        if (row.sentiment == "Positive"){
+        if (row.sentiment == "Positive") {
           restaurantStats.posCount++;
         }
-        if (row.sentiment == "Neutral"){
+        if (row.sentiment == "Neutral") {
           restaurantStats.neutralCount++;
         }
       })
@@ -154,7 +154,7 @@ export class PlotlyPlotComponent implements OnInit {
       // }
 
       const mergedData = [restaurantSentiment, deliverySentiment]
-      
+
       // plot the graph
       this.plot_data = {
         data: mergedData,
@@ -186,17 +186,28 @@ export class PlotlyPlotComponent implements OnInit {
     );
   }
 
-  getAllTweetsByFilter(filter: string): void {
+  getAllTweetsByFilter(filter?: string, dateFilter?: string): void {
     this.tweetsService.tweetDates = [];
     this.tweetsService.amountOfTweets = [];
 
     this.tweetsService.allTweets(filter).subscribe(
       data => {
-        // retrieve 5 tweets from data.
-        for (let i = 0; i < this.tweetsService.tweetLimit; i++) {
-          this.tweetsService.orderedTweetsArray[i] = data[i];
-        }
+        this.tweetsService.orderedTweetsArray = data.slice(0, this.tweetsService.tweetLimit);
+
         // Set data to datasource
+        if (dateFilter) {
+          const filteredDates = data.filter((tweet: any) => {
+            const filterDate = new Date(dateFilter);
+            const entryDate = new Date(tweet.created_at);
+
+            return filterDate.getDate() === entryDate.getDate() && filterDate.getMonth() === entryDate.getMonth()
+              && filterDate.getFullYear() === entryDate.getFullYear();
+          });
+
+          // TODO: Fix ?filter=2021-4-27 display all tweets if lesser than limit
+          this.tweetsService.orderedTweetsArray = filteredDates.slice(0, this.tweetsService.tweetLimit);
+        }
+
         this.tweetsService.dataSource.data = this.tweetsService.orderedTweetsArray;
 
         if (filter == 'd') {
@@ -206,7 +217,7 @@ export class PlotlyPlotComponent implements OnInit {
           this.tweetsService.amountOfTweets.push(data.length);
         }
 
-        if (filter == 'm' || filter == 'w') {
+        if (filter == 'm' || filter == 'w' || !filter) {
           // retrieve all created_at values and store them in an array.
           let tweetDates: string[] = data.map(tweet => tweet['created_at'].substr(5, 7));
           // filter unique dates out of the array.
@@ -243,8 +254,6 @@ export class PlotlyPlotComponent implements OnInit {
     if (type.split(':')[1] === 'timeline') {
       const selectedDate = new Date(event.points[0].x);
       selectedDate.setFullYear(new Date().getFullYear());
-
-
 
       this.router.navigate(['dashboard'], {
           queryParams:
