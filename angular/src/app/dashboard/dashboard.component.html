@@ -1,5 +1,13 @@
 <div class="grid-container">
   <h1 class="mat-h1" *ngIf="name != undefined;">Welcome, {{ name }}.</h1>
+
+  <p *ngIf="activeFilter" class="mat-h4">
+    Filter: {{ activeFilter }}
+    <button mat-icon-button color="primary" (click)="removeFilter()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </p>
+
   <mat-grid-list cols="4" rowHeight="2rem">
     <ng-container *ngFor="let component of components | async">
       <mat-grid-tile [colspan]="component?.cols" [rowspan]="component?.rows" *ngIf="component?.show == true;">
@@ -20,7 +28,7 @@
               <wordcloud></wordcloud>
             </ng-container>
             <ng-container *ngIf="component?.type.split(':')[0] == 'plotly-plot';">
-            <app-plotly-plot [component]="component"></app-plotly-plot>
+              <app-plotly-plot [component]="component"></app-plotly-plot>
             </ng-container>
             <ng-container *ngIf="component?.type == 'plotly-table';">
               <app-plotly-table></app-plotly-table>

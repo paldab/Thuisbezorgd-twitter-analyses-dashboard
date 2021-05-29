@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import { Layout, IconLayout } from '../interfaces/layout';
+import {ActivatedRoute, Router} from "@angular/router";
 
 
 @Component({
@@ -13,12 +14,19 @@ export class DashboardComponent implements OnInit {
   name: any = undefined;
   layout: Layout[] = [];
   components: any = undefined;
+  activeFilter: any;
 
-  constructor(private breakpointObserver: BreakpointObserver) {
+  constructor(private breakpointObserver: BreakpointObserver, private activatedRoute: ActivatedRoute, private route: Router) {
 
-    setTimeout(() => { 
-      this.name = window.sessionStorage.getItem('user_name')?.replace(/['"]+/g, '');
-    }, 4000);
+    this.activatedRoute.queryParams.subscribe(value => {
+      if (value.filter) {
+        this.activeFilter = value.filter;
+      }
+
+      setTimeout(() => {
+        this.name = window.sessionStorage.getItem('user_name')?.replace(/['"]+/g, '');
+      }, 4000);
+    });
   }
 
   ngOnInit(): void {
@@ -203,5 +211,10 @@ export class DashboardComponent implements OnInit {
         return [];
       })
     );
+  }
+
+  removeFilter(): void {
+    this.activeFilter = null;
+    this.route.navigate(['dashboard']);
   }
 }
