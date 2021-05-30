@@ -218,26 +218,32 @@ def generate_wordcloud():
     # Check parameters
     background_color = request.args.get('backgroundcolor')
     date_filter = request.args.get('date', default=None, type=str)
-
-    if background_color == "" or background_color == None:
-        background_color = "black"
-
-    tweets = db._session().query(Tweet.id, Tweet.text, Tweet.created_at)
+    filter = request.args.get('f', default=None, type=str)
+    procedure = db.get_procedure_name(filter)
 
     processed_tweets = db._session().query(
         ProcessedTweet.text, ProcessedTweet.created_at
     )
 
-    if date_filter:
-        tweets = tweets.filter(
-            func.date(Tweet.created_at) == date_filter
-        )
+    if background_color == "" or background_color == None:
+        background_color = "black"
 
-        processed_tweets = processed_tweets.filter(
-            func.date(ProcessedTweet.created_at) == date_filter
-        )
+    if procedure is None:
+        tweets = db._session().query(Tweet.id, Tweet.text, Tweet.created_at)
 
-    df = pd.DataFrame(tweets.all(), columns=['id', "text", 'created_at'])
+        if date_filter:
+            tweets = tweets.filter(Tweet.get_day_filter(date_filter))
+
+            processed_tweets = processed_tweets.filter(
+                ProcessedTweet.get_day_filter(date_filter)
+            )
+
+        df = pd.DataFrame(tweets.all(), columns=['id', "text", 'created_at'])
+    else:
+        df = db.call_procedure(procedure, convert_dt=False)
+        processed_tweets = ProcessedTweet.get_filter_by_param(
+            query=processed_tweets, param=filter
+        )
 
     processed_df = pd.DataFrame(processed_tweets.all(),
                                 columns=['text', 'created_at'])
@@ -256,7 +262,7 @@ def generate_wordcloud():
 
         df.to_sql(ProcessedTweet.__tablename__, db._engine,
                   if_exists='append', index=False, chunksize=250)
-        processed_df = df
+        processed_df = pd.concat([processed_df, df])
 
     wc = WordCloud(max_words=1000, stopwords=dutch_stopwords,
                    background_color=background_color).generate(
