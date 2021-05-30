@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
-import { Layout, IconLayout } from '../interfaces/layout';
-import {ActivatedRoute, Router} from "@angular/router";
+import {Component, OnInit} from '@angular/core';
+import {map} from 'rxjs/operators';
+import {Breakpoints, BreakpointObserver} from '@angular/cdk/layout';
+import {Layout, IconLayout} from '../interfaces/layout';
+import {ActivatedRoute, Router} from '@angular/router';
 
 
 @Component({
@@ -15,6 +15,7 @@ export class DashboardComponent implements OnInit {
   layout: Layout[] = [];
   components: any = undefined;
   activeFilter: any;
+  activePeriod: any;
 
   constructor(private breakpointObserver: BreakpointObserver, private activatedRoute: ActivatedRoute, private route: Router) {
 
@@ -23,14 +24,38 @@ export class DashboardComponent implements OnInit {
         this.activeFilter = value.filter;
       }
 
+      if (value.period) {
+        this.activePeriod = value.period;
+      }
+
       setTimeout(() => {
         this.name = window.sessionStorage.getItem('user_name')?.replace(/['"]+/g, '');
       }, 4000);
     });
   }
 
+  periodFilterToString(): string {
+    let formatted = '';
+
+    if (this.activePeriod) {
+      if (this.activePeriod === 'm') {
+        formatted = 'afgelopen maand';
+      }
+
+      if (this.activePeriod === 'w') {
+        formatted = 'afgelopen week';
+      }
+
+      if (this.activePeriod === 'd') {
+        formatted = 'vandaag';
+      }
+    }
+
+    return formatted;
+  }
+
   ngOnInit(): void {
-    let topTweeterLayout: IconLayout = {
+    const topTweeterLayout: IconLayout = {
       title: 'Top Tweeter',
       type: 'agg-numbers',
       icon: 'star',
@@ -39,8 +64,8 @@ export class DashboardComponent implements OnInit {
       cols: 4,
       rows: 4,
       show: true,
-    }
-    let tweetUsersLayout: IconLayout = {
+    };
+    const tweetUsersLayout: IconLayout = {
       title: 'Gebruikers',
       type: 'agg-numbers',
       selector: 'u',
@@ -49,8 +74,8 @@ export class DashboardComponent implements OnInit {
       cols: 4,
       rows: 4,
       show: true,
-    }
-    let tweetsLayout: IconLayout = {
+    };
+    const tweetsLayout: IconLayout = {
       title: 'Tweets',
       type: 'agg-numbers',
       selector: 'twt',
@@ -59,8 +84,8 @@ export class DashboardComponent implements OnInit {
       cols: 4,
       rows: 4,
       show: true,
-    }
-    let hashtagsLayout: IconLayout = {
+    };
+    const hashtagsLayout: IconLayout = {
       title: 'Hashtags',
       type: 'agg-numbers',
       selector: 'h',
@@ -69,15 +94,15 @@ export class DashboardComponent implements OnInit {
       cols: 4,
       rows: 4,
       show: true,
-    }
-    let wordcloudLayout: Layout = {
+    };
+    const wordcloudLayout: Layout = {
       title: 'Wordcloud van de dag',
       type: 'wordcloud',
       cols: 4,
       rows: 14,
       show: true,
-    }
-    let timelineLayout: Layout = {
+    };
+    const timelineLayout: Layout = {
       title: 'Timeline tweets',
       type: 'plotly-plot:timeline',
       enableButtons: true,
@@ -85,15 +110,15 @@ export class DashboardComponent implements OnInit {
       rows: 14,
       show: true,
       layout: {autosize: true}
-    }
-    let last5TweetsLayout: Layout = {
+    };
+    const last5TweetsLayout: Layout = {
       title: 'Laatste 5 tweets',
       type: 'plotly-table',
       cols: 4,
       rows: 14,
       show: true,
-    }
-    let sentimentTweetsLayout: Layout = {
+    };
+    const sentimentTweetsLayout: Layout = {
       title: 'Sentiment tweets',
       type: 'plotly-plot:sentiment',
       enableButtons: false,
@@ -101,7 +126,7 @@ export class DashboardComponent implements OnInit {
       rows: 14,
       show: true,
       layout: {autosize: true}
-    }
+    };
 
     this.components = this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small,
       Breakpoints.Medium, Breakpoints.Large, Breakpoints.XLarge]).pipe(
@@ -179,6 +204,7 @@ export class DashboardComponent implements OnInit {
 
   removeFilter(): void {
     this.activeFilter = null;
+    this.activePeriod = null;
     this.route.navigate(['dashboard']);
   }
 }

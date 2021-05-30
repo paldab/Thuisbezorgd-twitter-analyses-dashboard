@@ -35,26 +35,30 @@ export class PlotlyPlotComponent implements OnInit {
 
     this.activatedRoute.queryParams.subscribe(value => {
       let filter: any = null;
+      let period: any = null;
 
       if (value.filter) {
         filter = value.filter;
       }
 
-      switch (this.component.type.split(':')[1]) {
+      if (value.period) {
+        period = value.period;
+      }
 
+      switch (this.component.type.split(':')[1]) {
         case "sentiment":
-          this.getSortedGroupedTweets();
+          this.getSortedGroupedTweets(period, filter);
           break;
 
         case "timeline":
-          this.getAllTweetsByFilter(undefined, filter);
+          this.getAllTweetsByFilter(period, filter);
           break;
       }
     });
   }
 
-  private getSortedGroupedTweets(): void {
-    this.tweetsService.groupedTweets().subscribe((data: any) => {
+  private getSortedGroupedTweets(periodFilter?: string, dateFilter?: string): void {
+    this.tweetsService.groupedTweets(periodFilter, dateFilter).subscribe((data: any) => {
       data.delivery_data = JSON.parse(data.delivery_data)
       data.restaurant_data = JSON.parse(data.restaurant_data)
       data.remaining_data = JSON.parse(data.remaining_data)
@@ -224,5 +228,11 @@ export class PlotlyPlotComponent implements OnInit {
         }
       );
     }
+  }
+
+  filterByPeriod(periodFilter?: string): void {
+    this.router.navigate(['dashboard'], {
+      queryParams: {period: periodFilter}
+    });
   }
 }

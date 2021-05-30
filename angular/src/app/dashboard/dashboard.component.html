@@ -1,8 +1,8 @@
 <div class="grid-container">
   <h1 class="mat-h1" *ngIf="name != undefined;">Welcome, {{ name }}.</h1>
 
-  <p *ngIf="activeFilter" class="mat-h4">
-    Filter: {{ activeFilter }}
+  <p *ngIf="activeFilter || activePeriod" class="mat-h4">
+    Filter: {{ activeFilter }} {{this.periodFilterToString()}}
     <button mat-icon-button color="primary" (click)="removeFilter()">
       <mat-icon>close</mat-icon>
     </button>
