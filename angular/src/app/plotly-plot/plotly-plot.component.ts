@@ -16,13 +16,9 @@ export class PlotlyPlotComponent implements OnInit {
   groupedTweetsKeys!: string[];
   groupedTweetsVals!: any[];
 
-  array1: any[] = []
-  array2: any[] = []
-  array3: any[] = []
-  array4: any[] = []
-
   _plot_data: any = undefined;
   sentimentArray: any[] = []
+  graphObj: any =  { x: [], users: [], hashtags: [] };
 
   public get plot_data() {
     return this._plot_data;
@@ -54,12 +50,8 @@ export class PlotlyPlotComponent implements OnInit {
           this.getAllTweetsByFilter(undefined, filter);
           break;
 
-        case "hashtag":
-          this.getHashtags();
-          break;
-
-        case "sentiment":
-          this.getSentimentCount();
+        case "hashtag+user":
+          this.getHashtagUsers();
           break;
       }
     });
@@ -160,69 +152,43 @@ export class PlotlyPlotComponent implements OnInit {
     })
   }
 
-  private getHashtags(): void {
+  private getHashtagUsers(): void {
     this.tweetsService.users().subscribe(
-      userdata => {
-        console.log(userdata)
-        const hoi = Object.values(userdata);
-       
-        
-        for (let index = 0; index < hoi.length; index++) {
-          this.array1.push(hoi[index].created_at);
-          this.array2.push(hoi[index].user_screenname);          
+      payload => {
+        let keys = Object.values(payload)
+        this.graphObj = { x: [], users: [], hashtags: []};
+
+        for (let index = 0; index < keys.length; index++) {
+          this.graphObj.x.push(keys[index].created_at.substr(5,7));
+          this.graphObj.users.push(keys[index].user_id);
+          this.graphObj.hashtags.push(keys[index].id);
         }
       
-
-      }
-      );
-
-      this.tweetsService.hashtags().subscribe(
-        hashtagdata => {
-          console.log(hashtagdata)
-          const hoi = Object.values(hashtagdata);
-         
-          
-          for (let index = 0; index < hoi.length; index++) {
-            this.array3.push(hoi[index].created_at);
-            this.array4.push(hoi[index].id);          
-          }
-        
-  
-          console.log(this.array3);
-          console.log(this.array4);
-
-
-        }
-        );
-
-      
-
         this.plot_data = {
           data: [
-              {
-                x: this.array1,
-                y: this.array2,
-                name: 'Users',
-                type: 'line',
-                marker: {
-                  color: '#ff9800'
-                }
-              },
             {
-              x: this.array3,
-              y: this.array4,
+              x: this.graphObj.x,
+              y: this.graphObj.users,
+              name: 'Users',
+              type: 'line',
+              marker: {
+                color: '#ff9800'
+              }
+            },
+            {
+              x: this.graphObj.x,
+              y: this.graphObj.hashtags,
               name: 'Hashtags',
               type: 'line',
               marker: {
                 color: '#0000FF'
               }
-            
-
             }
           ],
-          layout: {width: 600, height: 400}
+          layout: {autosize: true}
         }
-
+      }
+    );
   }
 
   getAllTweetsByFilter(filter?: string, dateFilter?: string): void {
@@ -295,10 +261,10 @@ export class PlotlyPlotComponent implements OnInit {
       selectedDate.setFullYear(new Date().getFullYear());
 
       this.router.navigate(['dashboard'], {
-          queryParams:
-            {filter: `${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}`}
-        }
-      );
+          queryParams: {
+            filter: `${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}`
+          }
+      });
     }
   }
 }

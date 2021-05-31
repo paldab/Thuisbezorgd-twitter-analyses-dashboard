@@ -3,7 +3,7 @@ from models.model import Hashtag, Tweet, ProcessedTweet, hashtag_tweet
 from data import TweetCollector
 from models.database import db
 from utils.cleaner import clean_tweet, remove_stopwords
-from sqlalchemy import func, desc
+from sqlalchemy import text, func, desc
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from wordcloud import WordCloud
@@ -87,7 +87,6 @@ def subject_count():
 
     return jsonify(count_dict), 200
 
-
 @app.route(f'{prefix}/agg-numbers', methods=['GET'])
 def agg_numbers():
     date_filter = request.args.get('date', default=None, type=str)
@@ -152,7 +151,6 @@ def agg_numbers():
 
     return jsonify(json_data), 200
 
-
 @app.route(f'{prefix}/tweet', methods=['GET'])
 def all_tweets():
     filter = request.args.get('f', default=None, type=str)
@@ -182,54 +180,17 @@ def all_tweets():
 def agg_numbers_graph():
 
     json_data = []
-
-
    
-    statement = text("select count(DISTINCT tweet.user_id), DATE(tweet.created_at) from hashtag inner join hashtag_tweet on hashtag_tweet.hashtag_id = hashtag.id inner join tweet on hashtag_tweet.tweet_id = tweet.id where DATE(tweet.created_at) >= DATE_ADD(LAST_DAY(DATE_SUB(NOW(), INTERVAL 2 MONTH)), INTERVAL 1 DAY) and DATE(tweet.created_at) <= DATE_SUB(NOW(), INTERVAL 1 MONTH) group by DATE(tweet.created_at) order by DATE(tweet.created_at);").\
-            columns(Tweet.user_screenname, Tweet.created_at)
+    statement = text("SELECT COUNT(hashtag.id) AS hashtag_sum, COUNT(DISTINCT tweet.user_id), DATE(tweet.created_at) FROM hashtag INNER JOIN hashtag_tweet ON hashtag_tweet.hashtag_id = hashtag.id INNER JOIN tweet ON hashtag_tweet.tweet_id = tweet.id GROUP BY DATE(tweet.created_at);").\
+        columns(Hashtag.id, Tweet.user_id, Tweet.created_at)
 
     data = db._session().query(
-            Tweet.user_screenname, Tweet.created_at
-        ).from_statement(statement).all()
+        Hashtag.id, Tweet.user_id, Tweet.created_at
+    ).from_statement(statement).all()
 
-    json_data += create_json(data)
+    json_data = create_json(data)
 
     return jsonify(json_data), 200
-
-
-
-@app.route(f'{prefix}/agg-hastags-graph', methods=['GET'])
-def agg_hastags_graph():
-    # procedure = 'getMonthlyTweets'
-    # tweets_df = db.call_procedure(procedure)
-
-    #     # add trimmed_text to dataframe.
-    # tweets_df['trimmed_text'] = tweets_df['text'].apply(lambda x: textwrap.shorten(x, width=144, placeholder="..."))
-
-    # json_data = json.loads(
-    #     tweets_df.to_json(orient='records', date_format='iso')
-    #     )
-
-    # return jsonify(json_data), 200
-
-
-
-
-    json_data = []
-
-    statement = text("select count(hashtag.id) as hashtag_sum, DATE(tweet.created_at) from hashtag inner join hashtag_tweet on hashtag_tweet.hashtag_id = hashtag.id inner join tweet on hashtag_tweet.tweet_id = tweet.id where DATE(tweet.created_at) >= DATE_ADD(LAST_DAY(DATE_SUB(NOW(), INTERVAL 2 MONTH)), INTERVAL 1 DAY) and DATE(tweet.created_at) <= DATE_SUB(NOW(), INTERVAL 1 MONTH)group by DATE(tweet.created_at) order by DATE(tweet.created_at);").\
-            columns(Hashtag.id, Tweet.created_at)
-
-    data = db._session().query(
-            Hashtag.id, Tweet.created_at
-        ).from_statement(statement).all()
-
-    json_data += create_json(data)
-
-    return jsonify(json_data), 200 
-
-    
-
 
 @app.route(f'{prefix}/tweet/date', methods=['GET'])
 def dateFiltered_tweets():
@@ -246,10 +207,6 @@ def dateFiltered_tweets():
     )
 
     return jsonify(parsed_json), 200
-
-
-
-
 
 @app.route(f'{prefix}/wordcloud', methods=['GET'])
 def generate_wordcloud():

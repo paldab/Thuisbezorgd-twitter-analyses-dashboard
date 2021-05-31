@@ -104,12 +104,12 @@ export class DashboardComponent implements OnInit {
     }
     let hashtagAndUsersLayout: Layout = {
       title: 'Hashtags + users',
-      type: 'plotly-plot:hashtag',
+      type: 'plotly-plot:hashtag+user',
       enableButtons: false,
       cols: 4,
       rows: 14,
       show: true,
-      layout: {width: 600, height: 400}
+      layout: {autosize: true}
     }
     this.components = this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small,
       Breakpoints.Medium, Breakpoints.Large, Breakpoints.XLarge]).pipe(
@@ -121,16 +121,14 @@ export class DashboardComponent implements OnInit {
         const l = breakpointer.breakpoints[indexes[3]];
         const xl = breakpointer.breakpoints[indexes[4]];
 
-        // console.log(this.num_data);
-
         this.layout = [
           topTweeterLayout,
           tweetUsersLayout,
           tweetsLayout,
           hashtagsLayout,
           timelineLayout,
-          sentimentTweetsLayout,
           hashtagAndUsersLayout,
+          sentimentTweetsLayout,
           wordcloudLayout,
           last5TweetsLayout,
         ];
@@ -154,14 +152,12 @@ export class DashboardComponent implements OnInit {
           this.layout[0].cols = this.layout[1].cols = this.layout[2].cols = this.layout[3].cols = 1;
           this.layout[0].rows = this.layout[1].rows = this.layout[2].rows = this.layout[3].rows = 4;
 
-          this.layout[6].cols = 2;
-          this.layout[6].rows = 13;
+          this.layout[6].cols = this.layout[7].cols =  2;
+          this.layout[6].rows = this.layout[7].rows = 14;
 
-          this.layout[5].cols = 2;
-          this.layout[5].rows = 13;
 
-          this.layout[4].cols = this.layout[7].cols = 4;
-          this.layout[4].rows = this.layout[7].rows = 13;
+          this.layout[4].cols = this.layout[5].cols = this.layout[8].cols = 4;
+          this.layout[4].rows = this.layout[5].rows = this.layout[8].rows = 14;
 
           return this.layout;
         }
@@ -170,18 +166,15 @@ export class DashboardComponent implements OnInit {
           this.layout[0].cols = this.layout[1].cols = this.layout[2].cols = this.layout[3].cols = 1;
           this.layout[0].rows = this.layout[1].rows = this.layout[2].rows = this.layout[3].rows = 6;
 
-          this.layout[6].cols = 2;
-          this.layout[6].rows = 16;
+          this.layout[6].cols = this.layout[7].cols = 2;
+          this.layout[6].rows = this.layout[7].rows = 17;
 
-          this.layout[5].cols = 2;
-          this.layout[5].rows = 16;
-
-          this.layout[4].cols = this.layout[7].cols = 4;
-          this.layout[4].rows = this.layout[7].rows = 16;
+          this.layout[4].cols = this.layout[5].cols = this.layout[8].cols = 4;
+          this.layout[4].rows = this.layout[5].rows = this.layout[8].rows = 17;
 
           return this.layout;
         }
-        return [];
+        return this.layout;
       })
     );
   }
