@@ -3,7 +3,7 @@ from models.model import Hashtag, Tweet, ProcessedTweet, hashtag_tweet
 from data import TweetCollector
 from models.database import db
 from utils.cleaner import clean_tweet, remove_stopwords
-from sqlalchemy import func, desc
+from sqlalchemy import text, func, desc
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from wordcloud import WordCloud
@@ -18,7 +18,7 @@ import io
 import json
 import config
 import nltk
-import atexit
+import atexit 
 from apscheduler.schedulers.background import BackgroundScheduler
 from utils.basic_util import create_json
 
@@ -102,7 +102,6 @@ def subject_count():
 
     return jsonify(count_dict), 200
 
-
 @app.route(f'{prefix}/agg-numbers', methods=['GET'])
 def agg_numbers():
     date_filter = request.args.get('date', default=None, type=str)
@@ -167,7 +166,6 @@ def agg_numbers():
 
     return jsonify(json_data), 200
 
-
 @app.route(f'{prefix}/tweet', methods=['GET'])
 def all_tweets():
     filter = request.args.get('f', default=None, type=str)
@@ -195,6 +193,21 @@ def all_tweets():
 
     return jsonify(json_data), 200
 
+@app.route(f'{prefix}/agg-numbers-graph', methods=['GET'])
+def agg_numbers_graph():
+
+    json_data = []
+   
+    statement = text("SELECT COUNT(hashtag.id) AS hashtag_sum, COUNT(DISTINCT tweet.user_id), DATE(tweet.created_at) FROM hashtag INNER JOIN hashtag_tweet ON hashtag_tweet.hashtag_id = hashtag.id INNER JOIN tweet ON hashtag_tweet.tweet_id = tweet.id GROUP BY DATE(tweet.created_at);").\
+        columns(Hashtag.id, Tweet.user_id, Tweet.created_at)
+
+    data = db._session().query(
+        Hashtag.id, Tweet.user_id, Tweet.created_at
+    ).from_statement(statement).all()
+
+    json_data = create_json(data)
+
+    return jsonify(json_data), 200
 
 @app.route(f'{prefix}/tweet/date', methods=['GET'])
 def dateFiltered_tweets():
@@ -211,7 +224,6 @@ def dateFiltered_tweets():
     )
 
     return jsonify(parsed_json), 200
-
 
 @app.route(f'{prefix}/wordcloud', methods=['GET'])
 def generate_wordcloud():
