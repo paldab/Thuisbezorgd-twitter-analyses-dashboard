@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
-import { Layout, IconLayout } from '../interfaces/layout';
+import {Component, OnInit} from '@angular/core';
+import {map} from 'rxjs/operators';
+import {Breakpoints, BreakpointObserver} from '@angular/cdk/layout';
+import {Layout, IconLayout} from '../interfaces/layout';
+import {ActivatedRoute, Router} from '@angular/router';
 
 
 @Component({
@@ -13,16 +14,48 @@ export class DashboardComponent implements OnInit {
   name: any = undefined;
   layout: Layout[] = [];
   components: any = undefined;
+  activeFilter: any;
+  activePeriod: any;
 
-  constructor(private breakpointObserver: BreakpointObserver) {
+  constructor(private breakpointObserver: BreakpointObserver, private activatedRoute: ActivatedRoute, private route: Router) {
 
-    setTimeout(() => { 
-      this.name = window.sessionStorage.getItem('user_name')?.replace(/['"]+/g, '');
-    }, 4000);
+    this.activatedRoute.queryParams.subscribe(value => {
+      if (value.filter) {
+        this.activeFilter = value.filter;
+      }
+
+      if (value.period) {
+        this.activePeriod = value.period;
+      }
+
+      setTimeout(() => {
+        this.name = window.sessionStorage.getItem('user_name')?.replace(/['"]+/g, '');
+      }, 4000);
+    });
+  }
+
+  periodFilterToString(): string {
+    let formatted = '';
+
+    if (this.activePeriod) {
+      if (this.activePeriod === 'm') {
+        formatted = 'afgelopen maand';
+      }
+
+      if (this.activePeriod === 'w') {
+        formatted = 'afgelopen week';
+      }
+
+      if (this.activePeriod === 'd') {
+        formatted = 'vandaag';
+      }
+    }
+
+    return formatted;
   }
 
   ngOnInit(): void {
-    let topTweeterLayout: IconLayout = {
+    const topTweeterLayout: IconLayout = {
       title: 'Top Tweeter',
       type: 'agg-numbers',
       icon: 'star',
@@ -31,8 +64,8 @@ export class DashboardComponent implements OnInit {
       cols: 4,
       rows: 4,
       show: true,
-    }
-    let tweetUsersLayout: IconLayout = {
+    };
+    const tweetUsersLayout: IconLayout = {
       title: 'Gebruikers',
       type: 'agg-numbers',
       selector: 'u',
@@ -41,8 +74,8 @@ export class DashboardComponent implements OnInit {
       cols: 4,
       rows: 4,
       show: true,
-    }
-    let tweetsLayout: IconLayout = {
+    };
+    const tweetsLayout: IconLayout = {
       title: 'Tweets',
       type: 'agg-numbers',
       selector: 'twt',
@@ -51,8 +84,8 @@ export class DashboardComponent implements OnInit {
       cols: 4,
       rows: 4,
       show: true,
-    }
-    let hashtagsLayout: IconLayout = {
+    };
+    const hashtagsLayout: IconLayout = {
       title: 'Hashtags',
       type: 'agg-numbers',
       selector: 'h',
@@ -61,47 +94,47 @@ export class DashboardComponent implements OnInit {
       cols: 4,
       rows: 4,
       show: true,
-    }
-    let wordcloudLayout: Layout = {
+    };
+    const wordcloudLayout: Layout = {
       title: 'Wordcloud van de dag',
       type: 'wordcloud',
       cols: 4,
       rows: 14,
       show: true,
-    }
-    let timelineLayout: Layout = {
+    };
+    const timelineLayout: Layout = {
       title: 'Timeline tweets',
       type: 'plotly-plot:timeline',
       enableButtons: true,
       cols: 4,
       rows: 14,
       show: true,
-      layout: {width: 600, height: 400}
-    }
-    let last5TweetsLayout: Layout = {
+      layout: {autosize: true}
+    };
+    const last5TweetsLayout: Layout = {
       title: 'Laatste 5 tweets',
       type: 'plotly-table',
       cols: 4,
       rows: 14,
       show: true,
-    }
-    let groupedTweetsLayout: Layout = {
-      title: 'Grouped tweets',
-      type: 'plotly-plot:grouped',
-      enableButtons: false,
-      cols: 4,
-      rows: 14,
-      show: true,
-      layout: {width: 600, height: 400}
-    }
-    let sentimentTweetsLayout: Layout = {
+    };
+    const sentimentTweetsLayout: Layout = {
       title: 'Sentiment tweets',
       type: 'plotly-plot:sentiment',
       enableButtons: false,
       cols: 4,
       rows: 14,
       show: true,
-      layout: {width: 600, height: 400}
+      layout: {autosize: true}
+    }
+    let hashtagAndUsersLayout: Layout = {
+      title: 'Hashtags + users',
+      type: 'plotly-plot:hashtag+user',
+      enableButtons: false,
+      cols: 4,
+      rows: 14,
+      show: true,
+      layout: {autosize: true}
     }
 
     this.components = this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small,
@@ -114,27 +147,25 @@ export class DashboardComponent implements OnInit {
         const l = breakpointer.breakpoints[indexes[3]];
         const xl = breakpointer.breakpoints[indexes[4]];
 
-        // console.log(this.num_data);
-
         this.layout = [
           topTweeterLayout,
           tweetUsersLayout,
           tweetsLayout,
           hashtagsLayout,
-          wordcloudLayout,
           timelineLayout,
-          last5TweetsLayout,
-          groupedTweetsLayout,
+          hashtagAndUsersLayout,
           sentimentTweetsLayout,
+          wordcloudLayout,
+          last5TweetsLayout,
         ];
 
         if (xs == breakpointer.matches) {
-          // this.layout[6].show = false;
+          // this.layout[7].show = false;
           return this.layout;
         }
 
         if (s == breakpointer.matches) {
-          // this.layout[6].show = false;
+          // this.layout[7].show = false;
           return this.layout;
         }
 
@@ -147,26 +178,12 @@ export class DashboardComponent implements OnInit {
           this.layout[0].cols = this.layout[1].cols = this.layout[2].cols = this.layout[3].cols = 1;
           this.layout[0].rows = this.layout[1].rows = this.layout[2].rows = this.layout[3].rows = 4;
 
+          this.layout[6].cols = this.layout[7].cols =  2;
+          this.layout[6].rows = this.layout[7].rows = 14;
 
-          this.layout[4].cols = 2;
-          this.layout[4].rows = 13;
 
-          this.layout[5].cols = 2;
-          this.layout[5].rows = 13;
-          this.layout[5].layout = {
-            width: 500,
-            height: 300,
-          };
-
-          this.layout[7].cols = this.layout[8].cols = 2;
-          this.layout[7].rows = this.layout[8].rows = 13;
-          this.layout[7].layout = this.layout[8].layout = {
-            width: 500,
-            height: 300,
-          };
-
-          this.layout[6].cols = 4;
-          this.layout[6].rows = 13;
+          this.layout[4].cols = this.layout[5].cols = this.layout[8].cols = 4;
+          this.layout[4].rows = this.layout[5].rows = this.layout[8].rows = 14;
 
           return this.layout;
         }
@@ -175,33 +192,22 @@ export class DashboardComponent implements OnInit {
           this.layout[0].cols = this.layout[1].cols = this.layout[2].cols = this.layout[3].cols = 1;
           this.layout[0].rows = this.layout[1].rows = this.layout[2].rows = this.layout[3].rows = 6;
 
-          this.layout[4].cols = 2;
-          this.layout[4].rows = 16;
+          this.layout[6].cols = this.layout[7].cols = 2;
+          this.layout[6].rows = this.layout[7].rows = 17;
 
-
-          this.layout[5].cols = 2;
-          this.layout[5].rows = 16;
-
-          this.layout[5].layout = {
-            width: 600,
-            height: 400,
-          };
-
-          this.layout[7].cols = this.layout[8].cols = 2;
-          this.layout[7].rows = this.layout[8].rows = 16;
-
-          this.layout[7].layout = this.layout[8].layout = {
-            width: 600,
-            height: 400,
-          };
-
-          this.layout[6].cols = 4;
-          this.layout[6].rows = 16;
+          this.layout[4].cols = this.layout[5].cols = this.layout[8].cols = 4;
+          this.layout[4].rows = this.layout[5].rows = this.layout[8].rows = 17;
 
           return this.layout;
         }
-        return [];
+        return this.layout;
       })
     );
+  }
+
+  removeFilter(): void {
+    this.activeFilter = null;
+    this.activePeriod = null;
+    this.route.navigate(['dashboard']);
   }
 }

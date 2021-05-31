@@ -1,4 +1,4 @@
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {Injectable, ViewChild} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {Observable, of} from 'rxjs';
@@ -23,19 +23,48 @@ export class TweetsService {
   }
 
   allTweets(filter?: string): Observable<AllTweetsItem[]> {
-    if (!filter) {
-      return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/tweet`);
+    let params = new HttpParams();
+
+    if (filter) {
+      params = params.set('f', filter);
     }
 
-    return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/tweet?f=${filter}`);
+    return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/tweet`, {params});
   }
 
-  groupedTweets() {
-    return this.httpClient.get(`${this.SERVER_URL}/tweet/subject-count`);
+  groupedTweets(periodFilter?: string, dateFilter?: string) {
+    let params = new HttpParams();
+
+    if (dateFilter) {
+      params = params.set('date', dateFilter);
+    }
+
+    if (periodFilter) {
+      params = params.set('f', periodFilter);
+    }
+
+    return this.httpClient.get(`${this.SERVER_URL}/tweet/subject-count`, {params});
+  }
+
+  users(periodFilter?: string, dateFilter?: string) {
+    let params = new HttpParams();
+
+    if (dateFilter) {
+      params = params.set('date', dateFilter);
+    }
+
+    if (periodFilter) {
+      params = params.set('f', periodFilter);
+    }
+
+    return this.httpClient.get(`${this.SERVER_URL}/agg-numbers-graph`, {params});
   }
 
   dateFilteredTweets(startDate = '*', endDate = '*'): Observable<AllTweetsItem[]> {
-    return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/tweet/date?s=${startDate}&e=${endDate}`);
+    let params = new HttpParams()
+      .set('s', startDate).set('e', endDate);
+
+    return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/tweet/date`, {params});
   }
 
   getSentimentCount() {

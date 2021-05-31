@@ -1,9 +1,10 @@
 <ng-container *ngIf="component?.enableButtons == true;">
     <div class="button-container">
-      <button mat-raised-button color="primary" (click)="this.getAllTweetsByFilter('d');">Toon vandaag</button>
-      <button mat-raised-button color="primary" (click)="this.getAllTweetsByFilter('w');">Toon afgelopen week</button>
-      <button mat-raised-button color="primary" (click)="this.getAllTweetsByFilter('m');">Toon afgelopen maand</button>
+      <button mat-raised-button color="primary" (click)="this.filterByPeriod('d');">Toon vandaag</button>
+      <button mat-raised-button color="primary" (click)="this.filterByPeriod('w');">Toon afgelopen week</button>
+      <button mat-raised-button color="primary" (click)="this.filterByPeriod('m')">Toon afgelopen maand</button>
+      <button mat-raised-button color="primary" (click)="this.filterByPeriod()">Toon alles</button>
     </div>
 </ng-container>
 
-<plotly-plot [data]="this.plot_data?.data" [layout]="component?.layout"></plotly-plot>
+<plotly-plot [data]="this.plot_data?.data" [layout]="component?.layout" (plotlyClick)="filterByDate($event, component?.type)"></plotly-plot>
