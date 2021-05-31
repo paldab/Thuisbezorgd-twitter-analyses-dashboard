@@ -229,26 +229,26 @@ export class PlotlyPlotComponent implements OnInit {
           this.tweetsService.tweetDates.push(data[0].created_at.substr(5, 7));
           // retrieve the length of data and push it to the amountOfTweets array.
           
-          let local = {
+          let amountOfTweets = {
             positive_count: 0, negative_count: 0, neutral_count: 0,
           }
         
           data.forEach(item => {
             switch (item.sentiment) {
               case "Positive":
-                this.tweetsService.sentiment_obj.positive_count++;
+                amountOfTweets.positive_count++;
                 break;
               case "Negative":
-                this.tweetsService.sentiment_obj.negative_count++;
+                amountOfTweets.negative_count++;
                 break;
               case "Neutral":
-                this.tweetsService.sentiment_obj.neutral_count++;
+                amountOfTweets.neutral_count++;
                 break;
             }
           });
-          this.tweetsService.sentiment_obj.positive_array.push(local.positive_count);
-          this.tweetsService.sentiment_obj.negative_array.push(local.negative_count);
-          this.tweetsService.sentiment_obj.neutral_array.push(local.neutral_count);  
+          this.tweetsService.sentiment_obj.positive_array.push(amountOfTweets.positive_count);
+          this.tweetsService.sentiment_obj.negative_array.push(amountOfTweets.negative_count);
+          this.tweetsService.sentiment_obj.neutral_array.push(amountOfTweets.neutral_count);  
         }
 
         if (filter == 'm' || filter == 'w' || !filter) {
@@ -256,41 +256,34 @@ export class PlotlyPlotComponent implements OnInit {
           let tweetDates: string[] = data.map(tweet => tweet['created_at'].substr(5, 7));
           // filter unique dates out of the array.
           this.tweetsService.tweetDates = tweetDates.filter(this.tweetsService.unique);
-          console.log("=====INFO======");
 
           // foreach unique tweet date
           for (let i = 0; i < this.tweetsService.tweetDates.length; i++) {
-            console.log("current i: ", i);
 
-            let local = {
+            let amountOfTweets = {
               positive_count: 0, negative_count: 0, neutral_count: 0,
             }
             for (let j = 0; j < data.length; j++) {
 
               if (this.tweetsService.tweetDates[i] === data[j].created_at.substr(5, 7)) {
-                console.log("current j: ", data[j]);
                 
                 switch (data[j].sentiment) {
                   case "Positive":
-                    console.log("hit pos");
-                    local.positive_count++;
+                    amountOfTweets.positive_count++;
                     break;
                   case "Negative":
-                    console.log("hit neg");
-                    local.negative_count++;
+                    amountOfTweets.negative_count++;
                     break;
                   case "Neutral":
-                    console.log("hit neu");
-                    local.neutral_count++;
+                    amountOfTweets.neutral_count++;
                     break;
                 }
               }
             }
-            console.log("saving arrays...");
               
-            this.tweetsService.sentiment_obj.positive_array[i] = local.positive_count;
-            this.tweetsService.sentiment_obj.negative_array[i] = local.negative_count;
-            this.tweetsService.sentiment_obj.neutral_array[i] = local.neutral_count;  
+            this.tweetsService.sentiment_obj.positive_array[i] = amountOfTweets.positive_count;
+            this.tweetsService.sentiment_obj.negative_array[i] = amountOfTweets.negative_count;
+            this.tweetsService.sentiment_obj.neutral_array[i] = amountOfTweets.neutral_count;  
           }
         }
 
@@ -314,9 +307,7 @@ export class PlotlyPlotComponent implements OnInit {
             name: "Neutraal"
           }],
           layout: {autosize: true}
-        }
-        console.log(this.plot_data.data);
-        
+        }        
       },
     );
   }

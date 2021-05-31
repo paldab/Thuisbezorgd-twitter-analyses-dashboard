@@ -125,7 +125,7 @@ export class DashboardComponent implements OnInit {
       cols: 4,
       rows: 18,
       show: true,
-      layout: {autosize: true}
+      layout: {autosize: true, barmode: 'stack'}
     }
     let hashtagAndUsersLayout: Layout = {
       title: 'Hashtags + users',
@@ -148,24 +148,22 @@ export class DashboardComponent implements OnInit {
         const xl = breakpointer.breakpoints[indexes[4]];
 
         this.layout = [
-          // topTweeterLayout,
-          // tweetUsersLayout,
-          // tweetsLayout,
-          // hashtagsLayout,
+          topTweeterLayout,
+          tweetUsersLayout,
+          tweetsLayout,
+          hashtagsLayout,
           timelineLayout,
-          // hashtagAndUsersLayout,
-          // sentimentTweetsLayout,
-          // wordcloudLayout,
-          // last5TweetsLayout,
+          hashtagAndUsersLayout,
+          sentimentTweetsLayout,
+          wordcloudLayout,
+          last5TweetsLayout,
         ];
 
         if (xs == breakpointer.matches) {
-          // this.layout[7].show = false;
           return this.layout;
         }
 
         if (s == breakpointer.matches) {
-          // this.layout[7].show = false;
           return this.layout;
         }
 
@@ -173,33 +171,29 @@ export class DashboardComponent implements OnInit {
           return this.layout;
         }
 
-        // if (l == breakpointer.matches) {
+        if (l == breakpointer.matches) {
 
-        //   this.layout[0].cols = this.layout[1].cols = this.layout[2].cols = this.layout[3].cols = 1;
-        //   this.layout[0].rows = this.layout[1].rows = this.layout[2].rows = this.layout[3].rows = 4;
+          this.layout[0].cols = this.layout[1].cols = this.layout[2].cols = this.layout[3].cols = 1;
+          this.layout[0].rows = this.layout[1].rows = this.layout[2].rows = this.layout[3].rows = 4;
 
-        //   this.layout[6].cols = this.layout[7].cols =  2;
-        //   this.layout[6].rows = this.layout[7].rows = 14;
+          this.layout[6].cols = this.layout[7].cols =  2;
 
 
-        //   this.layout[4].cols = this.layout[5].cols = this.layout[8].cols = 4;
-        //   this.layout[4].rows = this.layout[5].rows = this.layout[8].rows = 14;
+          this.layout[4].cols = this.layout[5].cols = this.layout[8].cols = 4;
 
-        //   return this.layout;
-        // }
+          return this.layout;
+        }
 
-        // if (xl == breakpointer.matches) {
-        //   this.layout[0].cols = this.layout[1].cols = this.layout[2].cols = this.layout[3].cols = 1;
-        //   this.layout[0].rows = this.layout[1].rows = this.layout[2].rows = this.layout[3].rows = 6;
+        if (xl == breakpointer.matches) {
+          this.layout[0].cols = this.layout[1].cols = this.layout[2].cols = this.layout[3].cols = 1;
+          this.layout[0].rows = this.layout[1].rows = this.layout[2].rows = this.layout[3].rows = 6;
 
-        //   this.layout[6].cols = this.layout[7].cols = 2;
-        //   this.layout[6].rows = this.layout[7].rows = 17;
+          this.layout[6].cols = this.layout[7].cols = 2;
 
-        //   this.layout[4].cols = this.layout[5].cols = this.layout[8].cols = 4;
-        //   this.layout[4].rows = this.layout[5].rows = this.layout[8].rows = 17;
+          this.layout[4].cols = this.layout[5].cols = this.layout[8].cols = 4;
 
-        //   return this.layout;
-        // }
+          return this.layout;
+        }
         return this.layout;
       })
     );
