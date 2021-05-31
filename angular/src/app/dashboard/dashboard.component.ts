@@ -134,7 +134,7 @@ export class DashboardComponent implements OnInit {
       cols: 4,
       rows: 18,
       show: true,
-      layout: {autosize: true}
+      layout: {autosize: true, barmode: 'stack'}
     }
 
     this.components = this.breakpointObserver.observe([Breakpoints.XSmall, Breakpoints.Small,
@@ -176,10 +176,8 @@ export class DashboardComponent implements OnInit {
           this.layout[0].cols = this.layout[1].cols = this.layout[2].cols = this.layout[3].cols = 1;
           this.layout[0].rows = this.layout[1].rows = this.layout[2].rows = this.layout[3].rows = 4;
 
-          this.layout[6].cols = this.layout[7].cols =  2;
-
-
-          this.layout[4].cols = this.layout[5].cols = this.layout[8].cols = 4;
+          this.layout[6].cols = this.layout[5].cols = this.layout[7].cols =  2;
+          this.layout[4].cols = this.layout[8].cols = 4;
 
           return this.layout;
         }
@@ -188,9 +186,8 @@ export class DashboardComponent implements OnInit {
           this.layout[0].cols = this.layout[1].cols = this.layout[2].cols = this.layout[3].cols = 1;
           this.layout[0].rows = this.layout[1].rows = this.layout[2].rows = this.layout[3].rows = 6;
 
-          this.layout[6].cols = this.layout[7].cols = 2;
-
-          this.layout[4].cols = this.layout[5].cols = this.layout[8].cols = 4;
+          this.layout[6].cols = this.layout[5].cols = this.layout[7].cols = 2;
+          this.layout[4].cols = this.layout[8].cols = 4;
 
           return this.layout;
         }
