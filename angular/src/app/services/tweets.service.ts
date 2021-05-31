@@ -32,11 +32,15 @@ export class TweetsService {
     return this.httpClient.get<AllTweetsItem[]>(`${this.SERVER_URL}/tweet`, {params});
   }
 
-  groupedTweets(dateFilter?: string) {
+  groupedTweets(periodFilter?: string, dateFilter?: string) {
     let params = new HttpParams();
 
     if (dateFilter) {
       params = params.set('date', dateFilter);
+    }
+
+    if (periodFilter) {
+      params = params.set('f', periodFilter);
     }
 
     return this.httpClient.get(`${this.SERVER_URL}/tweet/subject-count`, {params});

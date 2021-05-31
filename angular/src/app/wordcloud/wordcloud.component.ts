@@ -17,22 +17,27 @@ export class WordcloudComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe(value => {
       let filter: any = null;
+      let period: any = null;
 
       if (value.filter) {
         filter = value.filter;
       }
 
-      this.getBase64Img(filter);
+      if (value.period) {
+        period = value.period;
+      }
+
+      this.getBase64Img(period, filter);
     });
   }
 
   /**
    * grabs the base64 url and format the string into a img-src tag
    */
-  public getBase64Img(dateFilter?: string): void {
+  public getBase64Img(periodFilter?: string, dateFilter?: string): void {
     let imgUrl;
     const base64ImgTemplate: string = 'data:image/png;base64,';
-    this.wordcloudService.generateWordcloud('white', dateFilter).subscribe(data => {
+    this.wordcloudService.generateWordcloud('white', periodFilter, dateFilter).subscribe(data => {
       const {image} = data;
       imgUrl = image;
 

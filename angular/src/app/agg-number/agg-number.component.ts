@@ -24,12 +24,17 @@ export class AggNumberComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe(value => {
       let filter: any = null;
+      let period: any = null;
 
       if (value.filter) {
         filter = value.filter;
       }
 
-      this.aggNumsService.getData(this.component?.selector, filter).subscribe((data: any) => {
+      if (value.period) {
+        period = value.period;
+      }
+
+      this.aggNumsService.getData(this.component?.selector, period, filter).subscribe((data: any) => {
         this.num_data = data[0];
       });
     });

@@ -40,7 +40,7 @@ class DB():
 
         return procedure
 
-    def call_procedure(self, name, params=None):
+    def call_procedure(self, name, params=None, convert_dt=True):
         if params is None:
             params = []
 
@@ -57,7 +57,7 @@ class DB():
             tweets = pd.DataFrame.from_records(results,
                                                columns=column_names_list)
 
-            if pd.api.types.is_datetime64_dtype(tweets['created_at']):
+            if pd.api.types.is_datetime64_dtype(tweets['created_at']) and convert_dt:
                 tweets['created_at'] = tweets['created_at'].dt.strftime(
                     '%a, %d %b %Y %H:%M:%S %Z'
                 )

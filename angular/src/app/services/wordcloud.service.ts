@@ -14,10 +14,13 @@ export class WordcloudService {
 
   /**
    *
-   * @param backgroundColor optional background color of the image
+   * @param backgroundColor - background color of the image (optional)
+   * @param periodFilter - Filter by period (optional)
+   * @param dateFilter - Filter by specific date (optional)
+   *
    * @returns a base64 url of an wordcloud png image
    */
-  generateWordcloud(backgroundColor?: string, dateFilter?: string): Observable<any> {
+  generateWordcloud(backgroundColor?: string, periodFilter?: string, dateFilter?: string): Observable<any> {
     let params = new HttpParams();
 
     if (backgroundColor) {
@@ -26,6 +29,10 @@ export class WordcloudService {
 
     if (dateFilter) {
       params = params.set('date', dateFilter);
+    }
+
+    if (periodFilter) {
+      params = params.set('f', periodFilter);
     }
 
     return this.http.get<any>(`${this.SERVER_URL}/wordcloud`, {params});

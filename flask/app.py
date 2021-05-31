@@ -34,48 +34,63 @@ app.config["APPLICATION_ROOT"] = prefix
 
 @app.route(f'{prefix}/tweet/subject-count', methods=['GET'])
 def subject_count():
-    all_data_df = pd.DataFrame(db.session.query(Tweet.id, Tweet.text).all(), columns=["id", "text"])
-
     date_filter = request.args.get('date', default=None, type=str)
+    filter = request.args.get('f', default=None, type=str)
+    procedure = db.get_procedure_name(filter)
 
-    restaurant_data = db.session.query(Tweet.id, Tweet.text).filter(
-        Tweet.text.like('%restaurant%')
-    ).all() 
-    
-    restaurant_df = pd.DataFrame(restaurant_data, columns=["id", "text"]) 
+    df_columns = ["id", "text"]
 
-    # Get the tweets with a rough estimate about the delivery
-    delivery = db._session().query(Tweet.id, Tweet.text).filter(
-        Tweet.text.like('%bezorg%')
-    )
+    if procedure is None:
+        all_data = db.session.query(Tweet.id, Tweet.text)
 
-    if date_filter:
-        restaurant_data = restaurant_data.filter(
-            func.date(Tweet.created_at) == date_filter
+        restaurant_data = db.session.query(Tweet.id, Tweet.text).filter(
+            Tweet.text.like('%restaurant%')
         )
 
-        delivery = delivery.filter(func.date(Tweet.created_at) == date_filter)
+        # Get the tweets with a rough estimate about the delivery
+        delivery = db._session().query(Tweet.id, Tweet.text).filter(
+            Tweet.text.like('%bezorg%')
+        )
 
-    delivery_df = pd.DataFrame(delivery.all(), columns=["id", "text"])
+        if date_filter:
+            all_data = all_data.filter(Tweet.get_day_filter(date_filter))
 
-    # Filter out the tweets that actually use the 'bezorg' verb
-    filtered_delivery = delivery_df[
-        delivery_df['text'].str.contains('.*\s(bezorg\w*)\s.*', case=False)
-    ]
-    
+            restaurant_data = restaurant_data.filter(
+                Tweet.get_day_filter(date_filter)
+            )
+
+            delivery = delivery.filter(Tweet.get_day_filter(date_filter))
+
+        delivery_df = pd.DataFrame(delivery.all(), columns=df_columns)
+        restaurant_df = pd.DataFrame(restaurant_data.all(), columns=df_columns)
+        all_data_df = pd.DataFrame(all_data.all(), columns=df_columns)
+
+        # Filter out the tweets that actually use the 'bezorg' verb
+        filtered_delivery = delivery_df[
+            delivery_df['text'].str.contains('.*\s(bezorg\w*)\s.*', case=False)
+        ]
+    else:
+        all_data_df = db.call_procedure(procedure)
+
+        restaurant_df = all_data_df[all_data_df['text'].str.contains('restaurant', case=False)]
+        filtered_delivery = all_data_df[
+            all_data_df['text'].str.contains('.*\s(bezorg\w*)\s.*', case=False)
+        ]
+
     combined_df = pd.concat([all_data_df, restaurant_df, filtered_delivery])
     all_df = combined_df.drop_duplicates(subset=['id'], keep=False)
 
     # labeled data
     labeled_all = tweet_sentiment_analysis(all_df)
-    labeled_delivery = tweet_sentiment_analysis(filtered_delivery)
-    labeled_restaurant = tweet_sentiment_analysis(restaurant_df)
+    # Can't process an empty DataFrame.
+    labeled_delivery = tweet_sentiment_analysis(filtered_delivery) if not filtered_delivery.empty else filtered_delivery
+    labeled_restaurant = tweet_sentiment_analysis(restaurant_df) if not restaurant_df.empty else restaurant_df
 
     # json transformed data
     restaurant_data_json = labeled_restaurant.to_json(orient="records")
     all_data_json = labeled_all.to_json(orient="records")
     delivery_data_json = labeled_delivery.to_json(orient="records")
-    
+
     count_dict = {
         'restaurant': len(labeled_restaurant),
         'delivery': len(filtered_delivery),
@@ -168,7 +183,9 @@ def all_tweets():
         tweets_df = db.call_procedure(procedure)
 
         # add trimmed_text to dataframe.
-        tweets_df['trimmed_text'] = tweets_df['text'].apply(lambda x: textwrap.shorten(x, width=144, placeholder="..."))
+        tweets_df['trimmed_text'] = tweets_df['text'].apply(
+            lambda x: textwrap.shorten(x, width=144, placeholder="...")
+        )
 
         json_data = json.loads(
             tweets_df.to_json(orient='records', date_format='iso')
@@ -213,26 +230,32 @@ def generate_wordcloud():
     # Check parameters
     background_color = request.args.get('backgroundcolor')
     date_filter = request.args.get('date', default=None, type=str)
-
-    if background_color == "" or background_color == None:
-        background_color = "black"
-
-    tweets = db._session().query(Tweet.id, Tweet.text, Tweet.created_at)
+    filter = request.args.get('f', default=None, type=str)
+    procedure = db.get_procedure_name(filter)
 
     processed_tweets = db._session().query(
         ProcessedTweet.text, ProcessedTweet.created_at
     )
 
-    if date_filter:
-        tweets = tweets.filter(
-            func.date(Tweet.created_at) == date_filter
-        )
+    if background_color == "" or background_color == None:
+        background_color = "black"
 
-        processed_tweets = processed_tweets.filter(
-            func.date(ProcessedTweet.created_at) == date_filter
-        )
+    if procedure is None:
+        tweets = db._session().query(Tweet.id, Tweet.text, Tweet.created_at)
 
-    df = pd.DataFrame(tweets.all(), columns=['id', "text", 'created_at'])
+        if date_filter:
+            tweets = tweets.filter(Tweet.get_day_filter(date_filter))
+
+            processed_tweets = processed_tweets.filter(
+                ProcessedTweet.get_day_filter(date_filter)
+            )
+
+        df = pd.DataFrame(tweets.all(), columns=['id', "text", 'created_at'])
+    else:
+        df = db.call_procedure(procedure, convert_dt=False)
+        processed_tweets = ProcessedTweet.get_filter_by_param(
+            query=processed_tweets, param=filter
+        )
 
     processed_df = pd.DataFrame(processed_tweets.all(),
                                 columns=['text', 'created_at'])
@@ -251,7 +274,7 @@ def generate_wordcloud():
 
         df.to_sql(ProcessedTweet.__tablename__, db._engine,
                   if_exists='append', index=False, chunksize=250)
-        processed_df = df
+        processed_df = pd.concat([processed_df, df])
 
     wc = WordCloud(max_words=1000, stopwords=dutch_stopwords,
                    background_color=background_color).generate(
@@ -278,24 +301,7 @@ def run_job():
     collector.recent_search(getattr(db, 'session'))
 
 
-@app.route(f'{prefix}/tweet/sentiment', methods=['GET'])
-def total_sentiment_tweets():
-    df = tweet_sentiment_analysis()
-    return jsonify(df["sentiment"].value_counts().to_json(orient='table')), 200
-
-
-@app.route(f'{prefix}/grouped_sentiment', methods=['GET'])
-def get_grouped_sentiment():
-    delivery = tweet_sentiment_analysis()
-    restaurant = tweet_sentiment_analysis()
-
-    payload = {"delivery": delivery, "restaurant": restaurant}
-
-    return jsonify(payload), 200
-
-
 if __name__ == '__main__':
-
     scheduler = BackgroundScheduler()
 
     c = twint.Config()
@@ -311,7 +317,8 @@ if __name__ == '__main__':
         config.twitter['key'], config.twitter['secret'], c
     )
 
-    scheduler.add_job(func=run_job, trigger="cron", day_of_week='mon-sun', hour=2, minute=30)
+    scheduler.add_job(func=run_job, trigger="cron", day_of_week='mon-sun',
+                      hour=2, minute=30)
     scheduler.start()
 
     nltk.download('stopwords')
