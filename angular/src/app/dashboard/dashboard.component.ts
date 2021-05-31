@@ -109,7 +109,7 @@ export class DashboardComponent implements OnInit {
       cols: 4,
       rows: 18,
       show: true,
-      layout: {autosize: true}
+      layout: {autosize: true, barmode: 'stack'}
     };
     const last5TweetsLayout: Layout = {
       title: 'Laatste 5 tweets',
