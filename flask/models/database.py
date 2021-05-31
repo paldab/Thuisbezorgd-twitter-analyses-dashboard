@@ -13,7 +13,7 @@ class DB():
                 config.database['connector'], config.database['user'],
                 config.database['password'], config.database['host'],
                 config.database['db']
-            )
+            ), pool_size=30, max_overflow=0
         )
 
         self._base = declarative_base()

@@ -46,15 +46,19 @@ export class TweetsService {
     return this.httpClient.get(`${this.SERVER_URL}/tweet/subject-count`, {params});
   }
 
-  users() {
-    return this.httpClient.get(`${this.SERVER_URL}/agg-numbers-graph`);
+  users(periodFilter?: string, dateFilter?: string) {
+    let params = new HttpParams();
+
+    if (dateFilter) {
+      params = params.set('date', dateFilter);
+    }
+
+    if (periodFilter) {
+      params = params.set('f', periodFilter);
+    }
+
+    return this.httpClient.get(`${this.SERVER_URL}/agg-numbers-graph`, {params});
   }
-
-  hashtags() {
-    return this.httpClient.get(`${this.SERVER_URL}/agg-hastags-graph`);
-  }
-
-
 
   dateFilteredTweets(startDate = '*', endDate = '*'): Observable<AllTweetsItem[]> {
     let params = new HttpParams()

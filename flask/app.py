@@ -18,7 +18,7 @@ import io
 import json
 import config
 import nltk
-import atexit 
+import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 from utils.basic_util import create_json
 
@@ -102,6 +102,7 @@ def subject_count():
 
     return jsonify(count_dict), 200
 
+
 @app.route(f'{prefix}/agg-numbers', methods=['GET'])
 def agg_numbers():
     date_filter = request.args.get('date', default=None, type=str)
@@ -166,6 +167,7 @@ def agg_numbers():
 
     return jsonify(json_data), 200
 
+
 @app.route(f'{prefix}/tweet', methods=['GET'])
 def all_tweets():
     filter = request.args.get('f', default=None, type=str)
@@ -193,21 +195,29 @@ def all_tweets():
 
     return jsonify(json_data), 200
 
+
 @app.route(f'{prefix}/agg-numbers-graph', methods=['GET'])
 def agg_numbers_graph():
-
+    date_filter = request.args.get('date', default=None, type=str)
+    filter = request.args.get('f', default=None, type=str)
     json_data = []
-   
-    statement = text("SELECT COUNT(hashtag.id) AS hashtag_sum, COUNT(DISTINCT tweet.user_id), DATE(tweet.created_at) FROM hashtag INNER JOIN hashtag_tweet ON hashtag_tweet.hashtag_id = hashtag.id INNER JOIN tweet ON hashtag_tweet.tweet_id = tweet.id GROUP BY DATE(tweet.created_at);").\
-        columns(Hashtag.id, Tweet.user_id, Tweet.created_at)
 
     data = db._session().query(
-        Hashtag.id, Tweet.user_id, Tweet.created_at
-    ).from_statement(statement).all()
+        func.count(Hashtag.id).label('id'),
+        func.count(Tweet.user_id.distinct()).label('user_id'),
+        func.date(Tweet.created_at).label('created_at')
+    ).select_from(Hashtag).group_by(func.date(Tweet.created_at)).join(hashtag_tweet).join(Tweet)
 
-    json_data = create_json(data)
+    if date_filter:
+        data = data.filter(Tweet.get_day_filter(date_filter))
+
+    if filter:
+        data = Tweet.get_filter_by_param(query=data, param=filter)
+
+    json_data = create_json(data.all())
 
     return jsonify(json_data), 200
+
 
 @app.route(f'{prefix}/tweet/date', methods=['GET'])
 def dateFiltered_tweets():
@@ -224,6 +234,7 @@ def dateFiltered_tweets():
     )
 
     return jsonify(parsed_json), 200
+
 
 @app.route(f'{prefix}/wordcloud', methods=['GET'])
 def generate_wordcloud():

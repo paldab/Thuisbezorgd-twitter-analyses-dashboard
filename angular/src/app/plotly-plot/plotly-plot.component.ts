@@ -18,7 +18,7 @@ export class PlotlyPlotComponent implements OnInit {
 
   _plot_data: any = undefined;
   sentimentArray: any[] = []
-  graphObj: any =  { x: [], users: [], hashtags: [] };
+  graphObj: any = {x: [], users: [], hashtags: []};
 
   public get plot_data() {
     return this._plot_data;
@@ -55,7 +55,7 @@ export class PlotlyPlotComponent implements OnInit {
           break;
 
         case "hashtag+user":
-          this.getHashtagUsers();
+          this.getHashtagUsers(period, filter);
           break;
       }
     });
@@ -156,25 +156,30 @@ export class PlotlyPlotComponent implements OnInit {
     })
   }
 
-  private getHashtagUsers(): void {
-    this.tweetsService.users().subscribe(
+  private getHashtagUsers(filter?: string, dateFilter?: string): void {
+    this.tweetsService.users(filter, dateFilter).subscribe(
       payload => {
         let keys = Object.values(payload)
-        this.graphObj = { x: [], users: [], hashtags: []};
+        this.graphObj = {x: [], users: [], hashtags: []};
 
         for (let index = 0; index < keys.length; index++) {
-          this.graphObj.x.push(keys[index].created_at.substr(5,7));
+          this.graphObj.x.push(keys[index].created_at.substr(5, 7));
           this.graphObj.users.push(keys[index].user_id);
           this.graphObj.hashtags.push(keys[index].id);
         }
-      
+        let graphType = 'line';
+
+        if (dateFilter || filter === 'd') {
+          graphType = 'bar';
+        }
+
         this.plot_data = {
           data: [
             {
               x: this.graphObj.x,
               y: this.graphObj.users,
               name: 'Users',
-              type: 'line',
+              type: graphType,
               marker: {
                 color: '#ff9800'
               }
@@ -183,14 +188,14 @@ export class PlotlyPlotComponent implements OnInit {
               x: this.graphObj.x,
               y: this.graphObj.hashtags,
               name: 'Hashtags',
-              type: 'line',
+              type: graphType,
               marker: {
                 color: '#0000FF'
               }
             }
           ],
           layout: {autosize: true}
-        }
+        };
       }
     );
   }
@@ -265,9 +270,9 @@ export class PlotlyPlotComponent implements OnInit {
       selectedDate.setFullYear(new Date().getFullYear());
 
       this.router.navigate(['dashboard'], {
-          queryParams: {
-            filter: `${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}`
-          }
+        queryParams: {
+          filter: `${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()}`
+        }
       });
     }
   }
