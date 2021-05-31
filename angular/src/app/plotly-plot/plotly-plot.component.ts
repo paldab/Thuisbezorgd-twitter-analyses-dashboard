@@ -228,7 +228,22 @@ export class PlotlyPlotComponent implements OnInit {
           // retrieve date from first entry and push it to the tweetDates array.
           this.tweetsService.tweetDates.push(data[0].created_at.substr(5, 7));
           // retrieve the length of data and push it to the amountOfTweets array.
-          this.tweetsService.amountOfTweets.push(data.length);
+          
+          this.tweetsService.sentiment_obj = {positive: 0, negative: 0, neutral: 0};
+
+          data.forEach(item => {
+            switch (item.sentiment) {
+              case "Positive":
+                this.tweetsService.sentiment_obj.positive++;
+                break;
+              case "Negative":
+                this.tweetsService.sentiment_obj.negative++;
+                break;
+              default:
+                this.tweetsService.sentiment_obj.neutral++;
+                break;
+            }
+          })
         }
 
         if (filter == 'm' || filter == 'w' || !filter) {
@@ -239,26 +254,46 @@ export class PlotlyPlotComponent implements OnInit {
 
           // foreach unique tweet date
           for (let i = 0; i < this.tweetsService.tweetDates.length; i++) {
-            let totalTweets = 0;
+            this.tweetsService.sentiment_obj = {positive: 0, negative: 0, neutral: 0};
             for (let j = 0; j < data.length; j++) {
               if (this.tweetsService.tweetDates[i] === data[j].created_at.substr(5, 7)) {
-                totalTweets++;
+                
+                  switch (data[j].sentiment) {
+                    case "Positive":
+                      this.tweetsService.sentiment_obj.positive++;
+                      break;
+                    case "Negative":
+                      this.tweetsService.sentiment_obj.negative++;
+                      break;
+                    default:
+                      this.tweetsService.sentiment_obj.neutral++;
+                      break;
+                }
+              }
               }
             }
-            this.tweetsService.amountOfTweets[i] = totalTweets;
           }
-        }
 
         this.plot_data = {
           data: [{
             x: this.tweetsService.tweetDates,
-            y: this.tweetsService.amountOfTweets,
+            y: this.tweetsService.sentiment_obj.negative,
             type: 'bar',
-            marker: {
-              color: '#ff9800'
-            }
+            name: "Negatief"
+          },
+          {
+            x: this.tweetsService.tweetDates,
+            y: this.tweetsService.sentiment_obj.positive,
+            type: 'bar',
+            name: "Positief"
+          },
+          {
+            x: this.tweetsService.tweetDates,
+            y: this.tweetsService.sentiment_obj.neutral,
+            type: 'bar',
+            name: "Neutraal"
           }],
-          layout: {autosize: true}
+          layout: {autosize: true, barmode: "stack"}
         }
       },
     );

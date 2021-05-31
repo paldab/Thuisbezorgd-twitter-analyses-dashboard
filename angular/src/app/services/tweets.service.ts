@@ -17,6 +17,8 @@ export class TweetsService {
   dataSource!: MatTableDataSource<any>;
   tweetDates: string[] = [];
   amountOfTweets: number[] = [];
+  public sentiment_obj: any = {positive: 0, negative: 0, neutral: 0};
+
 
   constructor(private httpClient: HttpClient) {
     this.dataSource = new MatTableDataSource<any>();
