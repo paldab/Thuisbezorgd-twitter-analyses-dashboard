@@ -99,7 +99,7 @@ export class DashboardComponent implements OnInit {
       title: 'Wordcloud van de dag',
       type: 'wordcloud',
       cols: 4,
-      rows: 14,
+      rows: 18,
       show: true,
     };
     const timelineLayout: Layout = {
@@ -107,7 +107,7 @@ export class DashboardComponent implements OnInit {
       type: 'plotly-plot:timeline',
       enableButtons: true,
       cols: 4,
-      rows: 14,
+      rows: 18,
       show: true,
       layout: {autosize: true}
     };
@@ -115,7 +115,7 @@ export class DashboardComponent implements OnInit {
       title: 'Laatste 5 tweets',
       type: 'plotly-table',
       cols: 4,
-      rows: 14,
+      rows: 18,
       show: true,
     };
     const sentimentTweetsLayout: Layout = {
@@ -123,7 +123,7 @@ export class DashboardComponent implements OnInit {
       type: 'plotly-plot:sentiment',
       enableButtons: false,
       cols: 4,
-      rows: 14,
+      rows: 18,
       show: true,
       layout: {autosize: true}
     }
@@ -132,7 +132,7 @@ export class DashboardComponent implements OnInit {
       type: 'plotly-plot:hashtag+user',
       enableButtons: false,
       cols: 4,
-      rows: 14,
+      rows: 18,
       show: true,
       layout: {autosize: true}
     }
