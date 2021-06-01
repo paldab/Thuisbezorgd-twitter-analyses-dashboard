@@ -40,7 +40,7 @@
   <mat-datepicker-toggle matSuffix [for]="campaignOnePicker"></mat-datepicker-toggle>
   <mat-date-range-picker #campaignOnePicker></mat-date-range-picker>
 </mat-form-field>
-<button mat-raised-button color="primary" (click)="this.getDateFilteredTweets();">Vind tweets</button>
+<button mat-raised-button color="primary" (click)="this.getDateFilteredTweets();" style="margin-left: 1rem">Vind Tweets</button>
   </div>
   <p class="filterType" *ngIf="this.filterType != null">Zoek resultaten van: {{this.filterType}}</p>
     <table mat-table class="full-width-table" matSort aria-label="Tweets">

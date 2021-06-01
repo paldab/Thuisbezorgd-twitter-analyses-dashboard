@@ -103,7 +103,7 @@ export class DashboardComponent implements OnInit {
       show: true,
     };
     const timelineLayout: Layout = {
-      title: 'Tijdlijn tweets',
+      title: 'Tijdlijn Tweets',
       type: 'plotly-plot:timeline',
       enableButtons: true,
       cols: 4,
@@ -112,14 +112,14 @@ export class DashboardComponent implements OnInit {
       layout: {autosize: true, barmode: 'stack'}
     };
     const last5TweetsLayout: Layout = {
-      title: '5 oudste tweets',
+      title: 'Laatste 5 Tweets',
       type: 'plotly-table',
       cols: 4,
       rows: 18,
       show: true,
     };
     const sentimentTweetsLayout: Layout = {
-      title: 'Sentiment tweets',
+      title: 'Sentiment Tweets',
       type: 'plotly-plot:sentiment',
       enableButtons: false,
       cols: 4,

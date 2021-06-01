@@ -112,7 +112,6 @@ export class AllTweetsComponent implements AfterViewInit, OnInit {
   }
 
   getAllTweetsByFilter(type: string, filter?: string): void {
-    console.log(filter, type);
     this.spinnerLoading = true;
 
     this.tweetsService.allTweets(filter).subscribe(
