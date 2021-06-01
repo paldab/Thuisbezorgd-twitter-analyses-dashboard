@@ -4,21 +4,13 @@
     [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="(isHandset$ | async) === false">
     <mat-toolbar>Menu</mat-toolbar>
     <mat-nav-list>
-      <a mat-list-item routerLink="/dashboard" routerLinkActive="link-active" [routerLinkActiveOptions]="{exact:true}">
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="link-active" [routerLinkActiveOptions]="{exact:false}">
         <mat-icon>home</mat-icon>
-        <span>Home</span>
+        <span>Dashboard</span>
       </a>
       <a mat-list-item routerLink="/table/all-tweets" routerLinkActive="link-active" [routerLinkActiveOptions]="{exact:true}">
         <mat-icon>view_list</mat-icon>
-        <span>Alle tweets</span>
-      </a>
-      <a mat-list-item routerLink="/">
-        <mat-icon>bar_chart</mat-icon>
-        <span>Tweet timeline</span>
-      </a>
-      <a mat-list-item routerLink="/">
-        <mat-icon>room</mat-icon>
-        <span>Tweets op locatie</span>
+        <span>Alle Tweets</span>
       </a>
     </mat-nav-list>
   </mat-sidenav>
@@ -32,33 +24,17 @@
         <span>Insight</span>
       </span>
       <span class="toolbar-spacer"></span>
-      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-        <mat-icon>more_vert</mat-icon>
-      </button>
-      <mat-menu #menu="matMenu">
-        <a mat-menu-item routerLink="/">
-          <mat-icon>settings</mat-icon>
-          <span>Settings</span>
-        </a>
-        <div mat-menu-item>
-          <mat-slide-toggle [formControl]="toggleControl" class="mr-8">
-            <span>Toggle dark theme</span>
-          </mat-slide-toggle>
-        </div>
-      </mat-menu>
-
       <div *ngIf="loggedIn===true" class="profile-container">
         <!-- User is logged in. -->
         <img class="avatar" [src]="user?.photoUrl"/>
         <button mat-raised-button color="warn" (click)="signOut()"
         aria-label="Example icon-button with share icon">
         <mat-icon>logout</mat-icon>
-        <span>Logout</span>
+        <span>Uitloggen</span>
         </button>
       </div>
     </mat-toolbar>
     <!-- Add Content Here -->
-    <!-- <app-dashboard [title]="user?.name"></app-dashboard> -->
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 

@@ -23,24 +23,27 @@
       <!-- <mat-hint>Hint</mat-hint> -->
     </mat-form-field>
   </p>
+
+  <mat-form-field class="example-form-field" appearance="fill">
+    <mat-label>Filteren op datum</mat-label>
+    <mat-date-range-input
+      [formGroup]="campaignOne"
+      [rangePicker]="campaignOnePicker">
+      <input matStartDate placeholder="Start date" formControlName="start" >
+      <input matEndDate placeholder="End date" formControlName="end">
+    </mat-date-range-input >
+    <mat-datepicker-toggle matSuffix [for]="campaignOnePicker"></mat-datepicker-toggle>
+    <mat-date-range-picker #campaignOnePicker></mat-date-range-picker>
+  </mat-form-field>
+  <button mat-raised-button color="primary" (click)="this.getDateFilteredTweets();" style="margin-left: 1rem">Vind Tweets</button>
+
+  
   <div class="button-container">
     <button mat-raised-button color="primary" (click)="this.getAllTweetsByFilter( 'vandaag', 'd');">Toon Vandaag</button>
     <button mat-raised-button color="primary" (click)="this.getAllTweetsByFilter('afgelopen week', 'w');">Toon Afgelopen week</button>
     <button mat-raised-button color="primary" (click)="this.getAllTweetsByFilter('afgelopen maand', 'm');">Toon Afgelopen maand</button>
     <button mat-raised-button color="primary" (click)="this.getAllTweetsByFilter('alles');">Toon Alles</button>
 
-<mat-form-field class="example-form-field" appearance="fill">
-  <mat-label>Filter on date</mat-label>
-  <mat-date-range-input
-    [formGroup]="campaignOne"
-    [rangePicker]="campaignOnePicker">
-    <input matStartDate placeholder="Start date" formControlName="start" >
-    <input matEndDate placeholder="End date" formControlName="end">
-  </mat-date-range-input >
-  <mat-datepicker-toggle matSuffix [for]="campaignOnePicker"></mat-datepicker-toggle>
-  <mat-date-range-picker #campaignOnePicker></mat-date-range-picker>
-</mat-form-field>
-<button mat-raised-button color="primary" (click)="this.getDateFilteredTweets();">Vind tweets</button>
   </div>
   <p class="filterType" *ngIf="this.filterType != null">Zoek resultaten van: {{this.filterType}}</p>
     <table mat-table class="full-width-table" matSort aria-label="Tweets">
@@ -52,7 +55,7 @@
 
       <!-- Name Column -->
       <ng-container matColumnDef="trimmed_text">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Text</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Tweet</th>
         <td mat-cell *matCellDef="let row">
           <div class="trimmed-text-container">
             <span [matTooltip]="row.text" matTooltipClass="tweet-tooltip">{{row.trimmed_text}}</span>
@@ -62,13 +65,13 @@
 
       <!-- Username Column -->
       <ng-container matColumnDef="user_screenname">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header id="user_screenname_column">User</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header id="user_screenname_column">Gebruiker</th>
         <td mat-cell *matCellDef="let row">{{row.user_screenname}}</td>
       </ng-container>
 
       <!-- Created at Column -->
       <ng-container matColumnDef="created_at">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Created at</th>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Gecreëerd op</th>
         <td mat-cell *matCellDef="let row">{{row.created_at}}</td>
       </ng-container>
 

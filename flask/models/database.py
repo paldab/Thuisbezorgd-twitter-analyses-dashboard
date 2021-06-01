@@ -13,7 +13,7 @@ class DB():
                 config.database['connector'], config.database['user'],
                 config.database['password'], config.database['host'],
                 config.database['db']
-            )
+            ), pool_size=30, max_overflow=0
         )
 
         self._base = declarative_base()
@@ -26,7 +26,21 @@ class DB():
 
         return self.call_procedure('filter_users', [cn_str])
 
-    def call_procedure(self, name, params=None):
+    def get_procedure_name(self, procedure_name):
+        procedure = None
+
+        if procedure_name == 'd':
+            procedure = 'getDailyTweets'
+
+        if procedure_name == 'w':
+            procedure = 'getWeeklyTweets'
+
+        if procedure_name == 'm':
+            procedure = 'getMonthlyTweets'
+
+        return procedure
+
+    def call_procedure(self, name, params=None, convert_dt=True):
         if params is None:
             params = []
 
@@ -43,7 +57,7 @@ class DB():
             tweets = pd.DataFrame.from_records(results,
                                                columns=column_names_list)
 
-            if pd.api.types.is_datetime64_dtype(tweets['created_at']):
+            if pd.api.types.is_datetime64_dtype(tweets['created_at']) and convert_dt:
                 tweets['created_at'] = tweets['created_at'].dt.strftime(
                     '%a, %d %b %Y %H:%M:%S %Z'
                 )
