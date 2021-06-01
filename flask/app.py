@@ -178,9 +178,25 @@ def all_tweets():
         tweets = db._session().query(
             Tweet.id, Tweet.text, Tweet.user_screenname, Tweet.created_at
         ).all()
+  
+        # sentiment_df = tweet_sentiment_analysis(tweets)
+        data_df = pd.DataFrame(tweets, columns=["id", "text", "user_screenname", "created_at"])
 
-        json_data = create_json(tweets, True)
+        data_df['trimmed_text'] = data_df['text'].apply(
+            lambda x: textwrap.shorten(x, width=144, placeholder="...")
+        )
 
+        data_df['created_at'] = data_df['created_at'].dt.strftime(
+            '%a, %d %b %Y %H:%M:%S %Z'
+        )
+        
+        sentiment_df = tweet_sentiment_analysis(data_df)
+        
+        data_df["sentiment"] = sentiment_df["sentiment"]
+        
+        json_data = json.loads(
+            data_df.to_json(orient='records', date_format='iso')
+        )
     else:
         tweets_df = db.call_procedure(procedure)
 
@@ -188,6 +204,10 @@ def all_tweets():
         tweets_df['trimmed_text'] = tweets_df['text'].apply(
             lambda x: textwrap.shorten(x, width=144, placeholder="...")
         )
+
+        sentiment_df = tweet_sentiment_analysis(tweets_df)
+        
+        tweets_df["sentiment"] = sentiment_df["sentiment"]
 
         json_data = json.loads(
             tweets_df.to_json(orient='records', date_format='iso')
