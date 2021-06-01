@@ -205,7 +205,7 @@ export class PlotlyPlotComponent implements OnInit {
 
     this.tweetsService.allTweets(filter).subscribe(
       data => {
-        this.tweetsService.orderedTweetsArray = data.slice(0, this.tweetsService.tweetLimit);
+        this.tweetsService.orderedTweetsArray = data.slice(Math.max(data.length - this.tweetsService.tweetLimit)).reverse();
 
         // Set data to datasource
         if (dateFilter) {
@@ -218,7 +218,7 @@ export class PlotlyPlotComponent implements OnInit {
           });
 
           // TODO: Fix ?filter=2021-4-27 display all tweets if lesser than limit
-          this.tweetsService.orderedTweetsArray = filteredDates.slice(0, this.tweetsService.tweetLimit);
+          this.tweetsService.orderedTweetsArray = filteredDates.slice(Math.max(filteredDates.length - this.tweetsService.tweetLimit)).reverse();
         }
 
         this.tweetsService.dataSource.data = this.tweetsService.orderedTweetsArray;
@@ -227,11 +227,11 @@ export class PlotlyPlotComponent implements OnInit {
           // retrieve date from first entry and push it to the tweetDates array.
           this.tweetsService.tweetDates.push(data[0].created_at.substr(5, 7));
           // retrieve the length of data and push it to the amountOfTweets array.
-          
+
           let amountOfTweets = {
             positive_count: 0, negative_count: 0, neutral_count: 0,
           }
-        
+
           data.forEach(item => {
             switch (item.sentiment) {
               case "Positive":
@@ -247,7 +247,7 @@ export class PlotlyPlotComponent implements OnInit {
           });
           this.tweetsService.sentiment_obj.positive_array.push(amountOfTweets.positive_count);
           this.tweetsService.sentiment_obj.negative_array.push(amountOfTweets.negative_count);
-          this.tweetsService.sentiment_obj.neutral_array.push(amountOfTweets.neutral_count);  
+          this.tweetsService.sentiment_obj.neutral_array.push(amountOfTweets.neutral_count);
         }
 
         if (filter == 'm' || filter == 'w' || !filter) {
@@ -265,7 +265,7 @@ export class PlotlyPlotComponent implements OnInit {
             for (let j = 0; j < data.length; j++) {
 
               if (this.tweetsService.tweetDates[i] === data[j].created_at.substr(5, 7)) {
-                
+
                 switch (data[j].sentiment) {
                   case "Positive":
                     amountOfTweets.positive_count++;
@@ -279,10 +279,10 @@ export class PlotlyPlotComponent implements OnInit {
                 }
               }
             }
-              
+
             this.tweetsService.sentiment_obj.positive_array[i] = amountOfTweets.positive_count;
             this.tweetsService.sentiment_obj.negative_array[i] = amountOfTweets.negative_count;
-            this.tweetsService.sentiment_obj.neutral_array[i] = amountOfTweets.neutral_count;  
+            this.tweetsService.sentiment_obj.neutral_array[i] = amountOfTweets.neutral_count;
           }
         }
 
@@ -306,7 +306,7 @@ export class PlotlyPlotComponent implements OnInit {
             name: "Neutraal"
           }],
           layout: {autosize: true}
-        }        
+        }
       },
     );
   }
