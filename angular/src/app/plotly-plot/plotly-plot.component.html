@@ -7,4 +7,4 @@
     </div>
 </ng-container>
 
-<plotly-plot [data]="this.plot_data?.data" [layout]="component?.layout" (plotlyClick)="filterByDate($event, component?.type)"></plotly-plot>
+<plotly-plot [data]="this.plot_data?.data" [layout]="component?.layout" [useResizeHandler]="true"	(plotlyClick)="filterByDate($event, component?.type)"></plotly-plot>

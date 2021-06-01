@@ -13,6 +13,7 @@ export interface AllTweetsItem {
   text: string;
   trimmed_text: string;
   id: number;
+  sentiment?: string;
 }
 
 @Component({
