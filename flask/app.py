@@ -123,7 +123,6 @@ def agg_numbers():
         if filter:
             data = Tweet.get_filter_by_param(query=data, param=filter)
 
-        print(data.first() is None)
         json_data += create_json(data.all())
 
     if 'twt' in type:
