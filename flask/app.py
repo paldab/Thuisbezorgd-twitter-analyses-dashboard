@@ -123,7 +123,8 @@ def agg_numbers():
         if filter:
             data = Tweet.get_filter_by_param(query=data, param=filter)
 
-        json_data += create_json(data.limit(1).all())
+        print(data.first() is None)
+        json_data += create_json(data.all())
 
     if 'twt' in type:
         data = db._session().query(func.count(Tweet.id).label('total'))
@@ -163,7 +164,7 @@ def agg_numbers():
         if filter:
             data = Tweet.get_filter_by_param(query=data, param=filter)
 
-        json_data += create_json(data)
+        json_data += create_json(data.all())
 
     return jsonify(json_data), 200
 
@@ -348,8 +349,7 @@ if __name__ == '__main__':
         config.twitter['key'], config.twitter['secret'], c
     )
 
-    scheduler.add_job(func=run_job, trigger="cron", day_of_week='mon-sun',
-                      hour=2, minute=30)
+    scheduler.add_job(func=run_job, trigger="interval", hours=1)
     scheduler.start()
 
     nltk.download('stopwords')
