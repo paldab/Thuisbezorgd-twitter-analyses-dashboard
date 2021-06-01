@@ -217,7 +217,6 @@ export class PlotlyPlotComponent implements OnInit {
               && filterDate.getFullYear() === entryDate.getFullYear();
           });
 
-          // TODO: Fix ?filter=2021-4-27 display all tweets if lesser than limit
           this.tweetsService.orderedTweetsArray = filteredDates.slice(0, this.tweetsService.tweetLimit);
         }
 

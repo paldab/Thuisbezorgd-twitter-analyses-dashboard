@@ -112,7 +112,7 @@ export class DashboardComponent implements OnInit {
       layout: {autosize: true, barmode: 'stack'}
     };
     const last5TweetsLayout: Layout = {
-      title: 'Laatste 5 tweets',
+      title: '5 oudste tweets',
       type: 'plotly-table',
       cols: 4,
       rows: 18,
