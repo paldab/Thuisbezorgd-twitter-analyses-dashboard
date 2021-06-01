@@ -35,13 +35,11 @@ export class WordcloudComponent implements OnInit {
    * grabs the base64 url and format the string into a img-src tag
    */
   public getBase64Img(periodFilter?: string, dateFilter?: string): void {
-    let imgUrl;
     const base64ImgTemplate: string = 'data:image/png;base64,';
     this.wordcloudService.generateWordcloud('white', periodFilter, dateFilter).subscribe(data => {
       const {image} = data;
-      imgUrl = image;
 
-      this.wordcloudImg = `${base64ImgTemplate}${imgUrl}`;
+      this.wordcloudImg = `${base64ImgTemplate}${image}`;
     });
   }
 }

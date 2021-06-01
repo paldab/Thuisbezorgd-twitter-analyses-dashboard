@@ -130,20 +130,29 @@ export class PlotlyPlotComponent implements OnInit {
         x: labels,
         y: [deliveryStats.negCount, deliveryStats.neutralCount, deliveryStats.posCount],
         name: "Bezorging",
-        type: 'bar'
+        type: 'bar',
+        marker: {
+          color: "#F5CF7A"
+        }
       }
       const restaurantSentiment = {
         x: labels,
         y: [restaurantStats.negCount, restaurantStats.neutralCount, restaurantStats.posCount],
         name: "Restaurant",
-        type: 'bar'
+        type: 'bar',
+        marker: {
+          color: "#8CCDB7"
+        }
       }
 
       const remainingSentiment = {
         x: labels,
         y: [remainingStats.negCount, remainingStats.neutralCount, remainingStats.posCount],
         name: "Overig",
-        type: 'bar'
+        type: 'bar',
+        marker: {
+          color: "#83C5DB"
+        }
       }
 
       const mergedData = [restaurantSentiment, deliverySentiment, remainingSentiment]
@@ -177,10 +186,10 @@ export class PlotlyPlotComponent implements OnInit {
             {
               x: this.graphObj.x,
               y: this.graphObj.users,
-              name: 'Users',
+              name: 'Gebruikers',
               type: graphType,
               marker: {
-                color: '#ff9800'
+                color: '#009688'
               }
             },
             {
@@ -189,7 +198,7 @@ export class PlotlyPlotComponent implements OnInit {
               name: 'Hashtags',
               type: graphType,
               marker: {
-                color: '#0000FF'
+                color: '#9c27b0'
               }
             }
           ],
@@ -290,19 +299,28 @@ export class PlotlyPlotComponent implements OnInit {
             x: this.tweetsService.tweetDates,
             y: this.tweetsService.sentiment_obj.negative_array,
             type: 'bar',
-            name: "Negatief"
+            name: "Negatief",
+            marker: {
+              color: '#EE7B5F'
+            }
           },
           {
             x: this.tweetsService.tweetDates,
             y: this.tweetsService.sentiment_obj.positive_array,
             type: 'bar',
-            name: "Positief"
+            name: "Positief",
+            marker: {
+              color: '#47B383'
+            }
           },
           {
             x: this.tweetsService.tweetDates,
             y: this.tweetsService.sentiment_obj.neutral_array,
             type: 'bar',
-            name: "Neutraal"
+            name: "Neutraal",
+            marker: {
+              color: '#FFC910'
+            }
           }],
           layout: {autosize: true}
         }        
