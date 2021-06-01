@@ -37,14 +37,9 @@
       </button>
       <mat-menu #menu="matMenu">
         <a mat-menu-item routerLink="/">
-          <mat-icon>settings</mat-icon>
-          <span>Settings</span>
+          <mat-icon>Instellingen</mat-icon>
+          <span>Instellingen</span>
         </a>
-        <div mat-menu-item>
-          <mat-slide-toggle [formControl]="toggleControl" class="mr-8">
-            <span>Toggle dark theme</span>
-          </mat-slide-toggle>
-        </div>
       </mat-menu>
 
       <div *ngIf="loggedIn===true" class="profile-container">
@@ -52,8 +47,8 @@
         <img class="avatar" [src]="user?.photoUrl"/>
         <button mat-raised-button color="warn" (click)="signOut()"
         aria-label="Example icon-button with share icon">
-        <mat-icon>logout</mat-icon>
-        <span>Logout</span>
+        <mat-icon>Uitloggen</mat-icon>
+        <span>Uitloggen</span>
         </button>
       </div>
     </mat-toolbar>

@@ -124,12 +124,12 @@ export class PlotlyPlotComponent implements OnInit {
       })
 
 
-      const labels = ["Negative", "Neutral", "Positive"]
+      const labels = ["Negatief", "Neutraal", "Positief"]
 
       const deliverySentiment = {
         x: labels,
         y: [deliveryStats.negCount, deliveryStats.neutralCount, deliveryStats.posCount],
-        name: "Delivery",
+        name: "Bezorging",
         type: 'bar'
       }
       const restaurantSentiment = {
