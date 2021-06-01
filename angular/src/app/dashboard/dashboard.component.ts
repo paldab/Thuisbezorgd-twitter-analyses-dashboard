@@ -103,7 +103,7 @@ export class DashboardComponent implements OnInit {
       show: true,
     };
     const timelineLayout: Layout = {
-      title: 'Timeline tweets',
+      title: 'Tijdlijn tweets',
       type: 'plotly-plot:timeline',
       enableButtons: true,
       cols: 4,
@@ -128,7 +128,7 @@ export class DashboardComponent implements OnInit {
       layout: {autosize: true}
     }
     let hashtagAndUsersLayout: Layout = {
-      title: 'Hashtags + users',
+      title: 'Hashtags en gebruikers',
       type: 'plotly-plot:hashtag+user',
       enableButtons: false,
       cols: 4,
