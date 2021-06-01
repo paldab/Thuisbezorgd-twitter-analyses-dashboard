@@ -68,7 +68,6 @@ export class PlotlyPlotComponent implements OnInit {
       data.remaining_data = JSON.parse(data.remaining_data)
 
       const {delivery_data, restaurant_data, remaining_data} = data
-      console.log(data);
 
       let deliveryStats = {
         negCount: 0,
